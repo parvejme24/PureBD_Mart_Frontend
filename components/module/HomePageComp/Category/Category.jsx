@@ -50,13 +50,23 @@ const categoriesData = [
     name: "Tea & Coffee",
     icon: <GiCoffeeCup className="w-10 h-10 text-brown-600" />,
   },
+  {
+    id: "9",
+    name: "Beverages",
+    icon: <GiSodaCan className="w-10 h-10 text-orange-500" />,
+  },
+  {
+    id: "10",
+    name: "Tea & Coffee",
+    icon: <GiCoffeeCup className="w-10 h-10 text-brown-600" />,
+  },
 ];
 
 export default function Category() {
   return (
     <div className="bg-blue-50/40">
       <div className="container mx-auto max-w-7xl px-4 py-10">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 text-center">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 text-center">
           {categoriesData.map((category) => (
             <div
               key={category.id}
