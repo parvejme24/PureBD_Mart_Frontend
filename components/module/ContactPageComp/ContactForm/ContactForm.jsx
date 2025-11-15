@@ -24,7 +24,7 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="w-full p-10 rounded-lg border">
+    <div className="w-full p-10 rounded-lg border bg-[#3BB77E]/4">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <h2 className="text-2xl font-semibold pb-3">Send Message</h2>
         {/* Name & Email */}
@@ -85,10 +85,10 @@ export default function ContactForm() {
         </div>
 
         {/* Submit Button */}
-        <div className="text-center">
+        <div className="">
           <Button
             type="submit"
-            className="bg-[#3BB77E] hover:bg-[#29A56C] duration-300 text-white cursor-pointer w-full md:w-auto px-10"
+            className="bg-[#3BB77E] hover:bg-[#29A56C] duration-300 text-white cursor-pointer w-full md:w-auto px-10 py-5 font-bold"
           >
             Send Message
           </Button>
