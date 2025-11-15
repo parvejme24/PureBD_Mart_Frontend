@@ -57,8 +57,8 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen w-full bg-blue-50/20">
-      <Card className="w-full sm:max-w-md mx-5 md:mx-auto px-3 md:px-5 py-10">
+    <div className="flex justify-center items-center min-h-screen w-full bg-[#D8F1E5]/10">
+      <Card className="w-full sm:max-w-md mx-5 md:mx-auto px-3 md:px-5 py-10 bg-white">
         <CardHeader>
           <CardTitle className="text-2xl text-center">Login</CardTitle>
           <CardDescription className="text-center pb-5">

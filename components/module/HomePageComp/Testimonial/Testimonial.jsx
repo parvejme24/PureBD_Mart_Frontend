@@ -20,7 +20,7 @@ export default function Testimonial() {
         </h2>
         <p className="text-gray-600 text-sm md:text-base">
           Start your daily shopping with{" "}
-          <span className="text-blue-600 font-semibold">PureBD Mart</span>
+          <span className="text-[#3BB77E] font-semibold">PureBD Mart</span>
         </p>
 
         <div className="flex flex-col sm:flex-row mt-4 space-y-1">
@@ -28,7 +28,7 @@ export default function Testimonial() {
             placeholder="Enter email address"
             className="rounded-full px-5 py-5 bg-white/90 border-gray-300"
           />
-          <Button className="md:-ml-[113px] cursor-pointer py-4 mt-[3px] rounded-full bg-blue-600 hover:bg-blue-700 text-white px-6">
+          <Button className="md:-ml-[113px] cursor-pointer py-4 mt-[3px] rounded-full bg-[#3BB77E] hover:bg-[#29A56C] text-white px-6">
             Subscribe
           </Button>
         </div>

@@ -51,7 +51,10 @@ export default function Navbar() {
           <Link href="/cart">
             <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-blue-500 transition" />
           </Link>
-          <Button asChild className="bg-[#3BB77E] hover:bg-[#29A56C] duration-300 text-white">
+          <Button
+            asChild
+            className="bg-[#3BB77E] hover:bg-[#29A56C] duration-300 text-white"
+          >
             <Link href="/login">Login</Link>
           </Button>
 
