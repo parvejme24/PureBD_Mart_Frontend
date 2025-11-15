@@ -57,8 +57,16 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen w-full bg-[#D8F1E5]/10">
-      <Card className="w-full sm:max-w-md mx-5 md:mx-auto px-3 md:px-5 py-10 bg-white">
+    <div
+      style={{
+        backgroundImage:
+          'url("https://themepanthers.com/wp/nest/d1/wp-content/uploads/2022/02/banner-10-min.png")',
+        backgroundRepeat: "repeat",
+        backgroundSize: "contain",
+      }}
+      className="flex justify-center items-center min-h-screen w-full"
+    >
+      <Card className="w-full sm:max-w-md mx-5 md:mx-auto px-3 md:px-5 py-10 bg-white/50">
         <CardHeader>
           <CardTitle className="text-2xl text-center">Login</CardTitle>
           <CardDescription className="text-center pb-5">
@@ -133,7 +141,7 @@ export default function LoginForm() {
             <Button
               type="submit"
               form="login-form"
-              className="cursor-pointer bg-blue-500 hover:bg-blue-700"
+              className="cursor-pointer font-bold bg-[#3BB77E] hover:bg-[#29A56C] text-white"
             >
               Login
             </Button>
@@ -142,7 +150,7 @@ export default function LoginForm() {
             <Button
               type="button"
               variant="outline"
-              className="flex items-center gap-2 w-full cursor-pointer"
+              className="flex items-center gap-2 w-full cursor-pointer "
               onClick={loginWithGoogle}
             >
               <FcGoogle size={20} />
@@ -152,7 +160,7 @@ export default function LoginForm() {
             <p className="text-center">
               <small>
                 New to this website?{" "}
-                <Link href="/register" className="underline">
+                <Link href="/register" className="underline text-[#29A56C]">
                   Register
                 </Link>
               </small>

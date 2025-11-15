@@ -56,8 +56,16 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen w-full bg-blue-50/20">
-      <Card className="w-full sm:max-w-md mx-5 md:mx-auto px-3 md:px-5 py-10">
+    <div
+      style={{
+        backgroundImage:
+          'url("https://themepanthers.com/wp/nest/d1/wp-content/uploads/2022/02/banner-10-min.png")',
+        backgroundRepeat: "repeat",
+        backgroundSize: "contain",
+      }}
+      className="flex justify-center items-center min-h-screen w-full"
+    >
+      <Card className="w-full sm:max-w-md mx-5 md:mx-auto px-3 md:px-5 py-10 bg-white/50">
         <CardHeader>
           <CardTitle className="text-2xl text-center">Register</CardTitle>
           <CardDescription className="text-center pb-4">
@@ -156,7 +164,7 @@ export default function RegisterPage() {
             <Button
               type="submit"
               form="register-form"
-              className="cursor-pointer bg-blue-500 hover:bg-blue-700"
+              className="cursor-pointer font-bold bg-[#3BB77E] hover:bg-[#29A56C] text-white"
             >
               Register
             </Button>
@@ -175,7 +183,7 @@ export default function RegisterPage() {
             {/* --- LOGIN LINK --- */}
             <p className="text-center text-sm">
               Already have an account?{" "}
-              <Link href="/login" className="underline text-blue-600">
+              <Link href="/login" className="underline text-[#29A56C]">
                 Login
               </Link>
             </p>
