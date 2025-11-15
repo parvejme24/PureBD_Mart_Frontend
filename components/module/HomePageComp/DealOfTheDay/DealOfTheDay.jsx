@@ -61,7 +61,7 @@ const productsData = [
 
 export default function DealOfTheDay() {
   return (
-    <div className="container mx-auto max-w-7xl py-10">
+    <div className="container mx-auto max-w-7xl px-5 py-10">
       <div className="mb-5 flex justify-between items-center w-full">
         <div>
           <h2 className="text-xl md:text-2xl">Deal of the Day</h2>
@@ -119,8 +119,8 @@ export default function DealOfTheDay() {
           ))}
         </CarouselContent>
 
-        <CarouselPrevious />
-        <CarouselNext />
+        <CarouselPrevious className={"hidden lg:flex cursor-pointer"} />
+        <CarouselNext className={"hidden lg:flex cursor-pointer"} />
       </Carousel>
     </div>
   );
