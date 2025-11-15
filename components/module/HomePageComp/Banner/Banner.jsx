@@ -42,7 +42,7 @@ const BannerData = [
 
 export default function Banner() {
   return (
-    <div className="bg-blue-50/40">
+    <div className="bg-[#D8F1E5]/10">
       <div className="pt-5 container px-5 lg:px-0 md:mx-auto max-w-7xl">
         <Carousel className="rounded-md overflow-hidden">
           <CarouselContent>

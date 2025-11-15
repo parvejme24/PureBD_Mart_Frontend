@@ -19,7 +19,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="bg-blue-50/90 sticky top-0 z-50 border-b backdrop-blur-md">
+    <nav className="bg-[#D8F1E5]/40 sticky top-0 z-50 border-b backdrop-blur-md">
       <div className="container mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
         {/* Left: Logo */}
         <Link href="/" className="flex items-center space-x-2">
@@ -51,7 +51,7 @@ export default function Navbar() {
           <Link href="/cart">
             <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-blue-500 transition" />
           </Link>
-          <Button asChild className="bg-blue-500 hover:bg-blue-600 text-white">
+          <Button asChild className="bg-[#3BB77E] hover:bg-[#29A56C] duration-300 text-white">
             <Link href="/login">Login</Link>
           </Button>
 

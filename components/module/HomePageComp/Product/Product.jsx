@@ -1,3 +1,4 @@
+import ProductCard from "@/components/shared/ProductCard/ProductCard";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ShoppingCart } from "lucide-react";
 import React from "react";
@@ -106,7 +107,10 @@ export default function Product() {
           </p>
         </div>
         <div>
-          <Button variant={"outline"} className={"md:w-[115px] rounded-full cursor-pointer"}>
+          <Button
+            variant={"outline"}
+            className={"md:w-[115px] rounded-full cursor-pointer"}
+          >
             View All <ArrowRight />
           </Button>
         </div>
@@ -114,32 +118,7 @@ export default function Product() {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6">
         {productsData.map((product) => (
-          <div
-            key={product.id}
-            className="bg-blue-50/20 rounded p-5 border transition-transform hover:-translate-y-1"
-          >
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full object-container rounded-lg mb-3"
-            />
-            <span className="uppercase text-green-700 font-bold text-xs">
-              In Stock
-            </span>
-            <h3 className="font-semibold text-gray-800">{product.name}</h3>
-            <p className="text-sm text-gray-600">{product.description}</p>
-            <div className="flex justify-between items-center">
-              <p className="mt-2 font-bold text-blue-600">{product.price}</p>
-              <Button
-                variant={"outline"}
-                className={
-                  "cursor-pointer bg-blue-600 text-white shadow-none duration-300 hover:bg-blue-700 hover:text-white"
-                }
-              >
-                <ShoppingCart /> Buy Now
-              </Button>
-            </div>
-          </div>
+          <ProductCard product={product} />
         ))}
       </div>
     </div>

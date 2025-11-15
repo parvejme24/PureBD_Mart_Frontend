@@ -64,13 +64,13 @@ const categoriesData = [
 
 export default function Category() {
   return (
-    <div className="bg-blue-50/40">
+    <div className="bg-[#D8F1E5]/10">
       <div className="container mx-auto max-w-7xl px-4 py-10">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 text-center">
           {categoriesData.map((category) => (
             <div
               key={category.id}
-              className="bg-white rounded p-5 border flex flex-col items-center justify-center transition-transform hover:-translate-y-1 cursor-pointer"
+              className="bg-white rounded-md p-5 border flex flex-col items-center justify-center transition-transform hover:-translate-y-1 cursor-pointer"
             >
               {category.icon}
               <p className="mt-3 text-gray-700 font-medium">{category.name}</p>

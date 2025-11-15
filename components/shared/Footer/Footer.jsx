@@ -7,7 +7,7 @@ import LOGO from "@/public/logo.png";
 
 export default function Footer() {
   return (
-    <footer className="bg-blue-50/90 border-t backdrop-blur-md">
+    <footer className="bg-[#D8F1E5]/40 border-t backdrop-blur-md">
       <div className="container mx-auto max-w-7xl text-center py-14 px-4">
         {/* Logo / Brand */}
         <div className="pb-5">

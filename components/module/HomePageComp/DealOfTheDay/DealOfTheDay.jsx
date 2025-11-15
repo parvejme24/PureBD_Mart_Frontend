@@ -86,7 +86,7 @@ export default function DealOfTheDay() {
               key={product.id}
               className="pl-2 md:pl-4 basis-full md:basis-1/2"
             >
-              <Card className="shadow-md hover:shadow-lg transition rounded-xl overflow-hidden bg-blue-50/30">
+              <Card className="shadow-md hover:shadow-lg transition rounded-xl overflow-hidden bg-[#D8F1E5]/10">
                 <CardContent className="flex items-center gap-5 p-5">
                   {/* Left: Image */}
                   <div className="w-1/3">
@@ -105,11 +105,11 @@ export default function DealOfTheDay() {
                     <p className="text-sm text-gray-600 mb-2 line-clamp-2">
                       {product.description}
                     </p>
-                    <p className="text-blue-600 font-bold">{product.price}</p>
+                    <p className="text-[#60B77E] font-bold">{product.price}</p>
                     <p className="text-xs text-gray-500 mb-3">
                       Qty: {product.quantity}
                     </p>
-                    <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full">
+                    <Button className="cursor-pointer bg-[#DEF9EC] hover:bg-[#50BB88]/30  text-[#50BB88] font-bold w-full">
                       Buy Now
                     </Button>
                   </div>

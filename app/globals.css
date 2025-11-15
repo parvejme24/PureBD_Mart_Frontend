@@ -21,6 +21,10 @@ label {
   font-family: "Rubik", sans-serif;
 }
 
+button{
+  /* background: #3BB77E; */
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
