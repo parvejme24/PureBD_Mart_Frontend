@@ -1,7 +1,4 @@
 import ProductCard from "@/components/shared/ProductCard/ProductCard";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, ShoppingCart } from "lucide-react";
-import Link from "next/link";
 import React from "react";
 
 const productsData = [
@@ -99,27 +96,8 @@ const productsData = [
 
 export default function Product() {
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-14">
-      <div className="mb-5 flex justify-between items-center w-full">
-        <div>
-          <h2 className="text-xl md:text-2xl">Our Special Products</h2>
-          <p className="text-xs md:text-base text-gray-500">
-            Do not miss the current offers until the end of March.
-          </p>
-        </div>
-        <div>
-          <Link href="/shop">
-            <Button
-              variant={"outline"}
-              className={"md:w-[115px] rounded-full cursor-pointer"}
-            >
-              View All <ArrowRight />
-            </Button>
-          </Link>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div className="w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {productsData.map((product) => (
           <ProductCard product={product} />
         ))}

@@ -3,6 +3,12 @@ import { ShoppingCart } from "lucide-react";
 import React from "react";
 
 export default function ProductCard({ product }) {
+  // Truncate description if longer than 44 characters
+  const truncateDescription = (desc, maxLength = 44) => {
+    if (!desc) return "";
+    return desc.length > maxLength ? desc.slice(0, maxLength) + "..." : desc;
+  };
+
   return (
     <div>
       <div
@@ -12,19 +18,21 @@ export default function ProductCard({ product }) {
         <img
           src={product.image}
           alt={product.name}
-          className="w-full object-container rounded-lg mb-3"
+          className="w-full object-contain rounded-lg mb-3"
         />
         <hr className="mb-2" />
         <span className="uppercase text-green-700 font-bold text-xs">
           In Stock
         </span>
         <h3 className="font-semibold text-gray-800">{product.name}</h3>
-        <p className="text-sm text-gray-600">{product.description}</p>
-        <div className="flex justify-between items-center">
-          <p className="mt-2 font-bold text-[#3BB77E]">{product.price}</p>
+        <p className="text-sm text-gray-600">
+          {truncateDescription(product.description)}
+        </p>
+        <div className="flex justify-between items-center mt-2">
+          <p className="mt-2 font-bold text-[#3BB77E]">{product.price}৳</p>
           <Button
             variant={"outline"}
-            className={"cursor-pointer bg-[#DEF9EC]  text-[#50BB88] font-bold"}
+            className={"cursor-pointer bg-[#DEF9EC] text-[#50BB88] font-bold"}
           >
             <ShoppingCart /> Buy Now
           </Button>

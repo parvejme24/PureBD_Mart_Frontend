@@ -35,7 +35,12 @@ export default function ContactForm() {
               name="name"
               control={control}
               render={({ field }) => (
-                <Input {...field} id="name" placeholder="Type Your Name" />
+                <Input
+                  {...field}
+                  id="name"
+                  placeholder="Type Your Name"
+                  className={"bg-white"}
+                />
               )}
             />
           </div>
@@ -45,7 +50,12 @@ export default function ContactForm() {
               name="email"
               control={control}
               render={({ field }) => (
-                <Input {...field} id="email" placeholder="example@gmail.com" />
+                <Input
+                  {...field}
+                  id="email"
+                  placeholder="example@gmail.com"
+                  className={"bg-white"}
+                />
               )}
             />
           </div>
@@ -62,6 +72,7 @@ export default function ContactForm() {
                 {...field}
                 id="subject"
                 placeholder="Type your subject..."
+                className={"bg-white"}
               />
             )}
           />
@@ -78,7 +89,8 @@ export default function ContactForm() {
                 {...field}
                 id="message"
                 placeholder="Type your message here."
-                rows={20}
+                className={"bg-white"}
+                row={10}
               />
             )}
           />
