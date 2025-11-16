@@ -1,5 +1,10 @@
+import AboutPageContainer from "@/components/module/AboutPageComp/AboutPageContainer";
 import React from "react";
 
 export default function AboutPage() {
-  return <div></div>;
+  return (
+    <div>
+      <AboutPageContainer />
+    </div>
+  );
 }

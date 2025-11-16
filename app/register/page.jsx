@@ -90,6 +90,7 @@ export default function RegisterPage() {
                     {...field}
                     placeholder="Your Name"
                     autoComplete="name"
+                    className={"bg-white"}
                   />
                   {fieldState.error && (
                     <p className="text-red-500 text-sm">
@@ -111,6 +112,7 @@ export default function RegisterPage() {
                     {...field}
                     placeholder="example@email.com"
                     autoComplete="email"
+                    className={"bg-white"}
                   />
                   {fieldState.error && (
                     <p className="text-red-500 text-sm">
@@ -135,6 +137,7 @@ export default function RegisterPage() {
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
                       autoComplete="new-password"
+                      className={"bg-white"}
                     />
 
                     {/* TOGGLE BUTTON */}

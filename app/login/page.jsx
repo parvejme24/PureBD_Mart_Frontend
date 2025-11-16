@@ -88,6 +88,7 @@ export default function LoginForm() {
                       {...field}
                       placeholder="yourname@example.com"
                       autoComplete="email"
+                      className={"bg-white"}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -111,7 +112,7 @@ export default function LoginForm() {
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
                         autoComplete="current-password"
-                        className="pr-10" // padding for icon
+                        className="pr-10 bg-white" // padding for icon
                       />
                       <button
                         type="button"
