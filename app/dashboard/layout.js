@@ -1,5 +1,4 @@
 import DashboardSidebar from "@/components/shared/DashboardSidebar/DashboardSidebar";
-import Footer from "@/components/shared/Footer/Footer";
 import Navbar from "@/components/shared/Navbar/Navbar";
 import React from "react";
 
