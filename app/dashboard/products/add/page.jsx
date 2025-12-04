@@ -49,7 +49,7 @@ export default function AddProductPage() {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
+    <div className="bg-white p-6 rounded-lg shadow border border-gray-2000">
       <h2 className="text-center text-2xl font-bold mb-6">Add New Product</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">

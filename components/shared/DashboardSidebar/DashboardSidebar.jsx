@@ -9,6 +9,7 @@ import {
   Folder,
   Users,
 } from "lucide-react";
+import { ImProfile } from "react-icons/im";
 
 export default function DashboardSidebar() {
   const pathname = usePathname();
@@ -18,6 +19,11 @@ export default function DashboardSidebar() {
       name: "Dashboard",
       href: "/dashboard",
       icon: <LayoutDashboard size={18} />,
+    },
+    {
+      name: "My Profile",
+      href: "/dashboard/profile",
+      icon: <ImProfile size={18} />,
     },
     {
       name: "Add Product",
@@ -43,8 +49,8 @@ export default function DashboardSidebar() {
   ];
 
   return (
-    <div className="w-64 min-h-screen bg-green-50/50 border p-5 rounded-lg">
-      <ul className="space-y-2">
+    <div className="w-[280px] min-h-screen bg-green-50/50 border p-5 rounded-lg">
+      <ul className="space-y-2 w-full">
         {menu.map((item, idx) => {
           const active = pathname === item.href;
           return (
@@ -52,11 +58,10 @@ export default function DashboardSidebar() {
               <Link
                 href={item.href}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all shadow-sm border
-                ${
-                  active
+                ${active
                     ? "bg-[#3BB77E] text-white border-[#3BB77E]"
                     : "bg-gray-50 text-gray-700 hover:bg-gray-100"
-                }`}
+                  }`}
               >
                 {item.icon}
                 {item.name}
