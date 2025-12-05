@@ -1,6 +1,7 @@
+"use client";
+
 import DashboardSidebar from "@/components/shared/DashboardSidebar/DashboardSidebar";
 import Navbar from "@/components/shared/Navbar/Navbar";
-import React from "react";
 
 export default function DashboardLayout({ children }) {
   return (

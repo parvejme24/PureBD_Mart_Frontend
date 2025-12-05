@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -109,7 +110,7 @@ export default function ProductsPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="container mx-auto max-w-7xl px-4">
+      <div className="w-full">
         {/* Header Skeleton */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div>
@@ -136,7 +137,7 @@ export default function ProductsPage() {
   // Error state
   if (isError) {
     return (
-      <div className="container mx-auto max-w-7xl px-4">
+      <div className="w-full">
         <div className="flex flex-col items-center justify-center h-64 text-red-500">
           <p className="font-medium">Failed to load products</p>
           <Button
@@ -152,7 +153,7 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-7xl px-4">
+    <div className="w-full">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
         <div>
@@ -185,14 +186,32 @@ export default function ProductsPage() {
 
           {/* Category Filter */}
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-full sm:w-40">
+            <SelectTrigger className="w-full sm:w-44">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
+              <SelectItem value="all">
+                <div className="flex items-center gap-2">
+                  <Package className="h-4 w-4 text-gray-400" />
+                  <span>All Categories</span>
+                </div>
+              </SelectItem>
               {categories.map((category) => (
                 <SelectItem key={category._id} value={category._id}>
-                  {category.name}
+                  <div className="flex items-center gap-2">
+                    {category.image?.url ? (
+                      <Image
+                        src={category.image.url}
+                        alt={category.name}
+                        width={16}
+                        height={16}
+                        className="rounded object-cover"
+                      />
+                    ) : (
+                      <Package className="h-4 w-4 text-gray-400" />
+                    )}
+                    <span>{category.name}</span>
+                  </div>
                 </SelectItem>
               ))}
             </SelectContent>

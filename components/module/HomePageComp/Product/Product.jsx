@@ -1,108 +1,31 @@
+"use client";
+
 import ProductCard from "@/components/shared/ProductCard/ProductCard";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ShoppingCart } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import React from "react";
-
-const productsData = [
-  {
-    id: "1",
-    name: "Fresh Apples",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/organic-carrot-300x300.jpg",
-    price: "180",
-    description: "Crisp and juicy apples sourced from local farms.",
-    quantity: "1 kg",
-  },
-  {
-    id: "2",
-    name: "Organic Bananas",
-    image:
-      "https://mybacola.myshopify.com/cdn/shop/files/product-image_3b821ada-6a37-40a8-b57e-9cdda2ae2ec5.jpg?v=1736510606&width=533",
-    price: "90",
-    description: "Sweet and ripe organic bananas for daily nutrition.",
-    quantity: "1 dozen",
-  },
-  {
-    id: "3",
-    name: "Fresh Tomatoes",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/beef-steak-300x300.jpg",
-    price: "70",
-    description: "Bright red tomatoes perfect for cooking and salads.",
-    quantity: "1 kg",
-  },
-  {
-    id: "4",
-    name: "Premium Rice",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/organic-cucumber-300x300.jpg",
-    price: "110",
-    description: "High-quality long-grain rice for every meal.",
-    quantity: "1 kg",
-  },
-  {
-    id: "5",
-    name: "Pure Mustard Oil",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/fresh-banana-300x300.jpg",
-    price: "320",
-    description: "Cold-pressed mustard oil rich in aroma and nutrients.",
-    quantity: "1 liter",
-  },
-  {
-    id: "6",
-    name: "Farm Fresh Eggs",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/10/fruit-product-3.jpg",
-    price: "140",
-    description: "Protein-rich, fresh eggs collected daily from farms.",
-    quantity: "12 pcs",
-  },
-  {
-    id: "7",
-    name: "Premium Lentils",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/organic-milk-300x300.jpg",
-    price: "160",
-    description: "High-quality red lentils perfect for everyday meals.",
-    quantity: "1 kg",
-  },
-  {
-    id: "8",
-    name: "Fresh Milk",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/green-gabbage-300x300.jpg",
-    price: "90",
-    description: "Pure and fresh milk packed with essential nutrients.",
-    quantity: "1 liter",
-  },
-  {
-    id: "9",
-    name: "Natural Honey",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/pig-food-300x300.jpg",
-    price: "450",
-    description: "100% pure honey collected from organic bee farms.",
-    quantity: "500 g",
-  },
-  {
-    id: "10",
-    name: "Brown Bread",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/organic-tomato-300x300.jpg",
-    price: "80",
-    description: "Soft, fresh, and healthy brown bread for daily breakfast.",
-    quantity: "1 pack",
-  },
-];
+import { useProducts } from "@/hooks/useProduct";
+import ProductSkeleton from "./ProductSkeleton";
 
 export default function Product() {
+  const { data, isLoading, isError } = useProducts();
+  const products = data?.products?.slice(0, 10) || [];
+
+  if (isLoading) {
+    return <ProductSkeleton />;
+  }
+
+  if (isError || products.length === 0) {
+    return null;
+  }
+
   return (
     <div className="container mx-auto max-w-7xl px-4 py-14">
       <div className="mb-5 flex justify-between items-center w-full">
         <div>
-          <h2 className="text-xl md:text-2xl">Our Special Products</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800">
+            Our Special Products
+          </h2>
           <p className="text-xs md:text-base text-gray-500">
             Do not miss the current offers until the end of March.
           </p>
@@ -119,9 +42,9 @@ export default function Product() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-        {productsData.map((product) => (
-          <ProductCard product={product} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        {products.map((product) => (
+          <ProductCard key={product._id} product={product} />
         ))}
       </div>
     </div>

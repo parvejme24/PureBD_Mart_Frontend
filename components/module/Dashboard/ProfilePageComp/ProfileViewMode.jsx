@@ -65,7 +65,7 @@ export default function ProfileViewMode({
           <div className="p-3 bg-gray-50 rounded-lg md:col-span-2">
             <p className="text-xs text-gray-500 mb-1">Detail Address</p>
             <p className="font-medium text-gray-900">
-              {address.street || "Not set"}
+              {address.detailsAddress || "Not set"}
             </p>
           </div>
         </div>
@@ -73,4 +73,5 @@ export default function ProfileViewMode({
     </div>
   );
 }
+
 

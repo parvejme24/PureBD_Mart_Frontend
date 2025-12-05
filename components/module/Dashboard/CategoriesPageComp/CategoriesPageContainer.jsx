@@ -53,7 +53,7 @@ export default function CategoriesPageContainer() {
   // Loading state with skeletons
   if (isLoading) {
     return (
-      <div className="container mx-auto">
+      <div className="">
         {/* Header Skeleton */}
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
           <div>
@@ -79,7 +79,7 @@ export default function CategoriesPageContainer() {
   // Error state
   if (isError) {
     return (
-      <div className="container mx-auto max-w-7xl px-4">
+      <div className="w-full">
         <div className="flex flex-col items-center justify-center h-64 text-red-500">
           <p>Failed to load categories</p>
           <Button
@@ -95,7 +95,7 @@ export default function CategoriesPageContainer() {
   }
 
   return (
-    <div className="container mx-auto max-w-7xl px-4">
+    <div className="">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
         <div>
@@ -162,7 +162,7 @@ export default function CategoriesPageContainer() {
 
       {/* Category Grid */}
       {filteredCategories.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6">
           {filteredCategories.map((category) => (
             <CategoryCard
               key={category._id}

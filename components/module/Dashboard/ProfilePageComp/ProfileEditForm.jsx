@@ -232,9 +232,9 @@ export default function ProfileEditForm({
             )}
           />
 
-          {/* Street Address */}
+          {/* Details Address */}
           <Controller
-            name="street"
+            name="detailsAddress"
             control={form.control}
             render={({ field }) => (
               <div className="space-y-1 md:col-span-2">
@@ -284,4 +284,5 @@ export default function ProfileEditForm({
     </form>
   );
 }
+
 

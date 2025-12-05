@@ -13,9 +13,14 @@ import {
   LogOut,
   ChevronDown,
   Loader2,
+  Trash2,
+  Minus,
+  Plus,
+  ShoppingBag,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/hooks/useCart";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -25,6 +30,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 // Get user initials for avatar fallback
 const getInitials = (name) => {
@@ -66,6 +76,15 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const { user, isAuthenticated, isLoading, logout, isAdmin } = useAuth();
+  const {
+    cart,
+    isLoaded,
+    cartTotal,
+    cartCount,
+    removeFromCart,
+    incrementQuantity,
+    decrementQuantity,
+  } = useCart();
 
   const navItems = [
     { name: "Home", href: "/" },
@@ -78,6 +97,9 @@ export default function Navbar() {
     logout();
     setIsOpen(false);
   };
+
+  // Cart state for popover
+  const [cartOpen, setCartOpen] = useState(false);
 
   // Render mobile user section based on auth state
   const renderMobileUserSection = () => {
@@ -133,9 +155,20 @@ export default function Navbar() {
               <span className="font-medium">Dashboard</span>
             </Link>
 
+            <Link
+              href="/cart"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/50 transition-colors"
+            >
+              <ShoppingCart className="h-5 w-5 text-gray-600" />
+              <span className="font-medium">
+                Cart {cartCount > 0 && `(${cartCount})`}
+              </span>
+            </Link>
+
             <button
               onClick={handleLogout}
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-red-50 transition-colors w-full text-red-600"
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-red-50 transition-colors w-full text-red-600 cursor-pointer"
             >
               <LogOut className="h-5 w-5" />
               <span className="font-medium">Logout</span>
@@ -155,8 +188,17 @@ export default function Navbar() {
           whileTap={{ scale: 0.95 }}
           transition={{ type: "spring", stiffness: 400 }}
         >
-          <Link href="/cart" onClick={() => setIsOpen(false)}>
+          <Link
+            href="/cart"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-2"
+          >
             <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-[#3BB77E]" />
+            {cartCount > 0 && (
+              <span className="text-sm font-medium text-[#3BB77E]">
+                ({cartCount})
+              </span>
+            )}
           </Link>
         </motion.div>
         <motion.div
@@ -226,14 +268,161 @@ export default function Navbar() {
 
         {/* Right section */}
         <div className="flex items-center space-x-4">
-          {/* Cart Icon */}
+          {/* Cart Dropdown - Desktop */}
+          <div className="hidden md:block">
+            <Popover open={cartOpen} onOpenChange={setCartOpen}>
+              <PopoverTrigger asChild>
+                <button className="relative focus:outline-none cursor-pointer">
+                  <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-[#3BB77E] transition duration-300" />
+                  {isLoaded && cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-[#3BB77E] text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      {cartCount > 99 ? "99+" : cartCount}
+                    </span>
+                  )}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-80 p-0">
+                {/* Cart Header */}
+                <div className="p-4 border-b bg-gray-50 rounded-t-md">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-gray-800">Shopping Cart</h3>
+                    <span className="text-sm text-gray-500">
+                      {cartCount} item{cartCount !== 1 ? "s" : ""}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Cart Items */}
+                <div className="max-h-[300px] overflow-y-auto">
+                  {!isLoaded ? (
+                    <div className="p-8 text-center">
+                      <Loader2 className="h-6 w-6 animate-spin mx-auto text-[#3BB77E]" />
+                    </div>
+                  ) : cart.length === 0 ? (
+                    <div className="p-8 text-center">
+                      <ShoppingBag className="h-12 w-12 mx-auto text-gray-300 mb-3" />
+                      <p className="text-gray-500 font-medium">Your cart is empty</p>
+                      <p className="text-sm text-gray-400">Add items to get started</p>
+                    </div>
+                  ) : (
+                    <div className="divide-y">
+                      {cart.map((item) => (
+                        <div
+                          key={item.productId}
+                          className="p-3 flex gap-3 hover:bg-gray-50 transition-colors"
+                        >
+                          {/* Product Image */}
+                          <div className="relative w-16 h-16 flex-shrink-0 rounded-md overflow-hidden bg-gray-100">
+                            {item.image ? (
+                              <Image
+                                src={item.image}
+                                alt={item.name}
+                                fill
+                                className="object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <ShoppingBag className="h-6 w-6 text-gray-300" />
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Product Details */}
+                          <div className="flex-1 min-w-0">
+                            <Link
+                              href={`/shop/${item.slug || item.productId}`}
+                              onClick={() => setCartOpen(false)}
+                              className="text-sm font-medium text-gray-800 hover:text-[#3BB77E] line-clamp-1 transition-colors"
+                            >
+                              {item.name}
+                            </Link>
+                            <p className="text-[#3BB77E] font-semibold text-sm">
+                              ৳{item.price}
+                            </p>
+
+                            {/* Quantity Controls */}
+                            <div className="flex items-center gap-2 mt-1">
+                              <button
+                                onClick={() => decrementQuantity(item.productId)}
+                                className="h-6 w-6 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50"
+                                disabled={item.qty <= 1}
+                              >
+                                <Minus className="h-3 w-3" />
+                              </button>
+                              <span className="text-sm font-medium w-6 text-center">
+                                {item.qty}
+                              </span>
+                              <button
+                                onClick={() => incrementQuantity(item.productId)}
+                                className="h-6 w-6 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors cursor-pointer"
+                              >
+                                <Plus className="h-3 w-3" />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Remove Button */}
+                          <button
+                            onClick={() => removeFromCart(item.productId)}
+                            className="self-start p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Cart Footer */}
+                {cart.length > 0 && (
+                  <div className="p-4 border-t bg-gray-50 space-y-3 rounded-b-md">
+                    {/* Total */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">Subtotal:</span>
+                      <span className="text-lg font-bold text-[#3BB77E]">
+                        ৳{cartTotal.toFixed(2)}
+                      </span>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        className="flex-1 cursor-pointer"
+                        asChild
+                        onClick={() => setCartOpen(false)}
+                      >
+                        <Link href="/cart">View Cart</Link>
+                      </Button>
+                      <Button
+                        className="flex-1 bg-[#3BB77E] hover:bg-[#2a9c66] cursor-pointer"
+                        asChild
+                        onClick={() => setCartOpen(false)}
+                      >
+                        <Link href="/checkout">Checkout</Link>
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Cart Icon - Mobile (simple link) */}
           <motion.div
+            className="md:hidden relative"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400 }}
           >
             <Link href="/cart">
               <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-[#3BB77E] transition duration-300" />
+              {isLoaded && cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-[#3BB77E] text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartCount > 99 ? "99+" : cartCount}
+                </span>
+              )}
             </Link>
           </motion.div>
 
@@ -247,7 +436,7 @@ export default function Navbar() {
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="flex items-center gap-2 p-1.5 rounded-full hover:bg-gray-100 transition-colors focus:outline-none"
+                    className="flex items-center gap-2 p-1.5 rounded-full hover:bg-gray-100 transition-colors focus:outline-none cursor-pointer"
                   >
                     <Avatar className="h-9 w-9 border-2 border-[#3BB77E]">
                       <AvatarImage src={user?.image} alt={user?.name} />
@@ -327,7 +516,7 @@ export default function Navbar() {
               >
                 <Button
                   asChild
-                  className="bg-[#3BB77E] hover:bg-green-700 text-white transition duration-300"
+                  className="bg-[#3BB77E] hover:bg-green-700 text-white transition duration-300 cursor-pointer"
                 >
                   <Link href="/login">Login</Link>
                 </Button>
@@ -337,7 +526,7 @@ export default function Navbar() {
 
           {/* Mobile menu toggle */}
           <motion.button
-            className="md:hidden text-gray-700"
+            className="md:hidden text-gray-700 cursor-pointer"
             onClick={() => setIsOpen(!isOpen)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
@@ -373,7 +562,7 @@ export default function Navbar() {
                 {/* Close Button */}
                 <motion.button
                   onClick={() => setIsOpen(false)}
-                  className="self-end text-gray-700 hover:text-[#3BB77E] transition duration-300 mb-8"
+                  className="self-end text-gray-700 hover:text-[#3BB77E] transition duration-300 mb-8 cursor-pointer"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   transition={{ type: "spring", stiffness: 400 }}

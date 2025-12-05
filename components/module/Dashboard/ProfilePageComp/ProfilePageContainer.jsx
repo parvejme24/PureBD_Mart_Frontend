@@ -35,7 +35,7 @@ const profileSchema = z.object({
   district: z.string().optional(),
   upazila: z.string().optional(),
   postalCode: z.string().optional(),
-  street: z.string().optional(),
+  detailsAddress: z.string().optional(),
 });
 
 export default function ProfilePageContainer() {
@@ -64,7 +64,7 @@ export default function ProfilePageContainer() {
       district: "",
       upazila: "",
       postalCode: "",
-      street: "",
+      detailsAddress: "",
     },
   });
 
@@ -109,7 +109,7 @@ export default function ProfilePageContainer() {
         district: userDistrict?.name || "",
         upazila: userUpazila?.name || "",
         postalCode: user.address?.postalCode || "",
-        street: user.address?.street || "",
+        detailsAddress: user.address?.detailsAddress || "",
       });
     }
     setIsEditing(true);
@@ -173,7 +173,7 @@ export default function ProfilePageContainer() {
       district: data.district || "",
       upazila: data.upazila || "",
       postalCode: data.postalCode || "",
-      street: data.street || "",
+      detailsAddress: data.detailsAddress || "",
     };
     formData.append("address", JSON.stringify(address));
 
@@ -287,4 +287,5 @@ export default function ProfilePageContainer() {
     </div>
   );
 }
+
 
