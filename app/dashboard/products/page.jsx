@@ -1,5 +1,9 @@
-import DashboardProductCard from "@/components/shared/DashboardProductCard/DashboardProductCard";
+"use client";
+
+import { useState, useMemo } from "react";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectTrigger,
@@ -7,140 +11,291 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import React from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Search, X, Plus, Package, Loader2, Trash2 } from "lucide-react";
+import DashboardProductCard from "@/components/shared/DashboardProductCard/DashboardProductCard";
+import DashboardProductCardSkeleton from "@/components/shared/DashboardProductCard/DashboardProductCardSkeleton";
+import { useProducts, useDeleteProduct } from "@/hooks/useProduct";
+import { useCategories } from "@/hooks/useCategory";
 
-const productsData = [
-  {
-    id: "1",
-    name: "Fresh Apples",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/organic-carrot-300x300.jpg",
-    price: "180",
-    description: "Crisp and juicy apples sourced from local farms.",
-    quantity: "1 kg",
-  },
-  {
-    id: "2",
-    name: "Organic Bananas",
-    image:
-      "https://mybacola.myshopify.com/cdn/shop/files/product-image_3b821ada-6a37-40a8-b57e-9cdda2ae2ec5.jpg?v=1736510606&width=533",
-    price: "90",
-    description: "Sweet and ripe organic bananas for daily nutrition.",
-    quantity: "1 dozen",
-  },
-  {
-    id: "3",
-    name: "Fresh Tomatoes",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/beef-steak-300x300.jpg",
-    price: "70",
-    description: "Bright red tomatoes perfect for cooking and salads.",
-    quantity: "1 kg",
-  },
-  {
-    id: "4",
-    name: "Premium Rice",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/organic-cucumber-300x300.jpg",
-    price: "110",
-    description: "High-quality long-grain rice for every meal.",
-    quantity: "1 kg",
-  },
-  {
-    id: "5",
-    name: "Pure Mustard Oil",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/fresh-banana-300x300.jpg",
-    price: "320",
-    description: "Cold-pressed mustard oil rich in aroma and nutrients.",
-    quantity: "1 liter",
-  },
-  {
-    id: "6",
-    name: "Farm Fresh Eggs",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/10/fruit-product-3.jpg",
-    price: "140",
-    description: "Protein-rich, fresh eggs collected daily from farms.",
-    quantity: "12 pcs",
-  },
-  {
-    id: "7",
-    name: "Premium Lentils",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/organic-milk-300x300.jpg",
-    price: "160",
-    description: "High-quality red lentils perfect for everyday meals.",
-    quantity: "1 kg",
-  },
-  {
-    id: "8",
-    name: "Fresh Milk",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/green-gabbage-300x300.jpg",
-    price: "90",
-    description: "Pure and fresh milk packed with essential nutrients.",
-    quantity: "1 liter",
-  },
-  {
-    id: "9",
-    name: "Natural Honey",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/pig-food-300x300.jpg",
-    price: "450",
-    description: "100% pure honey collected from organic bee farms.",
-    quantity: "500 g",
-  },
-  {
-    id: "10",
-    name: "Brown Bread",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/organic-tomato-300x300.jpg",
-    price: "80",
-    description: "Soft, fresh, and healthy brown bread for daily breakfast.",
-    quantity: "1 pack",
-  },
-];
+export default function ProductsPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("default");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
-export default function Product() {
-  return (
-    <div className="container mx-auto max-w-7xl px-4">
-      {/* Top Filters Row */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        {/* Title */}
-        <h2 className="text-2xl font-semibold">Products</h2>
+  // Fetch products and categories
+  const { data: productsData, isLoading, isError } = useProducts();
+  const { data: categoriesData } = useCategories();
+  const { mutate: deleteProduct, isPending: isDeleting } = useDeleteProduct();
 
-        {/* Search Input */}
-        <div className="w-full max-w-lg">
-          <Input
-            type="text"
-            placeholder="Search by Product Name or Category"
-            className="rounded-full px-5"
-          />
+  const products = useMemo(
+    () => productsData?.products || [],
+    [productsData?.products]
+  );
+  const categories = categoriesData?.categories || [];
+
+  // Filter and sort products
+  const filteredProducts = useMemo(() => {
+    let result = [...products];
+
+    // Search filter
+    if (searchQuery) {
+      const searchLower = searchQuery.toLowerCase();
+      result = result.filter(
+        (product) =>
+          product.name?.toLowerCase().includes(searchLower) ||
+          product.description?.toLowerCase().includes(searchLower) ||
+          product.category?.name?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Category filter
+    if (categoryFilter !== "all") {
+      result = result.filter(
+        (product) => product.category?._id === categoryFilter
+      );
+    }
+
+    // Sort
+    switch (sortBy) {
+      case "low-to-high":
+        result.sort((a, b) => a.price - b.price);
+        break;
+      case "high-to-low":
+        result.sort((a, b) => b.price - a.price);
+        break;
+      case "low-stock":
+        result.sort((a, b) => a.stock - b.stock);
+        break;
+      case "newest":
+        result.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        break;
+      default:
+        break;
+    }
+
+    return result;
+  }, [products, searchQuery, categoryFilter, sortBy]);
+
+  // Handle delete
+  const handleDeleteClick = (product) => {
+    setSelectedProduct(product);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDelete = () => {
+    if (!selectedProduct) return;
+    deleteProduct(selectedProduct._id, {
+      onSuccess: () => {
+        setDeleteDialogOpen(false);
+        setSelectedProduct(null);
+      },
+    });
+  };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="container mx-auto max-w-7xl px-4">
+        {/* Header Skeleton */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <div>
+            <div className="h-8 w-32 bg-gray-200 rounded animate-pulse" />
+            <div className="h-4 w-24 bg-gray-200 rounded mt-2 animate-pulse" />
+          </div>
+          <div className="flex gap-3">
+            <div className="h-10 w-64 bg-gray-200 rounded-full animate-pulse" />
+            <div className="h-10 w-36 bg-gray-200 rounded animate-pulse" />
+            <div className="h-10 w-36 bg-gray-200 rounded animate-pulse" />
+          </div>
         </div>
 
-        {/* Filter Dropdown */}
-        <div className="w-[150px] border rounded-sm">
-          <Select>
-            <SelectTrigger className="w-full border-none shadow-none">
-              <SelectValue placeholder="Filter Products" />
+        {/* Products Grid Skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {[...Array(8)].map((_, i) => (
+            <DashboardProductCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="container mx-auto max-w-7xl px-4">
+        <div className="flex flex-col items-center justify-center h-64 text-red-500">
+          <p className="font-medium">Failed to load products</p>
+          <Button
+            variant="outline"
+            className="mt-4 cursor-pointer"
+            onClick={() => window.location.reload()}
+          >
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto max-w-7xl px-4">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800">Products</h2>
+          <p className="text-sm text-gray-500 mt-1">
+            {products.length} total products
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3">
+          {/* Search Input */}
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 rounded-full"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Category Filter */}
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-full sm:w-40">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {categories.map((category) => (
+                <SelectItem key={category._id} value={category._id}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Sort Filter */}
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-full sm:w-40">
+              <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="default">Default</SelectItem>
-              <SelectItem value="low-to-high">Low to High Price</SelectItem>
-              <SelectItem value="high-to-low">High to Low Price</SelectItem>
-              <SelectItem value="low-stock">Low Stock Quantity</SelectItem>
+              <SelectItem value="newest">Newest First</SelectItem>
+              <SelectItem value="low-to-high">Price: Low to High</SelectItem>
+              <SelectItem value="high-to-low">Price: High to Low</SelectItem>
+              <SelectItem value="low-stock">Low Stock First</SelectItem>
             </SelectContent>
           </Select>
+
+          {/* Add Product Button */}
+          <Link href="/dashboard/products/add">
+            <Button className="bg-[#3BB77E] hover:bg-[#2a9c66] cursor-pointer whitespace-nowrap">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Product
+            </Button>
+          </Link>
         </div>
       </div>
 
-      {/* Product List */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
-        {productsData.map((product, i) => (
-          <DashboardProductCard key={i} product={product} />
-        ))}
-      </div>
+      {/* Empty State */}
+      {filteredProducts.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-16 text-gray-500">
+          <Package className="h-16 w-16 mb-4 text-gray-300" />
+          <h3 className="text-lg font-medium text-gray-600">
+            {searchQuery || categoryFilter !== "all"
+              ? "No products found"
+              : "No products yet"}
+          </h3>
+          <p className="text-sm mt-1">
+            {searchQuery
+              ? `No products matching "${searchQuery}"`
+              : categoryFilter !== "all"
+              ? "No products in this category"
+              : "Create your first product to get started"}
+          </p>
+          {!searchQuery && categoryFilter === "all" && (
+            <Link href="/dashboard/products/add">
+              <Button className="mt-4 bg-[#3BB77E] hover:bg-[#2a9c66] cursor-pointer">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Product
+              </Button>
+            </Link>
+          )}
+        </div>
+      )}
+
+      {/* Products Grid */}
+      {filteredProducts.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {filteredProducts.map((product) => (
+            <DashboardProductCard
+              key={product._id}
+              product={product}
+              onDelete={handleDeleteClick}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Product</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete &quot;{selectedProduct?.name}
+              &quot;? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting} className="cursor-pointer">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-red-500 hover:bg-red-600 cursor-pointer"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
+                </>
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

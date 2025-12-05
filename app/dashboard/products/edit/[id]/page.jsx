@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,18 +27,28 @@ import {
   ArrowLeft,
   Check,
   ChevronsUpDown,
+  Save,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useCategories } from "@/hooks/useCategory";
-import { useCreateProduct } from "@/hooks/useProduct";
+import { useProducts, useUpdateProduct } from "@/hooks/useProduct";
 
-export default function AddProductPage() {
+export default function EditProductPage() {
   const router = useRouter();
+  const params = useParams();
+  const productId = params.id;
+
   const [imagePreview, setImagePreview] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [categoryOpen, setCategoryOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    price: "",
+    stock: "",
+  });
   const imageInputRef = useRef(null);
 
   // Fetch categories
@@ -46,13 +56,38 @@ export default function AddProductPage() {
     useCategories();
   const categories = categoriesData?.categories || [];
 
+  // Fetch products to get current product data
+  const { data: productsData, isLoading: isProductsLoading } = useProducts();
+  const products = productsData?.products || [];
+  const currentProduct = products.find((p) => p._id === productId);
+
+  // Update product mutation
+  const { mutate: updateProduct, isPending: isUpdating } = useUpdateProduct();
+
   // Get selected category name
   const selectedCategoryName = categories.find(
     (cat) => cat._id === selectedCategory
   )?.name;
 
-  // Create product mutation
-  const { mutate: createProduct, isPending: isCreating } = useCreateProduct();
+  // Load current product data into form
+  useEffect(() => {
+    if (currentProduct) {
+      setFormData({
+        name: currentProduct.name || "",
+        description: currentProduct.description || "",
+        price: currentProduct.price?.toString() || "",
+        stock: currentProduct.stock?.toString() || "",
+      });
+      setSelectedCategory(currentProduct.category?._id || "");
+      setImagePreview(currentProduct.image?.url || null);
+    }
+  }, [currentProduct]);
+
+  // Handle input change
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   // Handle Image Preview
   const handleImageChange = (e) => {
@@ -68,7 +103,7 @@ export default function AddProductPage() {
 
   // Remove preview + clear file
   const handleRemoveImage = () => {
-    setImagePreview(null);
+    setImagePreview(currentProduct?.image?.url || null);
     setSelectedImage(null);
     if (imageInputRef.current) {
       imageInputRef.current.value = "";
@@ -83,32 +118,56 @@ export default function AddProductPage() {
       return;
     }
 
-    if (!selectedImage) {
-      return;
+    const submitData = new FormData();
+    submitData.append("name", formData.name);
+    submitData.append("description", formData.description);
+    submitData.append("price", formData.price);
+    submitData.append("category", selectedCategory);
+    submitData.append("stock", formData.stock);
+
+    // Only append image if a new one is selected
+    if (selectedImage) {
+      submitData.append("image", selectedImage);
     }
 
-    const form = e.target;
-    const formData = new FormData();
-
-    formData.append("name", form.name.value);
-    formData.append("description", form.description.value);
-    formData.append("price", form.price.value);
-    formData.append("category", selectedCategory);
-    formData.append("stock", form.stock.value);
-    formData.append("image", selectedImage);
-
-    createProduct(formData, {
-      onSuccess: () => {
-        router.push("/dashboard/products");
-      },
-    });
+    updateProduct(
+      { id: productId, formData: submitData },
+      {
+        onSuccess: () => {
+          router.push("/dashboard/products");
+        },
+      }
+    );
   };
 
-  // Handle Reset
-  const handleReset = () => {
-    setSelectedCategory("");
-    handleRemoveImage();
-  };
+  // Loading state
+  if (isProductsLoading) {
+    return (
+      <div className="bg-white p-6 rounded-lg shadow border border-gray-100">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-[#3BB77E]" />
+          <span className="ml-2 text-gray-600">Loading product...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Product not found
+  if (!currentProduct && !isProductsLoading) {
+    return (
+      <div className="bg-white p-6 rounded-lg shadow border border-gray-100">
+        <div className="flex flex-col items-center justify-center h-64">
+          <p className="text-gray-600">Product not found</p>
+          <Link href="/dashboard/products">
+            <Button variant="outline" className="mt-4 cursor-pointer">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Products
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white p-6 rounded-lg shadow border border-gray-100">
@@ -123,7 +182,7 @@ export default function AddProductPage() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
-        <h2 className="text-2xl font-bold text-gray-800">Add New Product</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Edit Product</h2>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -137,8 +196,10 @@ export default function AddProductPage() {
             name="name"
             type="text"
             placeholder="Enter product name"
+            value={formData.name}
+            onChange={handleInputChange}
             required
-            disabled={isCreating}
+            disabled={isUpdating}
           />
         </div>
 
@@ -156,7 +217,7 @@ export default function AddProductPage() {
                   role="combobox"
                   aria-expanded={categoryOpen}
                   className="w-full justify-between cursor-pointer font-normal"
-                  disabled={isCreating || isCategoriesLoading}
+                  disabled={isUpdating || isCategoriesLoading}
                 >
                   {isCategoriesLoading ? (
                     <span className="text-muted-foreground">Loading...</span>
@@ -243,8 +304,10 @@ export default function AddProductPage() {
               min="0"
               step="0.01"
               placeholder="Enter price"
+              value={formData.price}
+              onChange={handleInputChange}
               required
-              disabled={isCreating}
+              disabled={isUpdating}
             />
           </div>
 
@@ -259,8 +322,10 @@ export default function AddProductPage() {
               type="number"
               min="0"
               placeholder="Available stock"
+              value={formData.stock}
+              onChange={handleInputChange}
               required
-              disabled={isCreating}
+              disabled={isUpdating}
             />
           </div>
         </div>
@@ -275,16 +340,16 @@ export default function AddProductPage() {
             name="description"
             rows={4}
             placeholder="Write product details..."
+            value={formData.description}
+            onChange={handleInputChange}
             required
-            disabled={isCreating}
+            disabled={isUpdating}
           />
         </div>
 
         {/* Image Upload */}
         <div className="space-y-2">
-          <Label>
-            Product Image <span className="text-red-500">*</span>
-          </Label>
+          <Label>Product Image</Label>
 
           {!imagePreview ? (
             <div
@@ -305,15 +370,22 @@ export default function AddProductPage() {
                   className="object-cover"
                 />
               </div>
-              <Button
-                type="button"
-                variant="destructive"
-                size="icon"
-                className="absolute -top-2 -right-2 h-7 w-7 rounded-full cursor-pointer"
-                onClick={handleRemoveImage}
-              >
-                <X className="h-4 w-4" />
-              </Button>
+              {selectedImage && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  className="absolute -top-2 -right-2 h-7 w-7 rounded-full cursor-pointer"
+                  onClick={handleRemoveImage}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+              <p className="text-xs text-gray-400 mt-2">
+                {selectedImage
+                  ? "New image selected"
+                  : "Click below to change image"}
+              </p>
             </div>
           )}
 
@@ -324,31 +396,48 @@ export default function AddProductPage() {
             onChange={handleImageChange}
             className="hidden"
           />
+
+          {imagePreview && !selectedImage && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => imageInputRef.current?.click()}
+              className="cursor-pointer"
+            >
+              <ImagePlus className="h-4 w-4 mr-2" />
+              Change Image
+            </Button>
+          )}
         </div>
 
         {/* Buttons */}
         <div className="flex gap-3 pt-4 border-t">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleReset}
-            disabled={isCreating}
-            className="cursor-pointer"
-          >
-            Reset
-          </Button>
+          <Link href="/dashboard/products">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isUpdating}
+              className="cursor-pointer"
+            >
+              Cancel
+            </Button>
+          </Link>
           <Button
             type="submit"
-            disabled={isCreating || !selectedCategory || !selectedImage}
+            disabled={isUpdating || !selectedCategory}
             className="bg-[#3BB77E] hover:bg-[#2a9c66] text-white cursor-pointer"
           >
-            {isCreating ? (
+            {isUpdating ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Creating...
+                Updating...
               </>
             ) : (
-              "Add Product"
+              <>
+                <Save className="h-4 w-4 mr-2" />
+                Update Product
+              </>
             )}
           </Button>
         </div>
@@ -356,3 +445,4 @@ export default function AddProductPage() {
     </div>
   );
 }
+
