@@ -33,8 +33,8 @@ export default function DeleteCategoryModal({ isOpen, onClose, category }) {
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Category</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete "{category?.name}"? This action
-            cannot be undone.
+            Are you sure you want to delete &quot;{category?.name}&quot;? This
+            action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

@@ -2,14 +2,26 @@ import DashboardSidebar from "@/components/shared/DashboardSidebar/DashboardSide
 import Navbar from "@/components/shared/Navbar/Navbar";
 import React from "react";
 
-export default function layout({ children }) {
+export default function DashboardLayout({ children }) {
   return (
-    <div className="">
+    <div className="min-h-screen bg-gray-50/30">
       <Navbar />
-      <main className="container mx-auto max-w-7xl px-5 flex flex-row gap-5 my-5">
-        <DashboardSidebar />
-        <div className="w-full">{children}</div>
-      </main>
+      <div className="container mx-auto max-w-7xl px-4 lg:px-5">
+        <div className="flex gap-5 py-5">
+          {/* Sidebar - Hidden on mobile, shown via floating button */}
+          <div className="hidden lg:block w-[280px] shrink-0">
+            <DashboardSidebar />
+          </div>
+
+          {/* Mobile Sidebar (rendered but hidden by default) */}
+          <div className="lg:hidden">
+            <DashboardSidebar />
+          </div>
+
+          {/* Main Content */}
+          <main className="flex-1 min-w-0">{children}</main>
+        </div>
+      </div>
     </div>
   );
 }

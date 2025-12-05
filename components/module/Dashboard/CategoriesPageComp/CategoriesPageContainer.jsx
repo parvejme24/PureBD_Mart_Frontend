@@ -53,7 +53,7 @@ export default function CategoriesPageContainer() {
   // Loading state with skeletons
   if (isLoading) {
     return (
-      <div className="container mx-auto max-w-7xl px-4">
+      <div className="container mx-auto">
         {/* Header Skeleton */}
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
           <div>

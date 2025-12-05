@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -8,68 +9,139 @@ import {
   ShoppingBasket,
   Folder,
   Users,
+  Menu,
+  X,
+  ShoppingCart,
 } from "lucide-react";
 import { ImProfile } from "react-icons/im";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function DashboardSidebar() {
   const pathname = usePathname();
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
 
   const menu = [
     {
       name: "Dashboard",
       href: "/dashboard",
       icon: <LayoutDashboard size={18} />,
+      adminOnly: false,
     },
     {
       name: "My Profile",
       href: "/dashboard/profile",
       icon: <ImProfile size={18} />,
+      adminOnly: false,
     },
     {
       name: "Add Product",
       href: "/dashboard/products/add",
       icon: <PlusCircle size={18} />,
+      adminOnly: true,
     },
     {
       name: "Products",
       href: "/dashboard/products",
       icon: <ShoppingBasket size={18} />,
+      adminOnly: true,
     },
     {
       name: "Categories",
       href: "/dashboard/categories",
       icon: <Folder size={18} />,
+      adminOnly: true,
     },
     {
       name: "Orders",
       href: "/dashboard/orders",
-      icon: <Folder size={18} />,
+      icon: <ShoppingCart size={18} />,
+      adminOnly: false,
     },
-    { name: "Users", href: "/dashboard/users", icon: <Users size={18} /> },
+    {
+      name: "Users",
+      href: "/dashboard/users",
+      icon: <Users size={18} />,
+      adminOnly: true,
+    },
   ];
 
+  // Filter menu items based on role
+  const filteredMenu = menu.filter((item) => !item.adminOnly || isAdmin);
+
+  const closeMobileMenu = () => setIsMobileOpen(false);
+
   return (
-    <div className="w-[280px] min-h-screen bg-green-50/50 border p-5 rounded-lg">
-      <ul className="space-y-2 w-full">
-        {menu.map((item, idx) => {
-          const active = pathname === item.href;
-          return (
-            <li key={idx}>
-              <Link
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all shadow-sm border
-                ${active
-                    ? "bg-[#3BB77E] text-white border-[#3BB77E]"
-                    : "bg-gray-50 text-gray-700 hover:bg-gray-100"
-                  }`}
-              >
-                {item.icon}
-                {item.name}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+    <>
+      {/* Mobile Menu Button */}
+      <Button
+        variant="outline"
+        size="icon"
+        className="lg:hidden fixed bottom-4 right-4 z-50 h-12 w-12 rounded-full shadow-lg bg-[#3BB77E] text-white hover:bg-[#2a9c66] hover:text-white cursor-pointer"
+        onClick={() => setIsMobileOpen(!isMobileOpen)}
+      >
+        {isMobileOpen ? <X size={24} /> : <Menu size={24} />}
+      </Button>
+
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={closeMobileMenu}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed top-0 left-0 z-40 h-screen pt-20 bg-white border-r shadow-sm
+          transition-transform duration-300 ease-in-out
+          w-[280px]
+          lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shadow-none lg:border-0 lg:bg-transparent lg:pt-0
+          ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        `}
+      >
+        <div className="h-full overflow-y-auto px-4 py-5 lg:px-0 lg:py-0">
+          <div className="bg-green-50/50 border rounded-lg p-4 lg:min-h-screen">
+            {/* User Info on Mobile */}
+            <div className="lg:hidden mb-4 pb-4 border-b">
+              <p className="text-sm text-gray-500">Welcome back,</p>
+              <p className="font-semibold text-gray-800 truncate">
+                {user?.name || "User"}
+              </p>
+            </div>
+
+            {/* Menu Items */}
+            <ul className="space-y-2 w-full">
+              {filteredMenu.map((item, idx) => {
+                const active =
+                  pathname === item.href ||
+                  (item.href !== "/dashboard" &&
+                    pathname.startsWith(item.href));
+                return (
+                  <li key={idx}>
+                    <Link
+                      href={item.href}
+                      onClick={closeMobileMenu}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all shadow-sm border
+                      ${
+                        active
+                          ? "bg-[#3BB77E] text-white border-[#3BB77E]"
+                          : "bg-white text-gray-700 hover:bg-gray-100 border-gray-100"
+                      }`}
+                    >
+                      {item.icon}
+                      {item.name}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </>
   );
 }
