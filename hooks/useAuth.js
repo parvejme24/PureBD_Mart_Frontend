@@ -81,12 +81,15 @@ export function useAuth() {
 // Hook for user registration
 export function useRegister() {
   const router = useRouter();
+  const { login } = useAuth();
 
   return useMutation({
     mutationFn: registerUser,
     onSuccess: async (data) => {
-      if (data?.success) {
-        toast.success("Registration successful! Please login.");
+      // Backend returns: { message, user, token }
+      if (data?.user && data?.token) {
+        toast.success(data.message || "Registration successful!");
+        // Auto-login after registration
         router.push("/login");
       }
     },
@@ -104,7 +107,11 @@ export function useCurrentUser() {
 
   return useQuery({
     queryKey: ["currentUser"],
-    queryFn: getLoggedInUser,
+    queryFn: async () => {
+      const response = await getLoggedInUser();
+      // Backend returns: { user }
+      return response;
+    },
     enabled: isAuthenticated,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -118,15 +125,16 @@ export function useUpdateProfile() {
   return useMutation({
     mutationFn: updateProfile,
     onSuccess: async (data) => {
-      if (data?.success) {
+      // Backend returns: { message, user }
+      if (data?.user) {
         // Update session with new user data
         await updateSession({
-          name: data.user.name,
-          image: data.user.image,
+          name: data.user.fullName,
+          image: data.user.image?.url,
         });
         // Invalidate current user query
         queryClient.invalidateQueries({ queryKey: ["currentUser"] });
-        toast.success("Profile updated successfully!");
+        toast.success(data.message || "Profile updated successfully!");
       }
     },
     onError: (error) => {
@@ -143,7 +151,11 @@ export function useAllUsers() {
 
   return useQuery({
     queryKey: ["allUsers"],
-    queryFn: getAllUsers,
+    queryFn: async () => {
+      const response = await getAllUsers();
+      // Backend returns: { users }
+      return response;
+    },
     enabled: isAdmin(),
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
@@ -156,9 +168,9 @@ export function useChangeUserRole() {
   return useMutation({
     mutationFn: changeUserRole,
     onSuccess: (data) => {
-      if (data?.success) {
+      if (data?.user) {
         queryClient.invalidateQueries({ queryKey: ["allUsers"] });
-        toast.success("User role updated successfully!");
+        toast.success(data.message || "User role updated successfully!");
       }
     },
     onError: (error) => {
@@ -176,10 +188,8 @@ export function useDeleteUser() {
   return useMutation({
     mutationFn: deleteUser,
     onSuccess: (data) => {
-      if (data?.success) {
-        queryClient.invalidateQueries({ queryKey: ["allUsers"] });
-        toast.success("User deleted successfully!");
-      }
+      queryClient.invalidateQueries({ queryKey: ["allUsers"] });
+      toast.success(data?.message || "User deleted successfully!");
     },
     onError: (error) => {
       const errorMessage =
@@ -188,4 +198,3 @@ export function useDeleteUser() {
     },
   });
 }
-

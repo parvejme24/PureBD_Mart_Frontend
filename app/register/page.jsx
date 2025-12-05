@@ -22,14 +22,18 @@ import { useAuth, useRegister } from "@/hooks/useAuth";
 
 // ----------------- VALIDATION SCHEMA -----------------
 const registerSchema = z.object({
-  name: z.string().min(3, "Name must be at least 3 characters."),
+  fullName: z.string().min(3, "Name must be at least 3 characters."),
   email: z.string().email("Enter a valid email."),
   password: z.string().min(6, "Password must be at least 6 characters."),
 });
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const { loginWithGoogle, isAuthenticated, isLoading: authLoading } = useAuth();
+  const {
+    loginWithGoogle,
+    isAuthenticated,
+    isLoading: authLoading,
+  } = useAuth();
   const { mutate: register, isPending } = useRegister();
   const router = useRouter();
 
@@ -43,7 +47,7 @@ export default function RegisterPage() {
   const form = useForm({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: "",
+      fullName: "",
       email: "",
       password: "",
     },
@@ -95,9 +99,9 @@ export default function RegisterPage() {
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-5"
           >
-            {/* ---------- NAME ---------- */}
+            {/* ---------- FULL NAME ---------- */}
             <Controller
-              name="name"
+              name="fullName"
               control={form.control}
               render={({ field, fieldState }) => (
                 <div className="flex flex-col gap-1.5">

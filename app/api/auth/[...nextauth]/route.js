@@ -3,14 +3,16 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://pure-bd-mart-backend.vercel.app/api";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://pure-bd-mart-backend.vercel.app/api";
 
 export const authOptions = {
   providers: [
     // Google OAuth Provider
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
 
     // Credentials Provider (Email/Password)
@@ -27,22 +29,27 @@ export const authOptions = {
             password: credentials.password,
           });
 
-          if (response.data?.success && response.data?.user) {
+          const data = response.data;
+
+          if (data?.user && data?.token) {
             // Return user object with token
+            // Backend returns: { message, user: { id, fullName, email, role, image }, token }
             return {
-              id: response.data.user._id,
-              name: response.data.user.name,
-              email: response.data.user.email,
-              image: response.data.user.image,
-              role: response.data.user.role,
-              accessToken: response.data.token,
+              id: data.user.id,
+              name: data.user.fullName, // Map fullName to name for NextAuth
+              email: data.user.email,
+              image: data.user.image?.url || null,
+              role: data.user.role,
+              accessToken: data.token,
             };
           }
 
           return null;
         } catch (error) {
           console.error("Login error:", error.response?.data || error.message);
-          throw new Error(error.response?.data?.message || "Invalid credentials");
+          throw new Error(
+            error.response?.data?.message || "Invalid credentials"
+          );
         }
       },
     }),
@@ -50,28 +57,31 @@ export const authOptions = {
 
   callbacks: {
     // Handle Google sign-in - sync with backend
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       if (account?.provider === "google") {
         try {
-          // Send Google user info to backend for registration/login
+          // Try to register/login with Google via backend
+          // You may need to create a /auth/google endpoint in your backend
           const response = await axios.post(`${API_URL}/auth/google`, {
-            name: user.name,
+            fullName: user.name,
             email: user.email,
             image: user.image,
             googleId: account.providerAccountId,
           });
 
-          if (response.data?.success) {
-            // Attach backend data to user object
-            user.id = response.data.user._id;
+          if (response.data?.user) {
+            user.id = response.data.user.id;
             user.role = response.data.user.role;
             user.accessToken = response.data.token;
-            user.image = response.data.user.image || user.image;
+            user.image = response.data.user.image?.url || user.image;
             return true;
           }
         } catch (error) {
-          console.error("Google sign-in error:", error.response?.data || error.message);
-          // Still allow sign-in but with limited backend integration
+          console.error(
+            "Google sign-in error:",
+            error.response?.data || error.message
+          );
+          // Still allow sign-in but without backend sync
           return true;
         }
       }
@@ -124,4 +134,3 @@ export const authOptions = {
 const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
-
