@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Stats from "./Stats/Stats";
 import RevenueChart from "./RevenueChart/RevenueChart";
@@ -6,10 +8,15 @@ import OrderStats from "./OrderStats/OrderStats";
 
 export default function OverviewPageCompoent() {
   return (
-    <div>
+    <div className="space-y-6">
+      {/* Stats Cards */}
       <Stats />
+
+      {/* Revenue Chart */}
       <RevenueChart />
-      <div className="grid grid-cols-1 md:grid-cols-2 w-full mt-5">
+
+      {/* Bottom Section - Product Performance & Category Revenue */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <OrderStats />
         <ProductPerformanceChart />
       </div>

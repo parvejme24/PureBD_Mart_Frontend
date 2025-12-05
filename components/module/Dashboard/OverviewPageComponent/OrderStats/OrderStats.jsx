@@ -1,92 +1,125 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
+import { useCategoryPerformance } from "@/hooks/useDashboard";
+import { Skeleton } from "@/components/ui/skeleton";
+import { PieChart } from "lucide-react";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
+// Color palette for categories
+const COLORS = [
+  "rgba(59, 183, 126, 0.8)",   // Green
+  "rgba(59, 130, 246, 0.8)",   // Blue
+  "rgba(249, 115, 22, 0.8)",   // Orange
+  "rgba(168, 85, 247, 0.8)",   // Purple
+  "rgba(236, 72, 153, 0.8)",   // Pink
+  "rgba(234, 179, 8, 0.8)",    // Yellow
+  "rgba(20, 184, 166, 0.8)",   // Teal
+  "rgba(239, 68, 68, 0.8)",    // Red
+];
+
 export default function OrderStats() {
-  const chartRef = useRef(null);
-  const [chartData, setChartData] = useState(null);
+  const { data, isLoading, error } = useCategoryPerformance();
+  
+  const categories = data?.categories || [];
 
-  useEffect(() => {
-    if (!chartRef.current) return;
+  // Take top 6 categories by revenue
+  const topCategories = categories.slice(0, 6);
 
-    const ctx = chartRef.current.getContext("2d");
-
-    // Fake data
-    const fakeOrders = {
-      completed: 250,
-      pending: 75,
-      cancelled: 20,
-    };
-
-    // Create gradient colors
-    const gradientCompleted = ctx.createLinearGradient(0, 0, 200, 200);
-    gradientCompleted.addColorStop(0, "rgba(34, 197, 94, 0.9)"); // Green
-    gradientCompleted.addColorStop(1, "rgba(16, 185, 129, 0.6)"); // Teal
-
-    const gradientPending = ctx.createLinearGradient(0, 0, 200, 200);
-    gradientPending.addColorStop(0, "rgba(234, 179, 8, 0.9)"); // Yellow
-    gradientPending.addColorStop(1, "rgba(245, 158, 11, 0.6)"); // Amber
-
-    const gradientCancelled = ctx.createLinearGradient(0, 0, 200, 200);
-    gradientCancelled.addColorStop(0, "rgba(239, 68, 68, 0.9)"); // Red
-    gradientCancelled.addColorStop(1, "rgba(190, 18, 60, 0.6)"); // Dark Red
-
-    setChartData({
-      labels: ["Completed", "Pending", "Cancelled"],
-      datasets: [
-        {
-          data: [
-            fakeOrders.completed,
-            fakeOrders.pending,
-            fakeOrders.cancelled,
-          ],
-          backgroundColor: [
-            gradientCompleted,
-            gradientPending,
-            gradientCancelled,
-          ],
-          borderColor: "rgba(255, 255, 255, 0.7)",
-          borderWidth: 2,
-        },
-      ],
-    });
-  }, []);
+  // Chart data
+  const chartData = {
+    labels: topCategories.map((cat) => cat.name),
+    datasets: [
+      {
+        data: topCategories.map((cat) => cat.totalRevenue),
+        backgroundColor: COLORS.slice(0, topCategories.length),
+        borderColor: "rgba(255, 255, 255, 0.8)",
+        borderWidth: 2,
+        hoverOffset: 10,
+      },
+    ],
+  };
 
   const options = {
-    cutout: "50%", // Doughnut hole size
+    cutout: "60%",
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
-      legend: { position: "bottom" },
+      legend: { 
+        position: "bottom",
+        labels: {
+          usePointStyle: true,
+          padding: 15,
+          font: { size: 11 },
+        }
+      },
       tooltip: {
         callbacks: {
-          label: (context) =>
-            `${context.label}: ${context.raw.toLocaleString()}`,
+          label: (context) => {
+            const category = topCategories[context.dataIndex];
+            return [
+              `Revenue: ৳${context.raw.toLocaleString()}`,
+              `Products: ${category?.productCount || 0}`,
+              `Sold: ${category?.totalSold || 0}`,
+            ];
+          },
         },
       },
     },
   };
 
-  if (!chartData) return null; // wait for client-side rendering
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="w-full bg-white p-6 rounded-xl shadow border border-gray-200">
+        <Skeleton className="h-6 w-48 mb-4 mx-auto" />
+        <Skeleton className="h-[200px] w-[200px] rounded-full mx-auto" />
+        <div className="flex justify-center gap-4 mt-4">
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-4 w-20" />
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="w-full bg-white p-6 rounded-xl shadow border border-red-200">
+        <p className="text-red-600 text-center">Failed to load category data</p>
+      </div>
+    );
+  }
+
+  // Empty state
+  if (topCategories.length === 0) {
+    return (
+      <div className="w-full bg-white p-6 rounded-xl shadow border border-gray-200">
+        <h2 className="text-xl font-semibold mb-4 text-gray-800 text-center flex items-center justify-center gap-2">
+          <PieChart className="h-5 w-5 text-[#3BB77E]" />
+          Category Revenue
+        </h2>
+        <div className="flex items-center justify-center h-[200px] text-gray-500">
+          No category data available
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white dark:bg-gray-900 p-6 rounded-xl shadow border border-gray-200 dark:border-gray-800">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 text-center">
-        Order Statistics
+    <div className="w-full bg-white p-6 rounded-xl shadow border border-gray-200">
+      <h2 className="text-xl font-semibold mb-4 text-gray-800 text-center flex items-center justify-center gap-2">
+        <PieChart className="h-5 w-5 text-[#3BB77E]" />
+        Category Revenue
       </h2>
 
-      {/* Hidden canvas for gradient reference */}
-      <canvas ref={chartRef} style={{ display: "none" }} />
-      <Doughnut ref={chartRef} data={chartData} options={options} />
-
-      <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
-        Total Orders:{" "}
-        <span className="font-semibold">
-          {250 + 75 + 20} {/* Completed + Pending + Cancelled */}
-        </span>
+      {/* Chart */}
+      <div className="h-[280px]">
+        <Doughnut data={chartData} options={options} />
       </div>
     </div>
   );
