@@ -147,18 +147,28 @@ export function useUpdateProfile() {
 
 // Hook for fetching all users (admin only)
 export function useAllUsers() {
-  const { isAdmin } = useAuth();
+  const { user, isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const isAdmin = user?.role === "admin";
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ["allUsers"],
     queryFn: async () => {
       const response = await getAllUsers();
       // Backend returns: { users }
       return response;
     },
-    enabled: isAdmin(),
+    // Only fetch when authenticated and user is admin (and not loading)
+    enabled: !isAuthLoading && isAuthenticated && isAdmin,
     staleTime: 2 * 60 * 1000, // 2 minutes
+    retry: 1,
   });
+
+  return {
+    ...query,
+    // Include auth loading state for proper loading UI
+    isLoading: isAuthLoading || query.isLoading,
+    isAdmin,
+  };
 }
 
 // Hook for changing user role (admin only)

@@ -1,7 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import Swal from "sweetalert2";
 
+import React, { useState, useMemo } from "react";
 import {
   Table,
   TableHeader,
@@ -10,7 +9,6 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
@@ -19,169 +17,365 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import UserOrdersModal from "../UserOrdersModal/UserOrdersModal";
+import {
+  Trash2,
+  Search,
+  X,
+  Users,
+  Shield,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  useAllUsers,
+  useChangeUserRole,
+  useDeleteUser,
+  useAuth,
+} from "@/hooks/useAuth";
+import UserListSkeleton from "./UserListSkeleton";
 
+// Get user initials
+const getInitials = (name) => {
+  if (!name) return "U";
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+};
 
+// Format address
+const formatAddress = (address) => {
+  if (!address) return "Not set";
+  const parts = [address.upazila, address.district, address.division].filter(
+    Boolean
+  );
+  return parts.length > 0 ? parts.join(", ") : "Not set";
+};
 
-// Mock users
-const usersData = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john@example.com",
-    phone: "01710000001",
-    address: "Dhaka, Bangladesh",
-    role: "User",
-    avatar: "https://i.pravatar.cc/150?img=1",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    email: "jane@example.com",
-    phone: "01710000002",
-    address: "Chittagong, Bangladesh",
-    role: "Moderator",
-    avatar: "https://i.pravatar.cc/150?img=2",
-  },
-];
-
-export default function UsersPage() {
-  const [users, setUsers] = useState(usersData);
-
+export default function UserList() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [orderModalOpen, setOrderModalOpen] = useState(false);
 
+  // Get auth state
+  const { user: currentUser } = useAuth();
+
+  // Fetch users (includes auth loading state and isAdmin check)
+  const { data, isLoading, isError, refetch, isAdmin } = useAllUsers();
+  const { mutate: changeRole, isPending: isChangingRole } = useChangeUserRole();
+  const { mutate: deleteUser, isPending: isDeleting } = useDeleteUser();
+
+  const users = useMemo(() => data?.users || [], [data?.users]);
+
+  // Filter users based on search and role
+  const filteredUsers = useMemo(() => {
+    return users.filter((user) => {
+      // Search filter
+      const searchLower = searchQuery.toLowerCase();
+      const matchesSearch =
+        !searchQuery ||
+        user.fullName?.toLowerCase().includes(searchLower) ||
+        user.email?.toLowerCase().includes(searchLower) ||
+        user.phone?.toLowerCase().includes(searchLower);
+
+      // Role filter
+      const matchesRole = roleFilter === "all" || user.role === roleFilter;
+
+      return matchesSearch && matchesRole;
+    });
+  }, [users, searchQuery, roleFilter]);
+
+  // Handle role change
   const handleRoleChange = (userId, newRole) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user.id === userId ? { ...user, role: newRole } : user
-      )
-    );
+    changeRole({ userId, role: newRole });
   };
 
-  const handleDeleteUser = (userId) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "Cancel",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setUsers((prev) => prev.filter((user) => user.id !== userId));
-        Swal.fire("Deleted!", "User has been deleted.", "success");
-      }
+  // Open delete dialog
+  const openDeleteDialog = (user) => {
+    setSelectedUser(user);
+    setDeleteDialogOpen(true);
+  };
+
+  // Handle delete user
+  const handleDeleteUser = () => {
+    if (!selectedUser) return;
+    deleteUser(selectedUser._id, {
+      onSuccess: () => {
+        setDeleteDialogOpen(false);
+        setSelectedUser(null);
+      },
     });
   };
 
-  const openOrderModal = (user) => {
-    setSelectedUser(user);
-    setOrderModalOpen(true);
-  };
+  // Loading state (includes auth loading)
+  if (isLoading) {
+    return <UserListSkeleton />;
+  }
+
+  // Not admin state
+  if (!isAdmin) {
+    return (
+      <div className="p-4">
+        <div className="flex flex-col items-center justify-center h-64 text-amber-500">
+          <Shield className="h-12 w-12 mb-4" />
+          <p className="font-medium text-gray-800">Access Denied</p>
+          <p className="text-sm text-gray-500 mt-1">
+            You need admin permissions to view this page
+          </p>
+          <p className="text-xs text-gray-400 mt-3">
+            Current role:{" "}
+            <span className="font-mono bg-gray-100 px-2 py-1 rounded">
+              {currentUser?.role || "none"}
+            </span>
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
+            Please logout and login again if you recently became an admin
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="p-4">
+        <div className="flex flex-col items-center justify-center h-64 text-red-500">
+          <AlertCircle className="h-12 w-12 mb-4" />
+          <p className="font-medium">Failed to load users</p>
+          <p className="text-sm text-gray-500 mt-1">
+            Something went wrong. Please try again.
+          </p>
+          <Button
+            variant="outline"
+            className="mt-4 cursor-pointer"
+            onClick={() => refetch()}
+          >
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold mb-4">Users Management</h2>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-5">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800">Users Management</h2>
+          <p className="text-sm text-gray-500 mt-1">
+            {users.length} total users
+          </p>
+        </div>
 
-        <Input
-          type="text"
-          placeholder="Search by email or phone"
-          className="rounded-full px-5 max-w-sm"
-        />
+        {/* Search Input */}
+        <div className="relative w-full sm:w-64">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            type="text"
+            placeholder="Search by name, email..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 rounded-full"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
 
-        <div className="w-[180px] border rounded-sm">
-          <Select>
-            <SelectTrigger className="w-full border-none shadow-none">
-              <SelectValue placeholder="Filter Users" />
+        <div className="flex flex-col sm:flex-row gap-3">
+          {/* Role Filter */}
+          <Select value={roleFilter} onValueChange={setRoleFilter}>
+            <SelectTrigger className="w-full sm:w-40">
+              <SelectValue placeholder="Filter by role" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="default">Default</SelectItem>
+              <SelectItem value="all">All Users</SelectItem>
               <SelectItem value="admin">Admins</SelectItem>
-              <SelectItem value="moderator">Moderators</SelectItem>
               <SelectItem value="user">Users</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      <Table className="mt-5">
-        <TableHeader>
-          <TableRow>
-            <TableHead>Avatar</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Phone</TableHead>
-            <TableHead>Address</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
+      {/* Empty State */}
+      {filteredUsers.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-16 text-gray-500">
+          <Users className="h-16 w-16 mb-4 text-gray-300" />
+          <h3 className="text-lg font-medium text-gray-600">
+            {searchQuery || roleFilter !== "all"
+              ? "No users found"
+              : "No users yet"}
+          </h3>
+          <p className="text-sm mt-1">
+            {searchQuery
+              ? `No users matching "${searchQuery}"`
+              : roleFilter !== "all"
+              ? `No ${roleFilter}s found`
+              : "Users will appear here"}
+          </p>
+        </div>
+      )}
 
-        <TableBody>
-          {users.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell>
-                <Avatar>
-                  <AvatarImage src={user.avatar} />
-                  <AvatarFallback>{user.name[0]}</AvatarFallback>
-                </Avatar>
-              </TableCell>
+      {/* Users Table */}
+      {filteredUsers.length > 0 && (
+        <div className="border rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50">
+                <TableHead>User</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead>Address</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
 
-              <TableCell>{user.name}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>{user.phone}</TableCell>
-              <TableCell>{user.address}</TableCell>
+            <TableBody>
+              {filteredUsers.map((user) => (
+                <TableRow key={user._id} className="hover:bg-gray-50">
+                  {/* User Info */}
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={user.image?.url} />
+                        <AvatarFallback className="bg-[#3BB77E]/10 text-[#3BB77E]">
+                          {getInitials(user.fullName)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium text-gray-900">
+                          {user.fullName || "No name"}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {new Date(user.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  </TableCell>
 
-              <TableCell>
-                <Select
-                  value={user.role}
-                  onValueChange={(value) => handleRoleChange(user.id, value)}
-                >
-                  <SelectTrigger className="w-32">
-                    <SelectValue placeholder="Select Role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="User">User</SelectItem>
-                    <SelectItem value="Moderator">Moderator</SelectItem>
-                    <SelectItem value="Admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </TableCell>
+                  {/* Email */}
+                  <TableCell>
+                    <span className="text-gray-600">{user.email}</span>
+                  </TableCell>
 
-              <TableCell className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => openOrderModal(user)}
-                >
-                  View Orders
-                </Button>
+                  {/* Phone */}
+                  <TableCell>
+                    <span className="text-gray-600">
+                      {user.phone || "Not set"}
+                    </span>
+                  </TableCell>
 
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => handleDeleteUser(user.id)}
-                >
-                  <Trash2 />
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                  {/* Address */}
+                  <TableCell>
+                    <span className="text-gray-600 text-sm">
+                      {formatAddress(user.address)}
+                    </span>
+                  </TableCell>
 
-      {/* Order Dialog Component */}
-      <UserOrdersModal
-        open={orderModalOpen}
-        onClose={() => setOrderModalOpen(false)}
-        user={selectedUser}
-      />
+                  {/* Role */}
+                  <TableCell>
+                    <Select
+                      value={user.role}
+                      onValueChange={(value) =>
+                        handleRoleChange(user._id, value)
+                      }
+                      disabled={isChangingRole}
+                    >
+                      <SelectTrigger
+                        className={`w-28 ${
+                          user.role === "admin"
+                            ? "bg-purple-50 text-purple-700 border-purple-200"
+                            : "bg-gray-50 text-gray-700 border-gray-200"
+                        }`}
+                      >
+                        <div className="flex items-center gap-1">
+                          <Shield className="h-3 w-3" />
+                          <SelectValue />
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="user">User</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+
+                  {/* Actions */}
+                  <TableCell>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => openDeleteDialog(user)}
+                      className="cursor-pointer h-8 w-8 p-0 bg-red-50 text-red-500 border-red-200 hover:bg-red-100 hover:text-red-600"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete &quot;
+              {selectedUser?.fullName || selectedUser?.email}&quot;? This action
+              cannot be undone and will remove all user data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting} className="cursor-pointer">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteUser}
+              disabled={isDeleting}
+              className="bg-red-500 hover:bg-red-600 cursor-pointer"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete User
+                </>
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
