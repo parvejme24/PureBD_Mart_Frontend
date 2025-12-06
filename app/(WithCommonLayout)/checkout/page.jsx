@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { useCart } from "@/hooks/useCart";
 import { useCreateOrder } from "@/hooks/useOrder";
+import { useInitPayment } from "@/hooks/usePayment";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,13 +24,14 @@ import {
   ArrowLeft,
   Loader2,
   CreditCard,
-  Truck,
   MapPin,
   User,
   Tag,
   Check,
   X,
   Percent,
+  Banknote,
+  Wallet,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -42,8 +44,39 @@ const VALID_COUPONS = {
   WELCOME: { type: "percentage", value: 15, minOrder: 0 },
 };
 
+// Payment method options
+const PAYMENT_METHODS = [
+  {
+    value: "COD",
+    label: "Cash on Delivery",
+    icon: Banknote,
+    description: "Pay with cash when your order is delivered.",
+    color: "text-orange-600",
+    bgColor: "bg-orange-50",
+    borderColor: "border-orange-200",
+  },
+  {
+    value: "ShurjoPay",
+    label: "Online Payment",
+    icon: Wallet,
+    description: "Pay securely with bKash, Nagad, Cards, or Bank Transfer.",
+    color: "text-blue-600",
+    bgColor: "bg-blue-50",
+    borderColor: "border-blue-200",
+  },
+];
+
 // Checkout form component
-function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmit }) {
+function CheckoutForm({
+  user,
+  cart,
+  cartTotal,
+  getOrderItems,
+  isPending,
+  isPaymentPending,
+  onSubmitCOD,
+  onSubmitOnlinePayment,
+}) {
   // Initialize form with user data if available
   const [formData, setFormData] = useState({
     fullName: user?.fullName || "",
@@ -63,10 +96,14 @@ function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmi
   const [couponError, setCouponError] = useState("");
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
 
+  const isProcessing = isPending || isPaymentPending;
+
   // Get available districts based on selected division
   const availableDistricts = useMemo(() => {
     if (!formData.division) return [];
-    const selectedDivision = divisions.find((d) => d.name === formData.division);
+    const selectedDivision = divisions.find(
+      (d) => d.name === formData.division
+    );
     if (!selectedDivision) return [];
     return districts.filter((d) => d.divisionId === selectedDivision.id);
   }, [formData.division]);
@@ -74,7 +111,9 @@ function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmi
   // Get available upazilas based on selected district
   const availableUpazilas = useMemo(() => {
     if (!formData.district) return [];
-    const selectedDistrict = districts.find((d) => d.name === formData.district);
+    const selectedDistrict = districts.find(
+      (d) => d.name === formData.district
+    );
     if (!selectedDistrict) return [];
     return upazilas.filter((u) => u.districtId === selectedDistrict.id);
   }, [formData.district]);
@@ -134,7 +173,6 @@ function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmi
     setCouponError("");
     setIsApplyingCoupon(true);
 
-    // Simulate API call delay
     setTimeout(() => {
       const code = couponCode.trim().toUpperCase();
       const coupon = VALID_COUPONS[code];
@@ -176,7 +214,7 @@ function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmi
       return;
     }
 
-    // Prepare order data with address as object (matching backend schema)
+    // Prepare order data
     const orderData = {
       items: getOrderItems(),
       customer: {
@@ -198,8 +236,17 @@ function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmi
       discount: discount,
     };
 
-    onSubmit(orderData);
+    // Route to appropriate handler based on payment method
+    if (formData.paymentMethod === "ShurjoPay") {
+      onSubmitOnlinePayment(orderData);
+    } else {
+      onSubmitCOD(orderData);
+    }
   };
+
+  const selectedPaymentMethod = PAYMENT_METHODS.find(
+    (m) => m.value === formData.paymentMethod
+  );
 
   return (
     <form onSubmit={handleSubmit}>
@@ -222,8 +269,12 @@ function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmi
                   placeholder="Enter your full name"
                   value={formData.fullName}
                   onChange={handleInputChange}
-                  disabled={isPending}
-                  className={!formData.fullName.trim() ? "border-gray-300" : "border-green-300"}
+                  disabled={isProcessing}
+                  className={
+                    !formData.fullName.trim()
+                      ? "border-gray-300"
+                      : "border-green-300"
+                  }
                 />
               </div>
 
@@ -236,8 +287,12 @@ function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmi
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  disabled={isPending}
-                  className={!formData.email.trim() ? "border-gray-300" : "border-green-300"}
+                  disabled={isProcessing}
+                  className={
+                    !formData.email.trim()
+                      ? "border-gray-300"
+                      : "border-green-300"
+                  }
                 />
               </div>
 
@@ -250,8 +305,12 @@ function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmi
                   placeholder="Enter your phone number (e.g., 01XXXXXXXXX)"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  disabled={isPending}
-                  className={!formData.phone.trim() ? "border-gray-300" : "border-green-300"}
+                  disabled={isProcessing}
+                  className={
+                    !formData.phone.trim()
+                      ? "border-gray-300"
+                      : "border-green-300"
+                  }
                 />
               </div>
             </div>
@@ -271,9 +330,15 @@ function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmi
                 <Select
                   value={formData.division}
                   onValueChange={handleDivisionChange}
-                  disabled={isPending}
+                  disabled={isProcessing}
                 >
-                  <SelectTrigger className={`w-full ${!formData.division ? "border-gray-300" : "border-green-300"}`}>
+                  <SelectTrigger
+                    className={`w-full ${
+                      !formData.division
+                        ? "border-gray-300"
+                        : "border-green-300"
+                    }`}
+                  >
                     <SelectValue placeholder="Select Division" />
                   </SelectTrigger>
                   <SelectContent>
@@ -292,9 +357,15 @@ function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmi
                 <Select
                   value={formData.district}
                   onValueChange={handleDistrictChange}
-                  disabled={isPending || !formData.division}
+                  disabled={isProcessing || !formData.division}
                 >
-                  <SelectTrigger className={`w-full ${!formData.district ? "border-gray-300" : "border-green-300"}`}>
+                  <SelectTrigger
+                    className={`w-full ${
+                      !formData.district
+                        ? "border-gray-300"
+                        : "border-green-300"
+                    }`}
+                  >
                     <SelectValue
                       placeholder={
                         formData.division
@@ -321,9 +392,13 @@ function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmi
                   onValueChange={(value) =>
                     setFormData((prev) => ({ ...prev, upazila: value }))
                   }
-                  disabled={isPending || !formData.district}
+                  disabled={isProcessing || !formData.district}
                 >
-                  <SelectTrigger className={`w-full ${!formData.upazila ? "border-gray-300" : "border-green-300"}`}>
+                  <SelectTrigger
+                    className={`w-full ${
+                      !formData.upazila ? "border-gray-300" : "border-green-300"
+                    }`}
+                  >
                     <SelectValue
                       placeholder={
                         formData.district
@@ -351,7 +426,7 @@ function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmi
                   placeholder="Enter postal code"
                   value={formData.postalCode}
                   onChange={handleInputChange}
-                  disabled={isPending}
+                  disabled={isProcessing}
                 />
               </div>
 
@@ -365,8 +440,12 @@ function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmi
                   value={formData.detailsAddress}
                   onChange={handleInputChange}
                   rows={3}
-                  disabled={isPending}
-                  className={!formData.detailsAddress.trim() ? "border-gray-300" : "border-green-300"}
+                  disabled={isProcessing}
+                  className={
+                    !formData.detailsAddress.trim()
+                      ? "border-gray-300"
+                      : "border-green-300"
+                  }
                 />
               </div>
             </div>
@@ -379,37 +458,81 @@ function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmi
               Payment Method
             </h2>
 
-            <Select
-              value={formData.paymentMethod}
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, paymentMethod: value }))
-              }
-              disabled={isPending}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select payment method" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="COD">Cash on Delivery (COD)</SelectItem>
-                <SelectItem value="bKash">bKash</SelectItem>
-                <SelectItem value="Nagad">Nagad</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {PAYMENT_METHODS.map((method) => {
+                const Icon = method.icon;
+                const isSelected = formData.paymentMethod === method.value;
 
-            {formData.paymentMethod === "COD" && (
-              <p className="text-sm text-gray-500 mt-3">
-                Pay with cash when your order is delivered.
-              </p>
-            )}
-            {formData.paymentMethod === "bKash" && (
-              <p className="text-sm text-gray-500 mt-3">
-                You will receive payment instructions after placing the order.
-              </p>
-            )}
-            {formData.paymentMethod === "Nagad" && (
-              <p className="text-sm text-gray-500 mt-3">
-                You will receive payment instructions after placing the order.
-              </p>
+                return (
+                  <button
+                    key={method.value}
+                    type="button"
+                    onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        paymentMethod: method.value,
+                      }))
+                    }
+                    disabled={isProcessing}
+                    className={`p-4 rounded-lg border-2 text-left transition-all cursor-pointer ${
+                      isSelected
+                        ? `${method.borderColor} ${method.bgColor}`
+                        : "border-gray-200 hover:border-gray-300"
+                    } ${isProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`p-2 rounded-full ${
+                          isSelected ? method.bgColor : "bg-gray-100"
+                        }`}
+                      >
+                        <Icon
+                          className={`h-5 w-5 ${
+                            isSelected ? method.color : "text-gray-500"
+                          }`}
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <p
+                          className={`font-semibold ${
+                            isSelected ? method.color : "text-gray-800"
+                          }`}
+                        >
+                          {method.label}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {method.description}
+                        </p>
+                      </div>
+                      {isSelected && (
+                        <Check className={`h-5 w-5 ${method.color}`} />
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Payment Method Info */}
+            {selectedPaymentMethod && (
+              <div
+                className={`mt-4 p-3 rounded-lg ${selectedPaymentMethod.bgColor} border ${selectedPaymentMethod.borderColor}`}
+              >
+                <p className={`text-sm ${selectedPaymentMethod.color}`}>
+                  {formData.paymentMethod === "ShurjoPay" ? (
+                    <>
+                      <strong>Secure Online Payment:</strong> You will be
+                      redirected to ShurjoPay to complete your payment using
+                      bKash, Nagad, Visa, Mastercard, or Bank Transfer.
+                    </>
+                  ) : (
+                    <>
+                      <strong>Cash on Delivery:</strong> Pay with cash when your
+                      order is delivered to your doorstep.
+                    </>
+                  )}
+                </p>
+              </div>
             )}
           </div>
         </div>
@@ -458,7 +581,7 @@ function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmi
                 <Tag className="h-4 w-4" />
                 Coupon Code
               </Label>
-              
+
               {appliedCoupon ? (
                 <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-3">
                   <div className="flex items-center gap-2">
@@ -494,14 +617,16 @@ function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmi
                         setCouponCode(e.target.value);
                         setCouponError("");
                       }}
-                      disabled={isPending || isApplyingCoupon}
+                      disabled={isProcessing || isApplyingCoupon}
                       className="flex-1"
                     />
                     <Button
                       type="button"
                       variant="outline"
                       onClick={handleApplyCoupon}
-                      disabled={!couponCode.trim() || isPending || isApplyingCoupon}
+                      disabled={
+                        !couponCode.trim() || isProcessing || isApplyingCoupon
+                      }
                       className="cursor-pointer"
                     >
                       {isApplyingCoupon ? (
@@ -557,22 +682,33 @@ function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmi
 
             <Button
               type="submit"
-              disabled={isPending || !isFormValid}
+              disabled={isProcessing || !isFormValid}
               className={`w-full h-12 text-lg cursor-pointer transition-all ${
                 isFormValid
-                  ? "bg-[#3BB77E] hover:bg-[#2a9c66]"
+                  ? formData.paymentMethod === "ShurjoPay"
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-[#3BB77E] hover:bg-[#2a9c66]"
                   : "bg-gray-300 cursor-not-allowed"
               }`}
             >
-              {isPending ? (
+              {isProcessing ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                  Placing Order...
+                  {isPaymentPending ? "Redirecting..." : "Placing Order..."}
                 </>
               ) : isFormValid ? (
                 <>
-                  <Check className="h-5 w-5 mr-2" />
-                  Place Order
+                  {formData.paymentMethod === "ShurjoPay" ? (
+                    <>
+                      <Wallet className="h-5 w-5 mr-2" />
+                      Pay Now ৳{finalTotal.toFixed(2)}
+                    </>
+                  ) : (
+                    <>
+                      <Check className="h-5 w-5 mr-2" />
+                      Place Order
+                    </>
+                  )}
                 </>
               ) : (
                 "Fill Required Fields"
@@ -592,12 +728,19 @@ function CheckoutForm({ user, cart, cartTotal, getOrderItems, isPending, onSubmi
 
 export default function CheckoutPage() {
   const { cart, isLoaded, cartTotal, getOrderItems } = useCart();
-  const { mutate: createOrder, isPending } = useCreateOrder();
+  const { mutate: createOrder, isPending: isCODPending } = useCreateOrder();
+  const { mutate: initPayment, isPending: isPaymentPending } = useInitPayment();
   const { data: userData, isLoading: isUserLoading } = useCurrentUser();
   const user = userData?.user || null;
 
-  const handleSubmit = (orderData) => {
+  // Handle COD order
+  const handleCODSubmit = (orderData) => {
     createOrder(orderData);
+  };
+
+  // Handle Online Payment
+  const handleOnlinePayment = (orderData) => {
+    initPayment(orderData);
   };
 
   // Loading state
@@ -661,8 +804,10 @@ export default function CheckoutPage() {
         cart={cart}
         cartTotal={cartTotal}
         getOrderItems={getOrderItems}
-        isPending={isPending}
-        onSubmit={handleSubmit}
+        isPending={isCODPending}
+        isPaymentPending={isPaymentPending}
+        onSubmitCOD={handleCODSubmit}
+        onSubmitOnlinePayment={handleOnlinePayment}
       />
     </div>
   );

@@ -100,7 +100,11 @@ export default function DashboardSidebar() {
           transition-transform duration-300 ease-in-out
           w-[280px]
           lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shadow-none lg:border-0 lg:bg-transparent lg:pt-0
-          ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+          ${
+            isMobileOpen
+              ? "translate-x-0"
+              : "-translate-x-full lg:translate-x-0"
+          }
         `}
       >
         <div className="h-full overflow-y-auto px-4 py-5 lg:px-0 lg:py-0">
@@ -116,10 +120,23 @@ export default function DashboardSidebar() {
             {/* Menu Items */}
             <ul className="space-y-2 w-full">
               {filteredMenu.map((item, idx) => {
+                // Check if current path exactly matches or is a child route
+                // But don't match parent if another menu item is more specific
+                const isExactMatch = pathname === item.href;
+                const isChildRoute = pathname.startsWith(item.href + "/");
+
+                // For items with sub-routes in menu (like Products & Add Product)
+                // Only match exact path, not child routes that have their own menu item
+                const hasMoreSpecificMenuItem = filteredMenu.some(
+                  (other) =>
+                    other.href !== item.href &&
+                    other.href.startsWith(item.href) &&
+                    pathname.startsWith(other.href)
+                );
+
                 const active =
-                  pathname === item.href ||
-                  (item.href !== "/dashboard" &&
-                    pathname.startsWith(item.href));
+                  isExactMatch || (isChildRoute && !hasMoreSpecificMenuItem);
+
                 return (
                   <li key={idx}>
                     <Link

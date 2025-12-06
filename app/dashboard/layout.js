@@ -7,7 +7,7 @@ export default function DashboardLayout({ children }) {
   return (
     <div className="min-h-screen bg-gray-50/30">
       <Navbar />
-      <div className="container mx-auto max-w-7xl px-4 lg:px-5">
+      <div className="container mx-auto max-w-7xl pr-5 lg:pr-0 lg:px-5">
         <div className="flex gap-5 py-5">
           {/* Sidebar - Hidden on mobile, shown via floating button */}
           <div className="hidden lg:block w-[280px] shrink-0">
