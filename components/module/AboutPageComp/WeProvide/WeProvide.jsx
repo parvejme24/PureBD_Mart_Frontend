@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 const data = [
   {
@@ -56,8 +57,21 @@ export default function WeProvide() {
     <div className="container mx-auto max-w-7xl px-5 py-14">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {data.map((item) => (
-          <div key={item.id} className="border px-5 py-10 rounded-lg space-y-2 bg-green-50/40">
-            <img src={item.image} alt="" className="w-[100px] mx-auto" />
+          <div
+            key={item.id}
+            className="border px-5 py-10 rounded-lg space-y-2 bg-green-50/40"
+          >
+            <div className="w-[100px] h-[100px] mx-auto relative">
+              <Image
+                src={item.image}
+                alt={item.title}
+                width={100}
+                height={100}
+                className="object-contain"
+                unoptimized
+                draggable={false}
+              />
+            </div>
             <h3 className="text-center text-2xl font-semibold">{item.title}</h3>
             <p className="text-center">{item.description}</p>
           </div>

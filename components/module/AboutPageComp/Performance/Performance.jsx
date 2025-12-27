@@ -60,7 +60,7 @@ const faqData = [
 ];
 
 export default function Performance() {
-  // Split FAQs into two columns
+  // Split FAQs into two columns (4 FAQs each, can be extended to 5)
   const leftColumn = faqData.slice(0, Math.ceil(faqData.length / 2));
   const rightColumn = faqData.slice(Math.ceil(faqData.length / 2));
 
