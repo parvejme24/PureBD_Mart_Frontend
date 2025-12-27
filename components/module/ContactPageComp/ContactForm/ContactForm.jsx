@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { motion } from "framer-motion";
+import Swal from "sweetalert2";
 
 export default function ContactForm() {
   const [submitting, setSubmitting] = useState(false);
@@ -26,11 +27,52 @@ export default function ContactForm() {
   const onSubmit = async (data) => {
     setSubmitting(true);
     setStatus(null);
-    // Simulate API call
-    await new Promise((res) => setTimeout(res, 900));
-    setStatus("Message sent! We’ll get back shortly.");
-    setSubmitting(false);
-    reset();
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Message Sent!",
+          text: "We'll get back to you shortly.",
+          confirmButtonColor: "#3BB77E",
+          timer: 3000,
+          timerProgressBar: true,
+        });
+        setStatus("Message sent! We'll get back shortly.");
+        reset();
+      } else {
+        const errorMessage = result.message || "Failed to send message. Please try again.";
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: errorMessage,
+          confirmButtonColor: "#dc2626",
+        });
+        setStatus(errorMessage);
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      const errorMessage = "Failed to send message. Please try again later.";
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: errorMessage,
+        confirmButtonColor: "#dc2626",
+      });
+      setStatus(errorMessage);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -159,12 +201,13 @@ export default function ContactForm() {
 
 function AnimateStatus({ status }) {
   if (!status) return null;
+  const isError = status.includes("Failed") || status.includes("Invalid");
   return (
     <motion.div
       initial={{ opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="text-sm font-medium text-[#3BB77E]"
+      className={`text-sm font-medium ${isError ? "text-red-600" : "text-[#3BB77E]"}`}
     >
       {status}
     </motion.div>
