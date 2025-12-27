@@ -45,7 +45,7 @@ export default function Category() {
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-800">Shop by Category</h2>
           <Link
-            href="/categories"
+            href="/shop"
             className="text-[#3BB77E] hover:text-[#2a9c66] text-sm font-medium transition-colors"
           >
             View All →
@@ -57,7 +57,7 @@ export default function Category() {
           {categories.map((category) => (
             <Link
               key={category._id}
-              href={`/shop?category=${category.slug}`}
+              href={`/shop?categories=${category.slug}`}
               className="group bg-white rounded-xl p-4 border border-gray-100 flex flex-col items-center justify-center transition-all duration-300 hover:shadow-lg hover:border-[#3BB77E]/30 hover:-translate-y-1"
             >
               {/* Category Image */}

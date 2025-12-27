@@ -18,7 +18,7 @@ import {
   Plus,
   ShoppingBag,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -35,6 +35,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useSettings } from "@/hooks/useSettings";
 
 // Get user initials for avatar fallback
 const getInitials = (name) => {
@@ -47,33 +48,8 @@ const getInitials = (name) => {
     .slice(0, 2);
 };
 
-// Animation variants for mobile drawer
-const drawerVariants = {
-  closed: {
-    x: "-100%",
-    transition: {
-      duration: 0.3,
-      ease: "easeInOut",
-    },
-  },
-  open: {
-    x: 0,
-    transition: {
-      duration: 0.4,
-      ease: "easeOut",
-      staggerChildren: 0.1,
-      delayChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  closed: { opacity: 0, x: -20 },
-  open: { opacity: 1, x: 0 },
-};
-
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const { user, isAuthenticated, isLoading, logout, isAdmin } = useAuth();
   const {
@@ -85,6 +61,7 @@ export default function Navbar() {
     incrementQuantity,
     decrementQuantity,
   } = useCart();
+  const { data: settings } = useSettings();
 
   const navItems = [
     { name: "Home", href: "/" },
@@ -95,130 +72,11 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
-    setIsOpen(false);
+    setMobileMenuOpen(false);
   };
 
   // Cart state for popover
   const [cartOpen, setCartOpen] = useState(false);
-
-  // Render mobile user section based on auth state
-  const renderMobileUserSection = () => {
-    if (isLoading) {
-      return (
-        <div className="flex items-center justify-center p-4">
-          <Loader2 className="h-6 w-6 animate-spin text-[#3BB77E]" />
-        </div>
-      );
-    }
-
-    if (isAuthenticated && user) {
-      return (
-        <div className="border-t pt-6 space-y-4">
-          {/* User Info */}
-          <div className="flex items-center gap-3 p-3 bg-white/50 rounded-lg">
-            <Avatar className="h-12 w-12 border-2 border-[#3BB77E]">
-              <AvatarImage src={user?.image} alt={user?.name} />
-              <AvatarFallback className="bg-[#3BB77E] text-white font-semibold">
-                {getInitials(user?.name)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col overflow-hidden">
-              <p className="text-sm font-semibold text-gray-900 truncate">
-                {user?.name}
-              </p>
-              <p className="text-xs text-gray-500 truncate">{user?.email}</p>
-              {isAdmin() && (
-                <span className="mt-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#3BB77E]/10 text-[#3BB77E] w-fit">
-                  Admin
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Menu Links */}
-          <div className="space-y-2">
-            <Link
-              href="/dashboard/profile"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/50 transition-colors"
-            >
-              <User className="h-5 w-5 text-gray-600" />
-              <span className="font-medium">Profile</span>
-            </Link>
-
-            <Link
-              href="/dashboard"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/50 transition-colors"
-            >
-              <LayoutDashboard className="h-5 w-5 text-gray-600" />
-              <span className="font-medium">Dashboard</span>
-            </Link>
-
-            <Link
-              href="/cart"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/50 transition-colors"
-            >
-              <ShoppingCart className="h-5 w-5 text-gray-600" />
-              <span className="font-medium">
-                Cart {cartCount > 0 && `(${cartCount})`}
-              </span>
-            </Link>
-
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-red-50 transition-colors w-full text-red-600 cursor-pointer"
-            >
-              <LogOut className="h-5 w-5" />
-              <span className="font-medium">Logout</span>
-            </button>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <motion.div
-        variants={itemVariants}
-        className="flex items-center space-x-6 pt-6 border-t"
-      >
-        <motion.div
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 400 }}
-        >
-          <Link
-            href="/cart"
-            onClick={() => setIsOpen(false)}
-            className="flex items-center gap-2"
-          >
-            <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-[#3BB77E]" />
-            {cartCount > 0 && (
-              <span className="text-sm font-medium text-[#3BB77E]">
-                ({cartCount})
-              </span>
-            )}
-          </Link>
-        </motion.div>
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 300 }}
-        >
-          <Button
-            asChild
-            className="bg-[#3BB77E] hover:bg-green-700 text-white px-6 transition duration-300 w-full"
-            onClick={() => setIsOpen(false)}
-          >
-            <Link href="/login" className="w-full">
-              Login
-            </Link>
-          </Button>
-        </motion.div>
-      </motion.div>
-    );
-  };
 
   return (
     <nav className="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b shadow-sm">
@@ -231,17 +89,17 @@ export default function Navbar() {
         >
           <Link href="/" className="flex items-center">
             <Image
-              src={LOGO}
+              src={settings?.siteLogo?.url || LOGO}
               width={100}
               height={80}
-              alt="Logo"
+              alt={settings?.siteTitle || "Logo"}
               className="h-10 w-auto"
             />
           </Link>
         </motion.div>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex space-x-8 font-medium text-gray-700">
+          <div className="hidden md:flex space-x-8 font-medium text-gray-700">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -267,7 +125,7 @@ export default function Navbar() {
         </div>
 
         {/* Right section */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 md:space-x-4">
           {/* Cart Dropdown - Desktop */}
           <div className="hidden md:block">
             <Popover open={cartOpen} onOpenChange={setCartOpen}>
@@ -312,7 +170,7 @@ export default function Navbar() {
                           className="p-3 flex gap-3 hover:bg-gray-50 transition-colors"
                         >
                           {/* Product Image */}
-                          <div className="relative w-16 h-16 flex-shrink-0 rounded-md overflow-hidden bg-gray-100">
+                          <div className="relative w-16 h-16 shrink-0 rounded-md overflow-hidden bg-gray-100">
                             {item.image ? (
                               <Image
                                 src={item.image}
@@ -410,21 +268,21 @@ export default function Navbar() {
           </div>
 
           {/* Cart Icon - Mobile (simple link) */}
-          <motion.div
-            className="md:hidden relative"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400 }}
-          >
-            <Link href="/cart">
-              <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-[#3BB77E] transition duration-300" />
-              {isLoaded && cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-[#3BB77E] text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  {cartCount > 99 ? "99+" : cartCount}
-                </span>
-              )}
-            </Link>
-          </motion.div>
+            <motion.div
+              className="md:hidden relative"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400 }}
+            >
+              <Link href="/cart" className="flex items-center justify-center">
+                <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-[#3BB77E] transition duration-300" />
+                {isLoaded && cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-[#3BB77E] text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartCount > 99 ? "99+" : cartCount}
+                  </span>
+                )}
+              </Link>
+            </motion.div>
 
           {/* Desktop Auth Section */}
           <div className="hidden md:flex items-center">
@@ -524,87 +382,87 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile menu toggle */}
-          <motion.button
-            className="md:hidden text-gray-700 cursor-pointer"
-            onClick={() => setIsOpen(!isOpen)}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 400 }}
-          >
-            {isOpen ? <IoClose size={28} /> : <IoReorderTwoOutline size={28} />}
-          </motion.button>
+          {/* Mobile menu (popover) */}
+          <Popover open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <PopoverTrigger asChild>
+              <motion.button
+                className="md:hidden text-gray-700 cursor-pointer flex items-center justify-center"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 400 }}
+              >
+                {mobileMenuOpen ? <IoClose size={28} /> : <IoReorderTwoOutline size={28} />}
+              </motion.button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-56 p-3 md:hidden">
+              <div className="flex flex-col space-y-2">
+                {navItems.map((item) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`px-2 py-2 rounded-md text-sm font-medium transition-colors ${
+                        isActive
+                          ? "text-[#3BB77E] bg-green-50"
+                          : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                    >
+                      {item.name}
+                    </Link>
+                  );
+                })}
+              </div>
+
+              <div className="border-t border-gray-200 my-3" />
+
+              {isLoading ? (
+                <div className="flex items-center justify-center py-2">
+                  <Loader2 className="h-5 w-5 animate-spin text-[#3BB77E]" />
+                </div>
+              ) : isAuthenticated && user ? (
+                <div className="space-y-1">
+                  <Link
+                    href="/dashboard/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-2 px-2 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    <User className="h-4 w-4 text-gray-500" />
+                    Profile
+                  </Link>
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-2 px-2 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    <LayoutDashboard className="h-4 w-4 text-gray-500" />
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-2 py-2 rounded-md text-sm text-red-600 hover:bg-red-50 text-left cursor-pointer"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <Button
+                  asChild
+                  className="w-full bg-[#3BB77E] hover:bg-green-700 text-white mt-1 cursor-pointer"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Link href="/login">Login</Link>
+                </Button>
+              )}
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
-
-      {/* Mobile Drawer */}
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="fixed inset-0 z-30 bg-black/50 backdrop-blur-md md:hidden"
-              onClick={() => setIsOpen(false)}
-            />
-            {/* Drawer */}
-            <motion.div
-              initial="closed"
-              animate="open"
-              exit="closed"
-              variants={drawerVariants}
-              className="fixed top-0 left-0 h-full w-80 z-40 bg-green-50/97 min-h-screen shadow-xl md:hidden flex flex-col"
-            >
-              <div className="p-6 flex flex-col h-full overflow-y-auto">
-                {/* Close Button */}
-                <motion.button
-                  onClick={() => setIsOpen(false)}
-                  className="self-end text-gray-700 hover:text-[#3BB77E] transition duration-300 mb-8 cursor-pointer"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  transition={{ type: "spring", stiffness: 400 }}
-                >
-                  <IoClose size={28} />
-                </motion.button>
-
-                {/* Nav Items */}
-                <div className="flex flex-col space-y-6 flex-1">
-                  {navItems.map((item) => {
-                    const isActive = pathname === item.href;
-                    return (
-                      <motion.div
-                        key={item.name}
-                        variants={itemVariants}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        transition={{ type: "spring", stiffness: 400 }}
-                      >
-                        <Link
-                          href={item.href}
-                          onClick={() => setIsOpen(false)}
-                          className={`text-xl font-semibold transition-colors duration-300 inline ${
-                            isActive
-                              ? "text-[#3BB77E] border-b-2 border-[#3BB77E] pb-1"
-                              : "text-gray-700 hover:text-[#3BB77E]"
-                          }`}
-                        >
-                          {item.name}
-                        </Link>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-
-                {/* Mobile User Section */}
-                {renderMobileUserSection()}
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
     </nav>
   );
 }

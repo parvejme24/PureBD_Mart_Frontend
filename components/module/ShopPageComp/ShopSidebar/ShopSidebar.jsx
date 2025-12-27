@@ -5,23 +5,30 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Search, X, RotateCcw, Loader2 } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FaMinus, FaPlus, FaFilter } from "react-icons/fa";
 import { useCategories } from "@/hooks/useCategory";
 import { useShopFilter } from "@/hooks/useShopFilter";
+
+// Section header component (declared outside render to avoid recreation)
+const SectionHeader = ({ title, isOpen, toggle }) => (
+  <div className="flex justify-between items-center mt-3">
+    <h2 className="font-semibold text-lg text-gray-800">{title}</h2>
+    <Button
+      variant="outline"
+      size="icon"
+      className="border-none hover:bg-transparent cursor-pointer"
+      onClick={toggle}
+    >
+      {isOpen ? <FaMinus /> : <FaPlus />}
+    </Button>
+  </div>
+);
 
 export default function ShopSidebar() {
   const [catOpen, setCatOpen] = useState(true);
   const [priceOpen, setPriceOpen] = useState(true);
   const [showSidebar, setShowSidebar] = useState(false);
-  
-  // Local state for controlled inputs
-  const [searchInput, setSearchInput] = useState("");
-  const [priceRange, setPriceRange] = useState([0, 10000]);
-
-  // Get categories from API
-  const { data: categoriesData, isLoading: categoriesLoading } = useCategories();
-  const categories = categoriesData?.categories || [];
 
   // Get filter functions from hook
   const {
@@ -33,11 +40,16 @@ export default function ShopSidebar() {
     hasActiveFilters,
   } = useShopFilter();
 
-  // Sync local state with URL params on mount
-  useEffect(() => {
-    setSearchInput(filters.search);
-    setPriceRange([filters.minPrice, filters.maxPrice]);
-  }, [filters.search, filters.minPrice, filters.maxPrice]);
+  // Local state for controlled inputs
+  const [searchInput, setSearchInput] = useState(() => filters.search || "");
+  const [priceRange, setPriceRange] = useState(() => [
+    filters.minPrice ?? 0,
+    filters.maxPrice ?? 10000,
+  ]);
+
+  // Get categories from API
+  const { data: categoriesData, isLoading: categoriesLoading } = useCategories();
+  const categories = categoriesData?.categories || [];
 
   // Handle search submit
   const handleSearch = (e) => {
@@ -57,21 +69,6 @@ export default function ShopSidebar() {
     setPriceRange([0, 10000]);
     clearFilters();
   };
-
-  // Section header with toggle
-  const SectionHeader = ({ title, isOpen, toggle }) => (
-    <div className="flex justify-between items-center mt-3">
-      <h2 className="font-semibold text-lg text-gray-800">{title}</h2>
-      <Button
-        variant="outline"
-        size="icon"
-        className="border-none hover:bg-transparent cursor-pointer"
-        onClick={toggle}
-      >
-        {isOpen ? <FaMinus /> : <FaPlus />}
-      </Button>
-    </div>
-  );
 
   return (
     <>
@@ -260,6 +257,16 @@ export default function ShopSidebar() {
             >
               Apply Price Filter
             </Button>
+
+            {hasActiveFilters && (
+              <Button
+                variant="outline"
+                className="w-full mt-2 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 cursor-pointer"
+                onClick={handleClearFilters}
+              >
+                Clear All Filters
+              </Button>
+            )}
           </div>
         </div>
 

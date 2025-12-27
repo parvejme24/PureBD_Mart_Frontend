@@ -178,10 +178,6 @@ export default function CartPage() {
                 <span>Subtotal ({cartCount} items)</span>
                 <span className="font-medium">৳{cartTotal.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-gray-600">
-                <span>Shipping</span>
-                <span className="text-green-600 font-medium">Free</span>
-              </div>
             </div>
 
             <div className="flex justify-between py-4 border-b">
@@ -213,6 +209,13 @@ export default function CartPage() {
     </div>
   );
 }
+
+
+
+
+
+
+
 
 
 

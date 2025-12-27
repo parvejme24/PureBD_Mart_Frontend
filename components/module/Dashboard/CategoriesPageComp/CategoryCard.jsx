@@ -34,18 +34,18 @@ export default function CategoryCard({ category, onEdit, onDelete }) {
           <Button
             variant="outline"
             onClick={() => onEdit(category)}
-            className="flex-1 cursor-pointer h-6 px-2 text-[10px] bg-[#DEF9EC] text-[#3BB77E] border-[#3BB77E]/20 hover:bg-[#c9f4e2]"
+            className="flex-1 cursor-pointer h-8 px-2 text-xs bg-[#DEF9EC] text-[#3BB77E] border-[#3BB77E]/20 hover:bg-[#c9f4e2] flex items-center justify-center gap-1"
           >
-            <Edit className="h-2.5 w-2.5 mr-0.5" />
-            Edit
+            <Edit className="h-3 w-3" />
+            <span className="hidden sm:inline">Edit</span>
           </Button>
           <Button
             variant="outline"
             onClick={() => onDelete(category)}
-            className="flex-1 cursor-pointer h-6 px-2 text-[10px] bg-red-50 text-red-500 border-red-200 hover:bg-red-100"
+            className="flex-1 cursor-pointer h-8 px-2 text-xs bg-red-50 text-red-500 border-red-200 hover:bg-red-100 flex items-center justify-center gap-1"
           >
-            <Trash2 className="h-2.5 w-2.5 mr-0.5" />
-            Delete
+            <Trash2 className="h-3 w-3" />
+            <span className="hidden sm:inline">Delete</span>
           </Button>
         </div>
       </div>

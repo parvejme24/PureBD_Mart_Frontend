@@ -24,6 +24,10 @@ export function useCreateOrder() {
       if (typeof window !== "undefined") {
         localStorage.removeItem("cart");
         window.dispatchEvent(new Event("cartUpdated"));
+        // Store order data in sessionStorage for success page
+        if (data?.order) {
+          sessionStorage.setItem("lastOrder", JSON.stringify(data.order));
+        }
       }
       // Navigate to success page with order ID
       const orderId = data?.order?._id || data?.order?.id || "";

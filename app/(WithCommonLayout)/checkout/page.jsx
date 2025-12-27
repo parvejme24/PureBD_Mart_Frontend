@@ -3,7 +3,6 @@
 import { useState, useMemo } from "react";
 import { useCart } from "@/hooks/useCart";
 import { useCreateOrder } from "@/hooks/useOrder";
-import { useInitPayment } from "@/hooks/usePayment";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,9 +30,9 @@ import {
   X,
   Percent,
   Banknote,
-  Wallet,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useShippingConfig } from "@/hooks/useShipping";
 
 // Sample coupon codes (in real app, this would come from backend)
 const VALID_COUPONS = {
@@ -44,27 +43,16 @@ const VALID_COUPONS = {
   WELCOME: { type: "percentage", value: 15, minOrder: 0 },
 };
 
-// Payment method options
-const PAYMENT_METHODS = [
-  {
-    value: "COD",
-    label: "Cash on Delivery",
-    icon: Banknote,
-    description: "Pay with cash when your order is delivered.",
-    color: "text-orange-600",
-    bgColor: "bg-orange-50",
-    borderColor: "border-orange-200",
-  },
-  {
-    value: "ShurjoPay",
-    label: "Online Payment",
-    icon: Wallet,
-    description: "Pay securely with bKash, Nagad, Cards, or Bank Transfer.",
-    color: "text-blue-600",
-    bgColor: "bg-blue-50",
-    borderColor: "border-blue-200",
-  },
-];
+// Payment method - Only Cash on Delivery
+const PAYMENT_METHOD = {
+  value: "COD",
+  label: "Cash on Delivery",
+  icon: Banknote,
+  description: "Pay with cash when your order is delivered.",
+  color: "text-orange-600",
+  bgColor: "bg-orange-50",
+  borderColor: "border-orange-200",
+};
 
 // Checkout form component
 function CheckoutForm({
@@ -142,9 +130,25 @@ function CheckoutForm({
   }, [appliedCoupon, cartTotal]);
 
   // Calculate final total
+  const { data: shippingConfig, isLoading: isShippingLoading } = useShippingConfig();
+
+  const shippingAmount = useMemo(() => {
+    if (shippingConfig?.freeDeliveryEnabled) return 0;
+    const inside = Number(shippingConfig?.shippingInsideDhaka) || 0;
+    const outside = Number(shippingConfig?.shippingOutsideDhaka) || 0;
+    if (!formData.division) return 0;
+    const isDhaka = formData.division.trim().toLowerCase() === "dhaka";
+    return isDhaka ? inside : outside;
+  }, [
+    formData.division,
+    shippingConfig?.freeDeliveryEnabled,
+    shippingConfig?.shippingInsideDhaka,
+    shippingConfig?.shippingOutsideDhaka,
+  ]);
+
   const finalTotal = useMemo(() => {
-    return Math.max(0, cartTotal - discount);
-  }, [cartTotal, discount]);
+    return Math.max(0, cartTotal - discount + shippingAmount);
+  }, [cartTotal, discount, shippingAmount]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -234,19 +238,14 @@ function CheckoutForm({
       paymentMethod: formData.paymentMethod,
       coupon: appliedCoupon ? appliedCoupon.code : null,
       discount: discount,
+      shipping: shippingAmount,
     };
 
-    // Route to appropriate handler based on payment method
-    if (formData.paymentMethod === "ShurjoPay") {
-      onSubmitOnlinePayment(orderData);
-    } else {
-      onSubmitCOD(orderData);
-    }
+    // Only COD payment method
+    onSubmitCOD(orderData);
   };
 
-  const selectedPaymentMethod = PAYMENT_METHODS.find(
-    (m) => m.value === formData.paymentMethod
-  );
+  const selectedPaymentMethod = PAYMENT_METHOD;
 
   return (
     <form onSubmit={handleSubmit}>
@@ -458,82 +457,22 @@ function CheckoutForm({
               Payment Method
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {PAYMENT_METHODS.map((method) => {
-                const Icon = method.icon;
-                const isSelected = formData.paymentMethod === method.value;
-
-                return (
-                  <button
-                    key={method.value}
-                    type="button"
-                    onClick={() =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        paymentMethod: method.value,
-                      }))
-                    }
-                    disabled={isProcessing}
-                    className={`p-4 rounded-lg border-2 text-left transition-all cursor-pointer ${
-                      isSelected
-                        ? `${method.borderColor} ${method.bgColor}`
-                        : "border-gray-200 hover:border-gray-300"
-                    } ${isProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`p-2 rounded-full ${
-                          isSelected ? method.bgColor : "bg-gray-100"
-                        }`}
-                      >
-                        <Icon
-                          className={`h-5 w-5 ${
-                            isSelected ? method.color : "text-gray-500"
-                          }`}
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <p
-                          className={`font-semibold ${
-                            isSelected ? method.color : "text-gray-800"
-                          }`}
-                        >
-                          {method.label}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          {method.description}
-                        </p>
-                      </div>
-                      {isSelected && (
-                        <Check className={`h-5 w-5 ${method.color}`} />
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Payment Method Info */}
-            {selectedPaymentMethod && (
-              <div
-                className={`mt-4 p-3 rounded-lg ${selectedPaymentMethod.bgColor} border ${selectedPaymentMethod.borderColor}`}
-              >
-                <p className={`text-sm ${selectedPaymentMethod.color}`}>
-                  {formData.paymentMethod === "ShurjoPay" ? (
-                    <>
-                      <strong>Secure Online Payment:</strong> You will be
-                      redirected to ShurjoPay to complete your payment using
-                      bKash, Nagad, Visa, Mastercard, or Bank Transfer.
-                    </>
-                  ) : (
-                    <>
-                      <strong>Cash on Delivery:</strong> Pay with cash when your
-                      order is delivered to your doorstep.
-                    </>
-                  )}
-                </p>
+            <div className="p-4 rounded-lg border-2 border-orange-200 bg-orange-50">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-full bg-orange-50">
+                  <Banknote className="h-5 w-5 text-orange-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-orange-600">
+                    Cash on Delivery
+                  </p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Pay with cash when your order is delivered.
+                  </p>
+                </div>
+                <Check className="h-5 w-5 text-orange-600" />
               </div>
-            )}
+            </div>
           </div>
         </div>
 
@@ -660,8 +599,22 @@ function CheckoutForm({
               )}
               <div className="flex justify-between text-gray-600">
                 <span>Shipping</span>
-                <span className="text-green-600 font-medium">Free</span>
+                {isShippingLoading ? (
+                  <span className="text-gray-500 text-sm flex items-center gap-1">
+                    <Loader2 className="h-4 w-4 animate-spin" /> Calculating...
+                  </span>
+                ) : shippingAmount === 0 ? (
+                  <span className="text-green-600 font-medium">Free</span>
+                ) : (
+                  <span className="font-medium">৳{shippingAmount.toFixed(2)}</span>
+                )}
               </div>
+              {shippingConfig?.freeDeliveryEnabled && shippingConfig?.freeDeliveryNote && (
+                <p className="text-xs text-green-600 flex items-center gap-1">
+                  <Check className="h-3 w-3" />
+                  {shippingConfig.freeDeliveryNote}
+                </p>
+              )}
             </div>
 
             <div className="flex justify-between py-4">
@@ -685,30 +638,19 @@ function CheckoutForm({
               disabled={isProcessing || !isFormValid}
               className={`w-full h-12 text-lg cursor-pointer transition-all ${
                 isFormValid
-                  ? formData.paymentMethod === "ShurjoPay"
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-[#3BB77E] hover:bg-[#2a9c66]"
+                  ? "bg-[#3BB77E] hover:bg-[#2a9c66]"
                   : "bg-gray-300 cursor-not-allowed"
               }`}
             >
               {isProcessing ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                  {isPaymentPending ? "Redirecting..." : "Placing Order..."}
+                  Placing Order...
                 </>
               ) : isFormValid ? (
                 <>
-                  {formData.paymentMethod === "ShurjoPay" ? (
-                    <>
-                      <Wallet className="h-5 w-5 mr-2" />
-                      Pay Now ৳{finalTotal.toFixed(2)}
-                    </>
-                  ) : (
-                    <>
-                      <Check className="h-5 w-5 mr-2" />
-                      Place Order
-                    </>
-                  )}
+                  <Check className="h-5 w-5 mr-2" />
+                  Place Order
                 </>
               ) : (
                 "Fill Required Fields"
@@ -729,18 +671,12 @@ function CheckoutForm({
 export default function CheckoutPage() {
   const { cart, isLoaded, cartTotal, getOrderItems } = useCart();
   const { mutate: createOrder, isPending: isCODPending } = useCreateOrder();
-  const { mutate: initPayment, isPending: isPaymentPending } = useInitPayment();
   const { data: userData, isLoading: isUserLoading } = useCurrentUser();
   const user = userData?.user || null;
 
   // Handle COD order
   const handleCODSubmit = (orderData) => {
     createOrder(orderData);
-  };
-
-  // Handle Online Payment
-  const handleOnlinePayment = (orderData) => {
-    initPayment(orderData);
   };
 
   // Loading state
@@ -805,9 +741,9 @@ export default function CheckoutPage() {
         cartTotal={cartTotal}
         getOrderItems={getOrderItems}
         isPending={isCODPending}
-        isPaymentPending={isPaymentPending}
+        isPaymentPending={false}
         onSubmitCOD={handleCODSubmit}
-        onSubmitOnlinePayment={handleOnlinePayment}
+        onSubmitOnlinePayment={() => {}}
       />
     </div>
   );

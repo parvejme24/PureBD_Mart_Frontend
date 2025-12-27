@@ -4,7 +4,6 @@ import React, { Suspense } from "react";
 import ShopSidebar from "./ShopSidebar/ShopSidebar";
 import ShopContents from "./ShopContents/ShopContents";
 import ShopContentsSkeleton from "./ShopContents/ShopContentsSkeleton";
-import { Loader2 } from "lucide-react";
 
 // Sidebar skeleton for loading state
 function SidebarSkeleton() {
@@ -13,7 +12,7 @@ function SidebarSkeleton() {
       <div className="animate-pulse space-y-4">
         {/* Search skeleton */}
         <div className="h-10 bg-gray-200 rounded-md"></div>
-        
+
         {/* Section skeleton */}
         <div className="space-y-3 pt-4">
           <div className="h-5 bg-gray-200 rounded w-3/4"></div>
@@ -26,9 +25,9 @@ function SidebarSkeleton() {
             ))}
           </div>
         </div>
-        
+
         <hr className="border-gray-200" />
-        
+
         {/* Price filter skeleton */}
         <div className="space-y-3 pt-2">
           <div className="h-5 bg-gray-200 rounded w-2/3"></div>

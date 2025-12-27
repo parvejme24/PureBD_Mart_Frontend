@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,8 @@ export default function AddProductPage() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [categoryOpen, setCategoryOpen] = useState(false);
+  const [priceInput, setPriceInput] = useState("");
+  const [discountInput, setDiscountInput] = useState("");
   const imageInputRef = useRef(null);
 
   // Fetch categories
@@ -75,6 +77,13 @@ export default function AddProductPage() {
     }
   };
 
+  const discountedPrice = useMemo(() => {
+    const price = Number(priceInput) || 0;
+    const discount = Math.max(0, Number(discountInput) || 0);
+    const value = price - discount;
+    return value > 0 ? value : 0;
+  }, [priceInput, discountInput]);
+
   // Form Submit Handler
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -96,6 +105,8 @@ export default function AddProductPage() {
     formData.append("category", selectedCategory);
     formData.append("stock", form.stock.value);
     formData.append("image", selectedImage);
+    if (form.discount.value) formData.append("discount", form.discount.value);
+    if (form.weight.value) formData.append("weight", form.weight.value);
 
     createProduct(formData, {
       onSuccess: () => {
@@ -142,8 +153,8 @@ export default function AddProductPage() {
           />
         </div>
 
-        {/* Category + Price + Stock */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Category + Price + Stock + Discount + Weight */}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {/* Searchable Category Dropdown */}
           <div className="space-y-2">
             <Label>
@@ -245,6 +256,38 @@ export default function AddProductPage() {
               placeholder="Enter price"
               required
               disabled={isCreating}
+              value={priceInput}
+              onChange={(e) => setPriceInput(e.target.value)}
+            />
+          </div>
+
+          {/* Discount */}
+          <div className="space-y-2">
+            <Label htmlFor="discount">Discount (৳)</Label>
+            <Input
+              id="discount"
+              name="discount"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Optional absolute discount"
+              disabled={isCreating}
+              value={discountInput}
+              onChange={(e) => setDiscountInput(e.target.value)}
+            />
+          </div>
+
+          {/* Weight */}
+          <div className="space-y-2">
+            <Label htmlFor="weight">Weight (kg)</Label>
+            <Input
+              id="weight"
+              name="weight"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Optional weight for shipping"
+              disabled={isCreating}
             />
           </div>
 
@@ -262,6 +305,14 @@ export default function AddProductPage() {
               required
               disabled={isCreating}
             />
+          </div>
+        </div>
+
+        {/* Discounted price preview */}
+        <div className="rounded-md border border-dashed border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+          <div className="flex items-center justify-between">
+            <span>Calculated price after discount</span>
+            <span className="font-semibold">৳{discountedPrice.toFixed(2)}</span>
           </div>
         </div>
 
@@ -293,7 +344,7 @@ export default function AddProductPage() {
             >
               <ImagePlus className="h-12 w-12 text-gray-300 mb-3" />
               <p className="text-sm text-gray-500">Click to upload image</p>
-              <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</p>
+              <p className="text-xs text-gray-400 mt-1">PNG, JPG, WEBP up to 5MB</p>
             </div>
           ) : (
             <div className="relative inline-block">
@@ -320,7 +371,7 @@ export default function AddProductPage() {
           <input
             ref={imageInputRef}
             type="file"
-            accept="image/*"
+            accept="image/png,image/jpeg,image/jpg,image/webp"
             onChange={handleImageChange}
             className="hidden"
           />

@@ -6,13 +6,36 @@ import { useShopFilter } from "@/hooks/useShopFilter";
 import { Package, SearchX, FilterX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ShopContentsSkeleton from "./ShopContentsSkeleton";
+import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function ShopContents() {
   const { data, isLoading, isError } = useProducts();
   const { filters, filterProducts, hasActiveFilters, clearFilters } = useShopFilter();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(8);
+  const [showAll, setShowAll] = useState(false);
   
   const allProducts = data?.products || [];
   const filteredProducts = filterProducts(allProducts);
+
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+
+  const visibleProducts = showAll
+    ? filteredProducts
+    : filteredProducts.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  const filterKey = `${filters.search || ""}|${filters.categories.join(",")}|${filters.minPrice}-${filters.maxPrice}`;
+  const paginationKey = showAll ? "all" : `p${page}-s${pageSize}`;
+  const animationKey = `${filterKey}|${paginationKey}`;
 
   if (isLoading) {
     return <ShopContentsSkeleton />;
@@ -88,12 +111,121 @@ export default function ShopContents() {
 
   return (
     <div className="w-full">
+      {/* Pagination controls */}
+      {filteredProducts.length > 0 && (
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <span>
+              Showing {showAll ? filteredProducts.length : visibleProducts.length} of{" "}
+              {filteredProducts.length} products
+            </span>
+            {!showAll && (
+              <>
+                <span className="hidden sm:inline">·</span>
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                  <span>Per page:</span>
+                  <Select
+                    value={String(pageSize)}
+                    onValueChange={(val) => {
+                      const num = Number(val);
+                      setPageSize(num);
+                      setPage(1);
+                    }}
+                  >
+                    <SelectTrigger className="h-8 w-20 px-2">
+                      <SelectValue placeholder="Page size" />
+                    </SelectTrigger>
+                    <SelectContent side="bottom" align="start">
+                      {[8, 12, 16, 24].map((size) => (
+                        <SelectItem key={size} value={String(size)}>
+                          {size}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {!showAll && totalPages > 1 && (
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-9 px-3 cursor-pointer"
+                  disabled={currentPage === 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                >
+                  Prev
+                </Button>
+                <span className="text-sm text-gray-600 px-2">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-9 px-3 cursor-pointer"
+                  disabled={currentPage === totalPages}
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                >
+                  Next
+                </Button>
+              </div>
+            )}
+
+            {showAll ? (
+              <Button
+                variant="outline"
+                size="sm"
+                className="cursor-pointer"
+                onClick={() => {
+                  setShowAll(false);
+                  setPage(1);
+                }}
+              >
+                Back to paginated
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                className="cursor-pointer"
+                onClick={() => setShowAll(true)}
+              >
+                Show all
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Products grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredProducts.map((product) => (
-          <ProductCard key={product._id} product={product} />
-        ))}
-      </div>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={animationKey}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.25 }}
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {visibleProducts.map((product) => (
+              <motion.div
+                key={product._id}
+                layout
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.25 }}
+              >
+                <ProductCard product={product} />
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

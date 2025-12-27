@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "@/providers/Providers";
 import { Toaster } from "@/components/ui/sonner";
+import { fetchSettingsServer } from "@/lib/settings-server";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,10 +14,26 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata = {
-  title: "PureBD Mart - Your Trusted Online Marketplace",
-  description: "Shop the best products at PureBD Mart",
-};
+export async function generateMetadata() {
+  const settings = await fetchSettingsServer();
+  const title =
+    settings?.siteTitle || "PureBD Mart - Your Trusted Online Marketplace";
+  const description =
+    settings?.siteDescription || "Shop the best products at PureBD Mart";
+  const faviconFromApi = settings?.siteFavicon?.url;
+  const favicon =
+    faviconFromApi && faviconFromApi.toLowerCase().endsWith(".ico")
+      ? faviconFromApi
+      : "/favicon.ico";
+
+  return {
+    title,
+    description,
+    icons: {
+      icon: favicon,
+    },
+  };
+}
 
 export default function RootLayout({ children }) {
   return (
