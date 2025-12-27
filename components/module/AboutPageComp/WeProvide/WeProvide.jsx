@@ -7,7 +7,7 @@ const data = [
       "https://themepanthers.com/wp/nest/d1/wp-content/uploads/2022/02/icon-1.png",
     title: "Best Prices & Offers",
     description:
-      "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form",
+      "Enjoy competitive pricing on all premium quality products. We offer the best deals on authentic dates, pure honey, natural oils, nuts, and spices without compromising on quality.",
   },
   {
     id: 2,
@@ -15,7 +15,7 @@ const data = [
       "https://themepanthers.com/wp/nest/d1/wp-content/uploads/2022/02/icon-2.png",
     title: "Wide Assortment",
     description:
-      "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form",
+      "Browse through our extensive collection of natural and organic products including fresh dates, pure honey, natural oils, premium nuts, dry fruits, and high-quality cooking masalas.",
   },
   {
     id: 3,
@@ -23,7 +23,7 @@ const data = [
       "https://themepanthers.com/wp/nest/d1/wp-content/uploads/2022/02/icon-3.png",
     title: "Free Delivery",
     description:
-      "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form",
+      "Free delivery available in Dhaka! Fast and reliable doorstep delivery service across Bangladesh. Outside Dhaka delivery available with minimal shipping charges.",
   },
   {
     id: 4,
@@ -31,7 +31,7 @@ const data = [
       "https://themepanthers.com/wp/nest/d1/wp-content/uploads/2022/02/icon-4.png",
     title: "Easy Returns",
     description:
-      "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form",
+      "Not satisfied with your purchase? We offer hassle-free returns and exchanges. Contact us within 24-48 hours of delivery for quick resolution.",
   },
   {
     id: 5,
@@ -39,7 +39,7 @@ const data = [
       "https://themepanthers.com/wp/nest/d1/wp-content/uploads/2022/02/icon-5.png",
     title: "100% Satisfaction",
     description:
-      "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form",
+      "Every product is quality-checked and verified for authenticity. We guarantee freshness, purity, and great taste in every order you place with us.",
   },
   {
     id: 6,
@@ -47,7 +47,7 @@ const data = [
       "https://themepanthers.com/wp/nest/d1/wp-content/uploads/2022/02/icon-6.png",
     title: "Great Daily Deal",
     description:
-      "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form",
+      "Check out our daily deals and special offers on premium products. Save more on bulk purchases and enjoy exclusive discounts on selected items.",
   },
 ];
 
