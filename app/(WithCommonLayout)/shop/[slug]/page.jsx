@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import { useProduct } from "@/hooks/useProduct";
 import ProductDetails from "@/components/module/ShopPageComp/ProductDetails/ProductDetails";
 import ProductDetailsSkeleton from "@/components/module/ShopPageComp/ProductDetails/ProductDetailsSkeleton";
@@ -24,14 +25,14 @@ export default function ProductPage() {
             Product Not Found
           </h1>
           <p className="text-gray-600 mb-6">
-            The product you're looking for doesn't exist or has been removed.
+            The product you&apos;re looking for doesn&apos;t exist or has been removed.
           </p>
-          <a
+          <Link
             href="/shop"
             className="inline-block bg-[#3BB77E] text-white px-6 py-3 rounded-lg hover:bg-[#2a9c66] transition-colors"
           >
             Back to Shop
-          </a>
+          </Link>
         </div>
       </div>
     );

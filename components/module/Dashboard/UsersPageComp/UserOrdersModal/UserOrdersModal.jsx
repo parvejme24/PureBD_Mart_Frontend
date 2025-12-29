@@ -192,7 +192,7 @@ export default function UserOrdersModal({ open, onClose, user }) {
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold">
-            {user.name}'s Orders
+            {user.name}&apos;s Orders
           </DialogTitle>
           <DialogDescription>
             User basic information and complete order details.

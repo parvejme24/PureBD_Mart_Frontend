@@ -32,27 +32,36 @@ export default function ProductDetails({ product }) {
       <div className="container mx-auto max-w-7xl px-4 py-16 text-center">
         <div className="text-6xl mb-4">📦</div>
         <h1 className="text-2xl font-bold text-gray-800 mb-2">Product Not Found</h1>
-        <p className="text-gray-600">The product you're looking for is not available.</p>
+        <p className="text-gray-600">The product you&apos;re looking for is not available.</p>
       </div>
     );
   }
 
-  const images = product.images || [product.image];
-  const productInCart = isInCart(product._id);
-  const cartQuantity = productInCart ? getItemQuantity(product._id) : 0;
+  const images = Array.isArray(product.images) && product.images.length > 0
+    ? product.images
+    : product.image
+    ? [product.image]
+    : [{ url: "/placeholder-product.png" }];
+
+  const productInCart = product._id ? isInCart(product._id) : false;
+  const cartQuantity = productInCart && product._id ? getItemQuantity(product._id) : 0;
 
   const handleAddToCart = () => {
-    if (product.stock > 0) {
+    if ((product.stock || 0) > 0 && product._id) {
       addToCart(product);
     }
   };
 
   const handleIncrement = () => {
-    incrementQuantity(product._id);
+    if (product._id) {
+      incrementQuantity(product._id);
+    }
   };
 
   const handleDecrement = () => {
-    decrementQuantity(product._id);
+    if (product._id) {
+      decrementQuantity(product._id);
+    }
   };
 
   const nextImage = () => {
@@ -80,7 +89,7 @@ export default function ProductDetails({ product }) {
           {/* Main Image */}
           <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
             <Image
-              src={images[selectedImage]?.url || images[selectedImage] || "/placeholder-product.png"}
+              src={images[selectedImage]?.url || images[selectedImage]?.src || images[selectedImage] || "/placeholder-product.png"}
               alt={product.name}
               fill
               className="object-contain"
@@ -118,7 +127,7 @@ export default function ProductDetails({ product }) {
                   }`}
                 >
                   <Image
-                    src={image?.url || image || "/placeholder-product.png"}
+                    src={image?.url || image?.src || image || "/placeholder-product.png"}
                     alt={`${product.name} ${index + 1}`}
                     width={80}
                     height={80}
@@ -151,8 +160,8 @@ export default function ProductDetails({ product }) {
               <span className="text-sm text-gray-600">{product.sold || 0} sold</span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-3xl font-bold text-[#3BB77E]">৳{product.price}</span>
-              {product.withDiscountPrice && product.withDiscountPrice > product.price && (
+              <span className="text-3xl font-bold text-[#3BB77E]">৳{product.price || 0}</span>
+              {product.withDiscountPrice && product.withDiscountPrice > (product.price || 0) && (
                 <span className="text-xl text-gray-500 line-through">
                   ৳{product.withDiscountPrice}
                 </span>
@@ -174,12 +183,12 @@ export default function ProductDetails({ product }) {
           <div className="flex items-center gap-3">
             <span
               className={`px-3 py-1 rounded-full text-sm font-medium ${
-                product.stock > 0
+                (product.stock || 0) > 0
                   ? "bg-green-100 text-green-700"
                   : "bg-red-100 text-red-700"
               }`}
             >
-              {product.stock > 0 ? "In Stock" : "Out of Stock"}
+              {(product.stock || 0) > 0 ? "In Stock" : "Out of Stock"}
             </span>
             <span className="text-sm text-gray-600">
               {product.stock} items available
