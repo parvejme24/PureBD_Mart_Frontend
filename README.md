@@ -40,7 +40,21 @@ A modern e-commerce frontend built with Next.js 16.1.1, featuring a comprehensiv
    cd pure-bd-mart-frontend
    ```
 
-2. **Install dependencies**
+2. **Environment Variables**
+   Create a `.env.local` file in the root directory and add the following:
+   ```env
+   # NextAuth Configuration
+   NEXTAUTH_URL=http://localhost:3000
+   NEXTAUTH_SECRET=your-nextauth-secret-here
+
+   # API Configuration
+   NEXT_PUBLIC_API_URL=https://pure-bd-mart-backend.vercel.app/api
+
+   # Optional: For local development
+   # NEXT_PUBLIC_API_URL=http://localhost:8000/api
+   ```
+
+3. **Install dependencies**
    ```bash
    npm install
    # or
@@ -143,6 +157,33 @@ Copy `.env.example` to `.env.local` and configure the following variables:
 4. **Deploy**
    - Vercel will automatically deploy on every push
    - Your app will be live at `https://your-project-name.vercel.app`
+
+### 🛠️ Troubleshooting Vercel Deployment
+
+If you encounter build errors:
+
+1. **Schema Validation Error** (`nodeVersion` property not allowed):
+   - ✅ **Fixed**: Updated `vercel.json` to use only valid properties
+   - The config now only includes `framework` and `functions` settings
+
+2. **Middleware Issues** (deprecated middleware file):
+   - ✅ **Fixed**: Moved `middleware.js` from root to `app/middleware.js`
+   - Updated to Next.js 13+ app router format
+
+3. **Build Timeouts** or **Settings API Errors**:
+   - ✅ **Fixed**: Enhanced `useSettings` hook with better SSR handling
+   - Added retry logic and client-side only execution
+   - Settings API calls are now properly isolated to client-side
+
+4. **Environment Variables Missing**:
+   - Ensure all required variables are set in Vercel dashboard
+   - Check that `NEXT_PUBLIC_API_URL` points to your backend API
+   - Verify `NEXTAUTH_SECRET` is a secure random string
+
+5. **Build Logs Loading Forever**:
+   - Clear Vercel cache: Go to your project → Settings → Advanced → Clear Build Cache
+   - Re-deploy the project
+   - Check that all dependencies are properly installed
 
 ### Option 2: Vercel CLI
 ```bash

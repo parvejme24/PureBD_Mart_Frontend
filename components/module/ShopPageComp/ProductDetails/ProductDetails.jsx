@@ -99,13 +99,13 @@ export default function ProductDetails({ product }) {
               <>
                 <button
                   onClick={prevImage}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-colors"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-colors cursor-pointer"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 <button
                   onClick={nextImage}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-colors cursor-pointer"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
@@ -117,15 +117,15 @@ export default function ProductDetails({ product }) {
           {images.length > 1 && (
             <div className="flex gap-2 overflow-x-auto">
               {images.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
-                    selectedImage === index
-                      ? "border-[#3BB77E]"
-                      : "border-gray-200 hover:border-gray-300"
-                  }`}
-                >
+                  <button
+                    key={index}
+                    onClick={() => setSelectedImage(index)}
+                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors cursor-pointer ${
+                      selectedImage === index
+                        ? "border-[#3BB77E]"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
                   <Image
                     src={image?.url || image?.src || image || "/placeholder-product.png"}
                     alt={`${product.name} ${index + 1}`}
@@ -244,14 +244,14 @@ export default function ProductDetails({ product }) {
                     <div className="flex items-center border rounded-lg">
                       <button
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="p-2 hover:bg-gray-100 transition-colors"
+                        className="p-2 hover:bg-gray-100 transition-colors cursor-pointer"
                       >
                         <Minus className="w-4 h-4" />
                       </button>
                       <span className="px-4 py-2 font-medium">{quantity}</span>
                       <button
                         onClick={() => setQuantity(quantity + 1)}
-                        className="p-2 hover:bg-gray-100 transition-colors"
+                        className="p-2 hover:bg-gray-100 transition-colors cursor-pointer"
                       >
                         <Plus className="w-4 h-4" />
                       </button>

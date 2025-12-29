@@ -14,6 +14,7 @@ export const useSettings = () => {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    // Only set client after component mounts and we're definitely on client
     setIsClient(true);
   }, []);
 
@@ -24,7 +25,12 @@ export const useSettings = () => {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    enabled: isClient, // Only run on client side
+    enabled: isClient && typeof window !== 'undefined', // Extra check for SSR
+    retry: (failureCount, error) => {
+      // Don't retry on build time or server errors
+      if (typeof window === 'undefined') return false;
+      return failureCount < 2;
+    },
   });
 };
 
