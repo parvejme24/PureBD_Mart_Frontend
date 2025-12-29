@@ -15,6 +15,7 @@ export const useShopFilter = () => {
       categories: searchParams.get("categories")?.split(",").filter(Boolean) || [],
       minPrice: Number(searchParams.get("minPrice")) || 0,
       maxPrice: Number(searchParams.get("maxPrice")) || 10000,
+      productType: searchParams.get("productType") || "all",
     };
   }, [searchParams]);
 
@@ -59,6 +60,15 @@ export const useShopFilter = () => {
         }
       }
 
+      // Handle productType
+      if (newFilters.productType !== undefined) {
+        if (newFilters.productType !== "all") {
+          params.set("productType", newFilters.productType);
+        } else {
+          params.delete("productType");
+        }
+      }
+
       router.push(`${pathname}?${params.toString()}`, { scroll: false });
     },
     [searchParams, router, pathname]
@@ -92,6 +102,14 @@ export const useShopFilter = () => {
     [updateFilters]
   );
 
+  // Set product type
+  const setProductType = useCallback(
+    (productType) => {
+      updateFilters({ productType });
+    },
+    [updateFilters]
+  );
+
   // Clear all filters
   const clearFilters = useCallback(() => {
     router.push(pathname, { scroll: false });
@@ -103,7 +121,8 @@ export const useShopFilter = () => {
       filters.search ||
       filters.categories.length > 0 ||
       filters.minPrice > 0 ||
-      filters.maxPrice < 10000
+      filters.maxPrice < 10000 ||
+      filters.productType !== "all"
     );
   }, [filters]);
 
@@ -146,6 +165,7 @@ export const useShopFilter = () => {
     setSearch,
     toggleCategory,
     setPriceRange,
+    setProductType,
     clearFilters,
     hasActiveFilters,
     filterProducts,

@@ -4,19 +4,27 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getSettings, updateSettings } from "@/lib/settings";
 import { shippingKeys } from "./useShipping";
+import { useEffect, useState } from "react";
 
 export const settingsKeys = {
   all: ["settings"],
 };
 
 export const useSettings = () => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return useQuery({
     queryKey: settingsKeys.all,
     queryFn: getSettings,
-    staleTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    enabled: isClient, // Only run on client side
   });
 };
 

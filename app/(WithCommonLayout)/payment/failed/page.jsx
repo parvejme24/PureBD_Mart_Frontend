@@ -12,6 +12,7 @@ import {
   HelpCircle,
   AlertTriangle,
 } from "lucide-react";
+import { Suspense } from "react";
 
 // Common failure reasons
 const FAILURE_REASONS = {
@@ -23,7 +24,7 @@ const FAILURE_REASONS = {
   timeout: "Payment session timed out. Please try again.",
 };
 
-export default function PaymentFailedPage() {
+function PaymentFailedContent() {
   const searchParams = useSearchParams();
   const transactionId = searchParams.get("transactionId");
   const reason = searchParams.get("reason");
@@ -130,6 +131,37 @@ export default function PaymentFailedPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function PaymentFailedPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[60vh] py-12 px-4">
+        <div className="max-w-lg mx-auto">
+          <div className="animate-pulse">
+            <div className="text-center mb-8">
+              <div className="bg-gray-200 p-6 rounded-full mx-auto mb-4"></div>
+              <div className="h-8 bg-gray-200 rounded w-3/4 mx-auto mb-4"></div>
+              <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+            </div>
+            <div className="bg-white border rounded-lg p-6 shadow-sm mb-6">
+              <div className="h-20 bg-gray-200 rounded mb-4"></div>
+              <div className="h-12 bg-gray-200 rounded"></div>
+            </div>
+            <div className="space-y-3">
+              <div className="h-12 bg-gray-200 rounded"></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="h-12 bg-gray-200 rounded"></div>
+                <div className="h-12 bg-gray-200 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <PaymentFailedContent />
+    </Suspense>
   );
 }
 

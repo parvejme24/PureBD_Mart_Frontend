@@ -37,7 +37,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useSettings } from "@/hooks/useSettings";
+// import { useSettings } from "@/hooks/useSettings"; // Removed for static generation
 
 // Get user initials for avatar fallback
 const getInitials = (name) => {
@@ -64,7 +64,7 @@ export default function Navbar() {
     decrementQuantity,
   } = useCart();
   const { wishlist } = useWishlist();
-  const { data: settings } = useSettings();
+  // const { data: settings } = useSettings(); // Removed for static generation
 
   const navItems = [
     { name: "Home", href: "/" },
@@ -92,10 +92,10 @@ export default function Navbar() {
         >
           <Link href="/" className="flex items-center">
             <Image
-              src={settings?.siteLogo?.url || LOGO}
+              src={LOGO}
               width={100}
               height={80}
-              alt={settings?.siteTitle || "Logo"}
+              alt="Pure BD Mart"
               className="h-10 w-auto"
             />
           </Link>

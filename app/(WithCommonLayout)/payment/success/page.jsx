@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useCart } from "@/hooks/useCart";
 import { usePaymentStatus, useVerifyPayment } from "@/hooks/usePayment";
@@ -19,7 +19,7 @@ import {
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const transactionId = searchParams.get("transactionId");
   const orderId = searchParams.get("orderId");
@@ -200,6 +200,37 @@ export default function PaymentSuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[70vh] py-12 px-4">
+        <div className="max-w-2xl mx-auto">
+          <div className="animate-pulse">
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4"></div>
+              <div className="h-8 bg-gray-200 rounded w-3/4 mx-auto mb-4"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+            </div>
+            <div className="bg-white border rounded-lg p-6 shadow-sm mb-6">
+              <div className="h-32 bg-gray-200 rounded mb-4"></div>
+              <div className="h-12 bg-gray-200 rounded"></div>
+            </div>
+            <div className="space-y-3">
+              <div className="h-12 bg-gray-200 rounded"></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="h-12 bg-gray-200 rounded"></div>
+                <div className="h-12 bg-gray-200 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }
 

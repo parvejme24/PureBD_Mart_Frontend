@@ -28,6 +28,7 @@ const SectionHeader = ({ title, isOpen, toggle }) => (
 export default function ShopSidebar() {
   const [catOpen, setCatOpen] = useState(true);
   const [priceOpen, setPriceOpen] = useState(true);
+  const [productTypeOpen, setProductTypeOpen] = useState(true);
   const [showSidebar, setShowSidebar] = useState(false);
 
   // Get filter functions from hook
@@ -36,6 +37,7 @@ export default function ShopSidebar() {
     setSearch,
     toggleCategory,
     setPriceRange: applyPriceFilter,
+    setProductType,
     clearFilters,
     hasActiveFilters,
   } = useShopFilter();
@@ -67,6 +69,7 @@ export default function ShopSidebar() {
   const handleClearFilters = () => {
     setSearchInput("");
     setPriceRange([0, 10000]);
+    setProductType("all");
     clearFilters();
   };
 
@@ -215,6 +218,64 @@ export default function ShopSidebar() {
 
         <hr className="mt-3 border-green-200" />
 
+        {/* ---------------- Product Type Filter ---------------- */}
+        <div>
+          <SectionHeader
+            title="Product Type"
+            isOpen={productTypeOpen}
+            toggle={() => setProductTypeOpen(!productTypeOpen)}
+          />
+          <div
+            className={`transition-all duration-300 overflow-hidden pb-3 ${
+              productTypeOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+            }`}
+          >
+            <div className="space-y-2 mt-3">
+              <label className="flex items-center gap-2 cursor-pointer text-gray-700 hover:text-green-600 transition-colors">
+                <input
+                  type="radio"
+                  name="productType"
+                  value="all"
+                  checked={filters.productType === "all"}
+                  onChange={(e) => setProductType(e.target.value)}
+                  className="text-green-600 focus:ring-green-500"
+                />
+                <span className={filters.productType === "all" ? "text-green-700 font-medium" : ""}>
+                  All Products
+                </span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer text-gray-700 hover:text-green-600 transition-colors">
+                <input
+                  type="radio"
+                  name="productType"
+                  value="best-selling"
+                  checked={filters.productType === "best-selling"}
+                  onChange={(e) => setProductType(e.target.value)}
+                  className="text-green-600 focus:ring-green-500"
+                />
+                <span className={filters.productType === "best-selling" ? "text-green-700 font-medium" : ""}>
+                  Best Selling
+                </span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer text-gray-700 hover:text-green-600 transition-colors">
+                <input
+                  type="radio"
+                  name="productType"
+                  value="deal-of-day"
+                  checked={filters.productType === "deal-of-day"}
+                  onChange={(e) => setProductType(e.target.value)}
+                  className="text-green-600 focus:ring-green-500"
+                />
+                <span className={filters.productType === "deal-of-day" ? "text-green-700 font-medium" : ""}>
+                  Deal of the Day
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <hr className="mt-3 border-green-200" />
+
         {/* ---------------- Price Filter ---------------- */}
         <div>
           <SectionHeader
@@ -278,6 +339,11 @@ export default function ShopSidebar() {
               {filters.search && (
                 <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
                   Search: {filters.search}
+                </span>
+              )}
+              {filters.productType !== "all" && (
+                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                  {filters.productType === "best-selling" ? "Best Selling" : "Deal of the Day"}
                 </span>
               )}
               {filters.categories.length > 0 && (

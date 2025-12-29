@@ -11,9 +11,9 @@ export default function HomePage() {
     <div>
       <Banner />
       <Category />
+      <DealOfTheDay />
       <Product />
       <BestSellingProducts />
-      <DealOfTheDay />
       <Subscribe />
     </div>
   );

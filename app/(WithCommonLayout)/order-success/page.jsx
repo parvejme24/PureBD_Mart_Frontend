@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -37,7 +37,7 @@ const formatAddress = (address) => {
   return parts.length > 0 ? parts.join(", ") : "N/A";
 };
 
-export default function OrderSuccessPage() {
+function OrderSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
   const [orderData, setOrderData] = useState(null);
@@ -237,5 +237,36 @@ export default function OrderSuccessPage() {
         </motion.div>
       </motion.div>
     </div>
+  );
+}
+
+export default function OrderSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto max-w-7xl px-4 py-6 sm:py-10">
+        <div className="max-w-lg mx-auto">
+          <div className="animate-pulse">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-200 rounded-full mx-auto mb-4"></div>
+            <div className="h-8 bg-gray-200 rounded w-3/4 mx-auto mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-2/3 mb-6"></div>
+            <div className="bg-white border rounded-lg p-4 sm:p-5 mb-6">
+              <div className="h-6 bg-gray-200 rounded w-1/2 mb-4"></div>
+              <div className="space-y-3">
+                <div className="h-4 bg-gray-200 rounded"></div>
+                <div className="h-4 bg-gray-200 rounded"></div>
+                <div className="h-4 bg-gray-200 rounded"></div>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="h-11 bg-gray-200 rounded flex-1"></div>
+              <div className="h-11 bg-gray-200 rounded flex-1"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <OrderSuccessContent />
+    </Suspense>
   );
 }

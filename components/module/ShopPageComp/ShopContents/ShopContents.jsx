@@ -1,7 +1,7 @@
 "use client";
 
 import ProductCard from "@/components/shared/ProductCard/ProductCard";
-import { useProducts } from "@/hooks/useProduct";
+import { useProducts, useBestSellingProducts, useDealOfTheDay } from "@/hooks/useProduct";
 import { useShopFilter } from "@/hooks/useShopFilter";
 import { Package, SearchX, FilterX } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,8 +17,26 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function ShopContents() {
-  const { data, isLoading, isError } = useProducts();
+  const { data: allProductsData, isLoading: allLoading, isError: allError } = useProducts();
+  const { data: bestSellingData, isLoading: bestSellingLoading, isError: bestSellingError } = useBestSellingProducts();
+  const { data: dealOfDayData, isLoading: dealOfDayLoading, isError: dealOfDayError } = useDealOfTheDay();
   const { filters, filterProducts, hasActiveFilters, clearFilters } = useShopFilter();
+
+  // Determine which data source to use based on productType filter
+  let data, isLoading, isError;
+  if (filters.productType === "best-selling") {
+    data = bestSellingData;
+    isLoading = bestSellingLoading;
+    isError = bestSellingError;
+  } else if (filters.productType === "deal-of-day") {
+    data = dealOfDayData;
+    isLoading = dealOfDayLoading;
+    isError = dealOfDayError;
+  } else {
+    data = allProductsData;
+    isLoading = allLoading;
+    isError = allError;
+  }
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(8);
   const [showAll, setShowAll] = useState(false);

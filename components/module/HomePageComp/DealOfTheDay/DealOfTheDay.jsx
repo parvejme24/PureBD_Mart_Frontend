@@ -9,14 +9,22 @@ import {
 } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ShoppingCart } from "lucide-react";
+import { ArrowRight, ShoppingCart, Plus, Minus } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useDealOfTheDay } from "@/hooks/useProduct";
+import { useCart } from "@/hooks/useCart";
 import { Skeleton } from "@/components/ui/skeleton";
-
 
 export default function DealOfTheDay() {
   const { data, isLoading, isError } = useDealOfTheDay();
+  const {
+    addToCart,
+    isInCart,
+    getItemQuantity,
+    incrementQuantity,
+    decrementQuantity,
+  } = useCart();
   const products = data?.products || [];
 
   // Loading skeleton
@@ -90,10 +98,12 @@ export default function DealOfTheDay() {
                 <CardContent className="flex items-center gap-5 p-5">
                   {/* Left: Image */}
                   <div className="w-1/3">
-                    <img
+                    <Image
                       src={product.image?.url || "/placeholder-product.jpg"}
                       alt={product.name}
-                      className="rounded-lg object-cover w-full h-32 md:h-40"
+                      width={200}
+                      height={160}
+                      className="rounded-lg object-contain w-full h-32 md:h-40"
                     />
                   </div>
 
@@ -109,21 +119,67 @@ export default function DealOfTheDay() {
                       <p className="text-[#60B77E] font-bold text-lg">
                         ৳{product.price}
                       </p>
-                      {product.originalPrice && product.originalPrice > product.price && (
-                        <p className="text-gray-500 line-through text-sm">
-                          ৳{product.originalPrice}
-                        </p>
-                      )}
+                      {product.originalPrice &&
+                        product.originalPrice > product.price && (
+                          <p className="text-gray-500 line-through text-sm">
+                            ৳{product.originalPrice}
+                          </p>
+                        )}
                     </div>
                     {product.unit && (
                       <p className="text-xs text-gray-500 mb-3">
                         Qty: {product.unit}
                       </p>
                     )}
-                    <Button className="cursor-pointer bg-[#DEF9EC] hover:bg-[#50BB88]/30 text-[#50BB88] font-bold w-full">
-                      <ShoppingCart className="w-4 h-4 mr-2" />
-                      Buy Now
-                    </Button>
+                    {isInCart(product._id) ? (
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 w-8 p-0 cursor-pointer"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            decrementQuantity(product._id);
+                          }}
+                        >
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                        <span className="w-8 text-center text-sm font-medium">
+                          {getItemQuantity(product._id)}
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 w-8 p-0 cursor-pointer"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            incrementQuantity(product._id);
+                          }}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          addToCart({
+                            _id: product._id,
+                            name: product.name,
+                            price: product.price,
+                            image: product.image?.url || product.image,
+                            slug: product.slug,
+                          });
+                        }}
+                        className="cursor-pointer bg-[#DEF9EC] hover:bg-[#50BB88]/30 text-[#50BB88] font-bold w-full"
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Buy Now
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
