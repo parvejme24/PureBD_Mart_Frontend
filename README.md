@@ -1,6 +1,6 @@
 # Pure BD Mart - Frontend
 
-A modern e-commerce frontend built with Next.js 16, featuring a comprehensive shopping experience with cart management, user authentication, and admin dashboard.
+A modern e-commerce frontend built with Next.js 16.1.1, featuring a comprehensive shopping experience with cart management, user authentication, and admin dashboard.
 
 ## 🚀 Features
 
@@ -9,20 +9,23 @@ A modern e-commerce frontend built with Next.js 16, featuring a comprehensive sh
 - **Shopping Cart**: Local storage-based cart with real-time updates
 - **Wishlist**: User wishlist functionality with local storage
 - **Admin Dashboard**: Complete admin panel for product and order management
+- **Advanced Filtering**: Deal of the Day and Best Selling product filters
 - **Responsive Design**: Mobile-first responsive design
 - **SEO Optimized**: Next.js App Router with proper meta tags
 - **Type Safety**: Full TypeScript support
+- **Security**: Latest Next.js version with all security patches
 
 ## 🛠️ Tech Stack
 
-- **Framework**: Next.js 16 (App Router)
-- **Styling**: Tailwind CSS
+- **Framework**: Next.js 16.1.1 (App Router)
+- **Styling**: Tailwind CSS v4
 - **UI Components**: Shadcn/UI + Radix UI
 - **State Management**: React Query + Context API
-- **Authentication**: NextAuth.js
+- **Authentication**: NextAuth.js v4
 - **Icons**: Lucide React + React Icons
 - **Animations**: Framer Motion
 - **Forms**: React Hook Form + Zod validation
+- **Deployment**: Vercel (optimized)
 
 ## 📋 Prerequisites
 
@@ -95,31 +98,65 @@ Copy `.env.example` to `.env.local` and configure the following variables:
 
 ## 🚀 Deployment to Vercel
 
-### Option 1: Vercel CLI
+### ✅ Current Status: Ready for Deployment
+- ✅ **Next.js 16.1.1**: Latest secure version installed
+- ✅ **Zero Security Vulnerabilities**: All dependencies updated and secure
+- ✅ **Build Successful**: All 30 pages generated successfully
+- ✅ **Vercel Configuration**: Optimized for Vercel deployment
+
+### Option 1: GitHub Integration (Recommended)
+1. **Push to GitHub**
+   ```bash
+   git add .
+   git commit -m "Update to Next.js 16.1.1 and fix security issues"
+   git push origin main
+   ```
+
+2. **Connect to Vercel**
+   - Go to [vercel.com](https://vercel.com) and sign in
+   - Click "New Project" → Import your GitHub repository
+   - Vercel will auto-detect Next.js settings
+
+3. **Configure Environment Variables**
+   In your Vercel project settings → Environment Variables, add:
+
+   **Required:**
+   ```
+   NEXT_PUBLIC_API_URL=https://your-backend-api.vercel.app/api
+   NEXTAUTH_SECRET=your-generated-secret-here
+   NEXTAUTH_URL=https://your-vercel-app.vercel.app
+   ```
+
+   **Optional (for features):**
+   ```
+   GOOGLE_CLIENT_ID=your-google-client-id
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_USER=your-email@gmail.com
+   SMTP_PASS=your-app-password
+   EMAIL_FROM=your-email@gmail.com
+   MAILCHIMP_API_KEY=your-mailchimp-api-key
+   MAILCHIMP_AUDIENCE_ID=your-mailchimp-audience-id
+   ```
+
+4. **Deploy**
+   - Vercel will automatically deploy on every push
+   - Your app will be live at `https://your-project-name.vercel.app`
+
+### Option 2: Vercel CLI
 ```bash
 # Install Vercel CLI
 npm i -g vercel
+
+# Login to Vercel
+vercel login
 
 # Deploy
 vercel
 
 # For production deployment
 vercel --prod
-```
-
-### Option 2: GitHub Integration
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy automatically on push
-
-### Vercel Environment Variables
-In your Vercel project settings, add these environment variables:
-
-```
-NEXT_PUBLIC_API_URL=https://your-backend-api.vercel.app/api
-NEXTAUTH_SECRET=your-generated-secret
-NEXTAUTH_URL=https://your-vercel-app.vercel.app
 ```
 
 ## 📁 Project Structure
