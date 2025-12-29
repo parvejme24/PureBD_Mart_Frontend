@@ -18,9 +18,11 @@ import {
   Plus,
   ShoppingBag,
 } from "lucide-react";
+import { MdFavoriteBorder } from "react-icons/md";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -61,6 +63,7 @@ export default function Navbar() {
     incrementQuantity,
     decrementQuantity,
   } = useCart();
+  const { wishlist } = useWishlist();
   const { data: settings } = useSettings();
 
   const navItems = [
@@ -126,6 +129,18 @@ export default function Navbar() {
 
         {/* Right section */}
         <div className="flex items-center space-x-4 md:space-x-4">
+          {/* Wishlist Icon */}
+          {wishlist.length > 0 && (
+            <Link href="/wishlist">
+              <button className="relative focus:outline-none cursor-pointer">
+                <MdFavoriteBorder className="w-6 h-6 text-gray-700 hover:text-red-500 transition duration-300" />
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {wishlist.length > 99 ? "99+" : wishlist.length}
+                </span>
+              </button>
+            </Link>
+          )}
+
           {/* Cart Dropdown - Desktop */}
           <div className="hidden md:block">
             <Popover open={cartOpen} onOpenChange={setCartOpen}>
@@ -266,6 +281,23 @@ export default function Navbar() {
               </PopoverContent>
             </Popover>
           </div>
+
+          {/* Wishlist Icon - Mobile */}
+          {wishlist.length > 0 && (
+            <motion.div
+              className="md:hidden relative"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400 }}
+            >
+              <Link href="/wishlist" className="flex items-center justify-center">
+                <MdFavoriteBorder className="w-6 h-6 text-gray-700 hover:text-red-500 transition duration-300" />
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {wishlist.length > 99 ? "99+" : wishlist.length}
+                </span>
+              </Link>
+            </motion.div>
+          )}
 
           {/* Cart Icon - Mobile (simple link) */}
             <motion.div

@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { useOrders, useUpdateOrderStatus, useDeleteOrder } from "@/hooks/useOrder";
 import { Trash2, Eye, Download, RefreshCw, Search } from "lucide-react";
+import { motion } from "framer-motion";
 
 import OrdersTableSkeleton from "./OrdersTableSkeleton";
 import OrderFilters from "./OrderFilters";
@@ -243,15 +244,20 @@ export default function OrdersTable() {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleViewInvoice(order)}
-                        className="h-8 px-2 cursor-pointer"
-                        title="View Invoice"
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
                       >
-                        <Eye className="h-4 w-4" />
-                      </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleViewInvoice(order)}
+                          className="h-8 px-2 cursor-pointer hover:bg-[#3BB77E] hover:text-white hover:border-[#3BB77E] transition-all duration-200 group"
+                          title="View Invoice"
+                        >
+                          <Eye className="h-4 w-4 group-hover:scale-110 transition-transform duration-200" />
+                        </Button>
+                      </motion.div>
                       <Button
                         size="sm"
                         variant="outline"

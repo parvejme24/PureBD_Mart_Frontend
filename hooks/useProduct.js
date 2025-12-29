@@ -6,6 +6,8 @@ import {
   getAllProducts,
   getProductBySlug,
   getProductsByCategorySlug,
+  getBestSellingProducts,
+  getDealOfTheDay,
   createProduct,
   updateProduct,
   deleteProduct,
@@ -16,6 +18,8 @@ export const productKeys = {
   all: ["products"],
   single: (slug) => ["product", slug],
   byCategory: (categorySlug) => ["products", "category", categorySlug],
+  bestSelling: ["products", "analytics", "best-selling"],
+  dealOfTheDay: ["products", "analytics", "deal-of-the-day"],
 };
 
 // Hook to get all products
@@ -42,6 +46,24 @@ export const useProductsByCategory = (categorySlug) => {
     queryKey: productKeys.byCategory(categorySlug),
     queryFn: () => getProductsByCategorySlug(categorySlug),
     enabled: !!categorySlug,
+  });
+};
+
+// Hook to get best selling products
+export const useBestSellingProducts = () => {
+  return useQuery({
+    queryKey: productKeys.bestSelling,
+    queryFn: getBestSellingProducts,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
+// Hook to get deal of the day products
+export const useDealOfTheDay = () => {
+  return useQuery({
+    queryKey: productKeys.dealOfTheDay,
+    queryFn: getDealOfTheDay,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 
@@ -98,6 +120,10 @@ export const useDeleteProduct = () => {
     },
   });
 };
+
+
+
+
 
 
 

@@ -9,103 +9,55 @@ import {
 } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ShoppingCart } from "lucide-react";
 import Link from "next/link";
+import { useDealOfTheDay } from "@/hooks/useProduct";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const productsData = [
-  {
-    id: "1",
-    name: "Fresh Apples",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/organic-carrot-300x300.jpg",
-    price: "180",
-    description: "Crisp and juicy apples sourced from local farms.",
-    quantity: "1 kg",
-  },
-  {
-    id: "2",
-    name: "Organic Bananas",
-    image:
-      "https://mybacola.myshopify.com/cdn/shop/files/product-image_3b821ada-6a37-40a8-b57e-9cdda2ae2ec5.jpg?v=1736510606&width=533",
-    price: "90",
-    description: "Sweet and ripe organic bananas for daily nutrition.",
-    quantity: "1 dozen",
-  },
-  {
-    id: "3",
-    name: "Fresh Tomatoes",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/beef-steak-300x300.jpg",
-    price: "70",
-    description: "Bright red tomatoes perfect for cooking and salads.",
-    quantity: "1 kg",
-  },
-  {
-    id: "4",
-    name: "Premium Rice",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/organic-cucumber-300x300.jpg",
-    price: "110",
-    description: "High-quality long-grain rice for every meal.",
-    quantity: "1 kg",
-  },
-  {
-    id: "5",
-    name: "Pure Mustard Oil",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/fresh-banana-300x300.jpg",
-    price: "320",
-    description: "Cold-pressed mustard oil rich in aroma and nutrients.",
-    quantity: "1 liter",
-  },
-  {
-    id: "6",
-    name: "Farm Fresh Eggs",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/10/fruit-product-3.jpg",
-    price: "140",
-    description: "Protein-rich, fresh eggs collected daily from farms.",
-    quantity: "12 pcs",
-  },
-  {
-    id: "7",
-    name: "Premium Lentils",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/organic-milk-300x300.jpg",
-    price: "160",
-    description: "High-quality red lentils perfect for everyday meals.",
-    quantity: "1 kg",
-  },
-  {
-    id: "8",
-    name: "Fresh Milk",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/green-gabbage-300x300.jpg",
-    price: "90",
-    description: "Pure and fresh milk packed with essential nutrients.",
-    quantity: "1 liter",
-  },
-  {
-    id: "9",
-    name: "Natural Honey",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/pig-food-300x300.jpg",
-    price: "450",
-    description: "100% pure honey collected from organic bee farms.",
-    quantity: "500 g",
-  },
-  {
-    id: "10",
-    name: "Brown Bread",
-    image:
-      "https://agricoma.ninetheme.com/wp-content/uploads/2023/12/organic-tomato-300x300.jpg",
-    price: "80",
-    description: "Soft, fresh, and healthy brown bread for daily breakfast.",
-    quantity: "1 pack",
-  },
-];
 
 export default function DealOfTheDay() {
+  const { data, isLoading, isError } = useDealOfTheDay();
+  const products = data?.products || [];
+
+  // Loading skeleton
+  if (isLoading) {
+    return (
+      <div className="container mx-auto max-w-7xl px-5 py-10">
+        <div className="mb-5 flex justify-between items-center w-full">
+          <div>
+            <Skeleton className="h-6 w-48 mb-2" />
+            <Skeleton className="h-4 w-80" />
+          </div>
+          <Skeleton className="h-10 w-24 rounded-full" />
+        </div>
+
+        <div className="flex gap-4">
+          {[1, 2].map((item) => (
+            <div key={item} className="flex-1">
+              <Card className="shadow-md rounded-xl overflow-hidden bg-[#D8F1E5]/10">
+                <CardContent className="flex items-center gap-5 p-5">
+                  <Skeleton className="w-1/3 h-32 md:h-40 rounded-lg" />
+                  <div className="flex-1 space-y-3">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Error or no products
+  if (isError || products.length === 0) {
+    return null;
+  }
+
   return (
     <div className="container mx-auto max-w-7xl px-5 py-10">
       <div className="mb-5 flex justify-between items-center w-full">
@@ -129,9 +81,9 @@ export default function DealOfTheDay() {
 
       <Carousel className="w-full">
         <CarouselContent className="-ml-2 md:-ml-4">
-          {productsData.map((product) => (
+          {products.map((product) => (
             <CarouselItem
-              key={product.id}
+              key={product._id}
               className="pl-2 md:pl-4 basis-full md:basis-1/2"
             >
               <Card className="shadow-md hover:shadow-lg transition rounded-xl overflow-hidden bg-[#D8F1E5]/10">
@@ -139,7 +91,7 @@ export default function DealOfTheDay() {
                   {/* Left: Image */}
                   <div className="w-1/3">
                     <img
-                      src={product.image}
+                      src={product.image?.url || "/placeholder-product.jpg"}
                       alt={product.name}
                       className="rounded-lg object-cover w-full h-32 md:h-40"
                     />
@@ -151,13 +103,25 @@ export default function DealOfTheDay() {
                       {product.name}
                     </h3>
                     <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                      {product.description}
+                      {product.description || "Premium quality product"}
                     </p>
-                    <p className="text-[#60B77E] font-bold">{product.price}</p>
-                    <p className="text-xs text-gray-500 mb-3">
-                      Qty: {product.quantity}
-                    </p>
-                    <Button className="cursor-pointer bg-[#DEF9EC] hover:bg-[#50BB88]/30  text-[#50BB88] font-bold w-full">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="text-[#60B77E] font-bold text-lg">
+                        ৳{product.price}
+                      </p>
+                      {product.originalPrice && product.originalPrice > product.price && (
+                        <p className="text-gray-500 line-through text-sm">
+                          ৳{product.originalPrice}
+                        </p>
+                      )}
+                    </div>
+                    {product.unit && (
+                      <p className="text-xs text-gray-500 mb-3">
+                        Qty: {product.unit}
+                      </p>
+                    )}
+                    <Button className="cursor-pointer bg-[#DEF9EC] hover:bg-[#50BB88]/30 text-[#50BB88] font-bold w-full">
+                      <ShoppingCart className="w-4 h-4 mr-2" />
                       Buy Now
                     </Button>
                   </div>

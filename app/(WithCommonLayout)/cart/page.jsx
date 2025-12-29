@@ -1,6 +1,7 @@
 "use client";
 
 import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,6 +12,7 @@ import {
   Plus,
   ArrowLeft,
   ShoppingCart,
+  Heart,
 } from "lucide-react";
 
 export default function CartPage() {
@@ -24,6 +26,7 @@ export default function CartPage() {
     decrementQuantity,
     clearCart,
   } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
 
   if (!isLoaded) {
     return (
@@ -146,13 +149,35 @@ export default function CartPage() {
                 </div>
               </div>
 
-              {/* Remove Button */}
-              <button
-                onClick={() => removeFromCart(item.productId)}
-                className="self-start p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-              >
-                <Trash2 className="h-5 w-5" />
-              </button>
+              {/* Action Buttons */}
+              <div className="self-start flex flex-col gap-2">
+                {/* Wishlist Button */}
+                <button
+                  onClick={() => toggleWishlist({
+                    _id: item.productId,
+                    name: item.name,
+                    price: item.price,
+                    image: item.image,
+                    slug: item.slug,
+                  })}
+                  className={`p-2 rounded-lg transition-colors cursor-pointer ${
+                    isInWishlist(item.productId)
+                      ? "text-red-500 bg-red-50"
+                      : "text-gray-400 hover:text-red-500 hover:bg-red-50"
+                  }`}
+                  title={isInWishlist(item.productId) ? "Remove from wishlist" : "Add to wishlist"}
+                >
+                  <Heart className={`h-5 w-5 ${isInWishlist(item.productId) ? "fill-current" : ""}`} />
+                </button>
+
+                {/* Remove Button */}
+                <button
+                  onClick={() => removeFromCart(item.productId)}
+                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                >
+                  <Trash2 className="h-5 w-5" />
+                </button>
+              </div>
             </div>
           ))}
 
