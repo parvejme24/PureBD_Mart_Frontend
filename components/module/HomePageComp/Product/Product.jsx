@@ -2,7 +2,6 @@
 
 import ProductCard from "@/components/shared/ProductCard/ProductCard";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useProducts } from "@/hooks/useProduct";
 import ProductSkeleton from "./ProductSkeleton";
@@ -23,21 +22,19 @@ export default function Product() {
     <div className="container mx-auto max-w-7xl px-4 py-14">
       <div className="mb-5 flex justify-between items-center w-full">
         <div>
-          <h2 className="text-xl md:text-2xl font-bold text-gray-800">
+          <h2 className="md:text-2xl font-bold text-gray-800">
             Our Special Products
           </h2>
-          <p className="text-xs md:text-base text-gray-500">
+          <p className="hidden md:block md:text-base text-gray-500">
             Do not miss the current offers until the end of March.
           </p>
         </div>
         <div>
-          <Link href="/shop">
-            <Button
-              variant={"outline"}
-              className={"md:w-[115px] rounded-full cursor-pointer"}
-            >
-              View All <ArrowRight />
-            </Button>
+          <Link
+            href="/shop"
+            className="text-[#3BB77E] hover:text-[#2a9c66] text-sm font-medium transition-colors"
+          >
+            View All →
           </Link>
         </div>
       </div>

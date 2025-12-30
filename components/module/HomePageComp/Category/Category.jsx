@@ -43,7 +43,7 @@ export default function Category() {
       <div className="container mx-auto max-w-7xl px-4 py-10">
         {/* Section Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Shop by Category</h2>
+          <h2 className="md:text-2xl font-bold text-gray-800">Shop by Category</h2>
           <Link
             href="/shop"
             className="text-[#3BB77E] hover:text-[#2a9c66] text-sm font-medium transition-colors"

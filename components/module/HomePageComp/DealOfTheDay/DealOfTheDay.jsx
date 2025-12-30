@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ShoppingCart, Plus, Minus } from "lucide-react";
+import { ShoppingCart, Plus, Minus } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useDealOfTheDay } from "@/hooks/useProduct";
@@ -70,19 +70,17 @@ export default function DealOfTheDay() {
     <div className="container mx-auto max-w-7xl px-5 py-10">
       <div className="mb-5 flex justify-between items-center w-full">
         <div>
-          <h2 className="text-xl md:text-2xl">Deal of the Day</h2>
-          <p className="text-xs md:text-base text-gray-500">
+          <h2 className="md:text-2xl font-bold">Deal of the Day</h2>
+          <p className="hidden md:block md:text-base text-gray-500">
             Dont miss this opportunity at a special discount just for this week.
           </p>
         </div>
         <div>
-          <Link href={"/shop"}>
-            <Button
-              variant={"outline"}
-              className={"md:w-[115px] rounded-full cursor-pointer"}
-            >
-              View All <ArrowRight />
-            </Button>
+          <Link
+            href="/shop"
+            className="text-[#3BB77E] hover:text-[#2a9c66] text-sm font-medium transition-colors"
+          >
+            View All →
           </Link>
         </div>
       </div>
