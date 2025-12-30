@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import Swal from "sweetalert2";
+import VEGETABLES from "@/public/vegetables.png";
+import Image from "next/image";
 
 export default function Subscribe() {
   const [email, setEmail] = useState("");
@@ -80,44 +82,59 @@ export default function Subscribe() {
 
   return (
     <div className="container px-5 md:mx-auto max-w-7xl my-10">
-      <div
-        className="rounded-xl"
-        style={{
-          backgroundImage:
-            'url("https://themepanthers.com/wp/nest/d1/wp-content/uploads/2022/02/banner-10-min.png")',
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          padding: "80px 50px",
-        }}
-      >
-        <div className="max-w-lg space-y-4 text-left">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-800">
-            Stay home & get your daily needs from our shop
-          </h2>
-          <p className="text-gray-600 text-sm md:text-base">
-            Start your daily shopping with{" "}
-            <span className="text-[#3BB77E] font-semibold">PureBD Mart</span>
-          </p>
+      <div className="relative rounded-xl overflow-hidden">
+        <div
+          className="relative z-10"
+          style={{
+            backgroundImage:
+              'url("https://themepanthers.com/wp/nest/d1/wp-content/uploads/2022/02/banner-10-min.png")',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            padding: "80px 50px",
+          }}
+        >
+          <div className="max-w-lg space-y-4 text-left">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-800">
+              Stay home & get your daily needs from our shop
+            </h2>
+            <p className="text-gray-600 text-sm md:text-base">
+              Start your daily shopping with{" "}
+              <span className="text-[#3BB77E] font-semibold">PureBD Mart</span>
+            </p>
 
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row mt-4 space-y-1">
-            <Input
-              type="email"
-              placeholder="Enter email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={submitting}
-              className="rounded-full px-5 py-5 bg-white/90 border-gray-300"
-              required
-            />
-            <Button
-              type="submit"
-              disabled={submitting}
-              className="md:-ml-[113px] cursor-pointer py-4 mt-[3px] rounded-full bg-[#3BB77E] hover:bg-[#29A56C] text-white px-6 disabled:opacity-60"
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col sm:flex-row mt-4 space-y-1"
             >
-              {submitting ? "Subscribing..." : "Subscribe"}
-            </Button>
-          </form>
+              <Input
+                type="email"
+                placeholder="Enter email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={submitting}
+                className="rounded-full px-5 py-5 bg-white/90 border-gray-300"
+                required
+              />
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="md:-ml-[113px] cursor-pointer py-4 mt-[3px] rounded-full bg-[#3BB77E] hover:bg-[#29A56C] text-white px-6 disabled:opacity-60"
+              >
+                {submitting ? "Subscribing..." : "Subscribe"}
+              </Button>
+            </form>
+          </div>
         </div>
+
+        <Image
+          src={VEGETABLES}
+          alt="Vegetables"
+          width={300}
+          height={300}
+          className="hidden lg:block absolute bottom-0 right-0 lg:right-5 z-20 object-contain"
+          style={{ maxWidth: '40%', height: 'auto' }}
+          draggable={false}
+        />
       </div>
     </div>
   );

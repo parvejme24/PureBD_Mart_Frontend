@@ -51,6 +51,7 @@ export default function Team() {
                   height={400}
                   className="object-cover w-full h-full"
                   unoptimized
+                  draggable={false}
                 />
               </div>
               <div className="p-6 text-center">

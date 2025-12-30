@@ -16,6 +16,7 @@ export default function AboutUs() {
               className="rounded-lg shadow-lg w-full h-full object-cover"
               unoptimized
               priority
+              draggable={false}
             />
           </div>
 
