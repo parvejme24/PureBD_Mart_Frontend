@@ -24,7 +24,6 @@ const BannerData = [
     offer: "Up to 50% OFF",
     heading: "Specialist in Premium Grocery Store",
     subHeading: "Fresh organic products delivered to your doorstep",
-    from: "৳100",
     ctaText: "Shop Now",
     ctaLink: "/shop",
     gradient: "from-green-600/20 via-emerald-500/10 to-teal-400/20",
@@ -39,7 +38,6 @@ const BannerData = [
     offer: "Express Delivery",
     heading: "Fresh Groceries in 30 Minutes",
     subHeading: "Lightning-fast delivery service for busy lifestyles",
-    from: "৳120",
     ctaText: "Order Now",
     ctaLink: "/shop",
     gradient: "from-blue-600/20 via-cyan-500/10 to-sky-400/20",
@@ -54,7 +52,6 @@ const BannerData = [
     offer: "Healthy Living",
     heading: "Nutrition That Nourishes",
     subHeading: "Premium quality organic food for a healthier you",
-    from: "৳150",
     ctaText: "Explore More",
     ctaLink: "/shop",
     gradient: "from-purple-600/20 via-violet-500/10 to-fuchsia-400/20",
@@ -80,7 +77,7 @@ export default function Banner() {
                   initial={{ opacity: 0, scale: 1.1 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.8, ease: "easeOut" }}
-                  className="relative w-full h-[450px] md:h-[550px] lg:h-[600px] flex items-center justify-center bg-cover bg-center group"
+                  className="relative w-full h-[400px] sm:h-[450px] md:h-[550px] lg:h-[600px] flex items-center justify-center bg-cover bg-center group"
                   style={{ backgroundImage: `url(${banner.imageUrl})` }}
                 >
                   {/* Animated Gradient Overlay */}
@@ -98,7 +95,7 @@ export default function Banner() {
                       repeat: Infinity,
                       ease: "easeInOut",
                     }}
-                    className="absolute top-10 right-10 opacity-20"
+                    className="absolute top-6 right-4 sm:top-10 sm:right-10 opacity-20"
                   >
                     <Star className="w-8 h-8 text-yellow-400" />
                   </motion.div>
@@ -114,21 +111,21 @@ export default function Banner() {
                       ease: "easeInOut",
                       delay: 1,
                     }}
-                    className="absolute bottom-20 left-10 opacity-15"
+                    className="absolute bottom-16 left-4 sm:bottom-20 sm:left-10 opacity-15"
                   >
                     <Zap className="w-10 h-10 text-blue-400" />
                   </motion.div>
 
                   {/* Main Content */}
-                  <div className="relative z-10 text-center text-white px-4 md:px-10 max-w-4xl mx-auto">
+                  <div className="relative z-10 text-center text-white px-4 sm:px-6 md:px-10 max-w-4xl mx-auto">
                     {/* Badge */}
                     <motion.div
                       initial={{ opacity: 0, y: -20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2, duration: 0.6 }}
-                      className="inline-block mb-4"
+                      className="inline-block mb-3 sm:mb-4"
                     >
-                      <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold ${banner.badgeColor} text-white shadow-lg`}>
+                      <span className={`inline-flex items-center px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-bold ${banner.badgeColor} text-white shadow-lg`}>
                         {banner.badge}
                       </span>
                     </motion.div>
@@ -138,7 +135,7 @@ export default function Banner() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.4, duration: 0.6 }}
-                      className="text-lg md:text-xl font-bold text-yellow-300 mb-2"
+                      className="text-base sm:text-lg md:text-xl font-bold text-yellow-300 mb-2"
                     >
                       {banner.offer}
                     </motion.p>
@@ -148,7 +145,7 @@ export default function Banner() {
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.6, duration: 0.8 }}
-                      className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight"
+                      className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 leading-tight"
                     >
                       {banner.heading}
                     </motion.h2>
@@ -158,7 +155,7 @@ export default function Banner() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.8, duration: 0.6 }}
-                      className="text-lg md:text-xl mb-6 text-gray-100"
+                      className="text-base sm:text-lg md:text-xl mb-4 sm:mb-6 text-gray-100"
                     >
                       {banner.subHeading}
                     </motion.p>
@@ -169,29 +166,20 @@ export default function Banner() {
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 1.4, duration: 0.6 }}
-                      className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                      className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center"
                     >
                       <Link href={banner.ctaLink}>
                         <motion.div
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <Button className="bg-[#3BB77E] hover:bg-[#2a9c66] text-white px-8 py-4 rounded-full text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center gap-2">
+                          <Button className="bg-[#3BB77E] hover:bg-[#2a9c66] text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full text-base sm:text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center gap-2 cursor-pointer">
                             <ShoppingBag className="w-5 h-5" />
                             {banner.ctaText}
                             <ArrowRight className="w-5 h-5" />
                           </Button>
                         </motion.div>
                       </Link>
-
-                      <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <span className="bg-yellow-400 hover:bg-yellow-300 text-black px-6 py-3 rounded-full text-lg font-bold shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
-                          From {banner.from}
-                        </span>
-                      </motion.div>
                     </motion.div>
                   </div>
                 </motion.div>
