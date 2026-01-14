@@ -31,16 +31,39 @@ export function useAuth() {
         redirect: false,
       });
 
+      console.log("NextAuth signIn result:", result);
+
+      // Check for NextAuth errors
       if (result?.error) {
-        toast.error(result.error);
+        console.error("NextAuth login error:", result.error);
+
+        // Handle specific NextAuth error codes
+        let errorMessage = "Login failed";
+        if (result.error === "CredentialsSignin") {
+          errorMessage = "Invalid email or password";
+        } else if (result.error === "OAuthSignin") {
+          errorMessage = "Authentication failed";
+        } else {
+          errorMessage = result.error;
+        }
+
+        toast.error(errorMessage);
         return { success: false, error: result.error };
       }
 
-      toast.success("Login successful!");
-      router.push("/");
-      router.refresh();
-      return { success: true };
+      // Check if sign-in was successful
+      if (result?.ok || !result?.error) {
+        toast.success("Login successful!");
+        router.push("/");
+        router.refresh();
+        return { success: true };
+      }
+
+      // Handle unexpected cases
+      toast.error("Login failed. Please try again.");
+      return { success: false, error: "Unknown error" };
     } catch (error) {
+      console.error("Login error:", error);
       const errorMessage = error.message || "Login failed";
       toast.error(errorMessage);
       return { success: false, error: errorMessage };

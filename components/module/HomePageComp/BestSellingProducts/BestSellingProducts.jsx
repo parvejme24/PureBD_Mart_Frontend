@@ -110,7 +110,7 @@ export default function BestSellingProducts() {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  toggleWishlist(product);
+                  toggleWishlist(product._id);
                 }}
               >
                 <Heart
@@ -137,6 +137,7 @@ export default function BestSellingProducts() {
                         }
                         alt={product.name}
                         fill
+                        sizes="(max-width: 640px) 64px, (max-width: 1024px) 80px, 96px"
                         className="object-contain"
                       />
                     </div>

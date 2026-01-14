@@ -1,120 +1,155 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import {
+  getUserWishlist,
+  addToWishlist as addToWishlistAPI,
+  removeFromWishlist as removeFromWishlistAPI,
+  clearWishlist as clearWishlistAPI,
+  isProductInWishlist,
+} from "@/lib/wishlist";
 
-const WISHLIST_KEY = "wishlist";
-
-// Get wishlist from localStorage
-const getStoredWishlist = () => {
-  if (typeof window === "undefined") return [];
-  try {
-    const wishlist = localStorage.getItem(WISHLIST_KEY);
-    return wishlist ? JSON.parse(wishlist) : [];
-  } catch {
-    return [];
-  }
+// Query keys
+export const wishlistKeys = {
+  all: ["wishlist"],
+  lists: () => [...wishlistKeys.all, "list"],
+  list: (filters) => [...wishlistKeys.lists(), filters],
 };
 
-// Save wishlist to localStorage
-const saveWishlist = (wishlist) => {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
-  // Dispatch custom event to notify other components
-  window.dispatchEvent(new Event("wishlistUpdated"));
+// Hook to get user's wishlist
+export const useGetUserWishlist = () => {
+  return useQuery({
+    queryKey: wishlistKeys.lists(),
+    queryFn: getUserWishlist,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: (failureCount, error) => {
+      // Don't retry on 401/403 errors
+      if (error?.response?.status === 401 || error?.response?.status === 403) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
 };
 
+// Hook to add product to wishlist
+export const useAddToWishlist = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: addToWishlistAPI,
+    onSuccess: (data) => {
+      // Invalidate and refetch wishlist
+      queryClient.invalidateQueries({ queryKey: wishlistKeys.all });
+      toast.success(data.message || "Product added to wishlist");
+    },
+    onError: (error) => {
+      if (error.response?.status === 400 && error.response?.data?.message?.includes("already in")) {
+        toast.info("Product is already in your wishlist");
+      } else if (error.response?.status === 401) {
+        toast.error("Please log in to add items to wishlist");
+      } else if (error.response?.status === 404) {
+        toast.error("Product not found");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to add product to wishlist");
+      }
+    },
+  });
+};
+
+// Hook to remove product from wishlist
+export const useRemoveFromWishlist = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: removeFromWishlistAPI,
+    onSuccess: (data) => {
+      // Invalidate and refetch wishlist
+      queryClient.invalidateQueries({ queryKey: wishlistKeys.all });
+      toast.success(data.message || "Product removed from wishlist");
+    },
+    onError: (error) => {
+      if (error.response?.status === 401) {
+        toast.error("Please log in to manage your wishlist");
+      } else if (error.response?.status === 404) {
+        toast.error("Product not found in wishlist");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to remove product from wishlist");
+      }
+    },
+  });
+};
+
+// Hook to clear entire wishlist
+export const useClearWishlist = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: clearWishlistAPI,
+    onSuccess: (data) => {
+      // Invalidate and refetch wishlist
+      queryClient.invalidateQueries({ queryKey: wishlistKeys.all });
+      toast.success(data.message || "Wishlist cleared");
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || "Failed to clear wishlist");
+    },
+  });
+};
+
+// Main wishlist hook that combines all functionality
 export function useWishlist() {
-  const [wishlist, setWishlist] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const { data: wishlistData, isLoading, error } = useGetUserWishlist();
+  const addMutation = useAddToWishlist();
+  const removeMutation = useRemoveFromWishlist();
+  const clearMutation = useClearWishlist();
 
-  // Load wishlist from localStorage on mount
-  useEffect(() => {
-    setWishlist(getStoredWishlist());
-    setIsLoaded(true);
-  }, []);
-
-  // Listen for wishlist updates from other components
-  useEffect(() => {
-    const handleWishlistUpdate = () => {
-      setWishlist(getStoredWishlist());
-    };
-
-    window.addEventListener("wishlistUpdated", handleWishlistUpdate);
-    window.addEventListener("storage", handleWishlistUpdate);
-
-    return () => {
-      window.removeEventListener("wishlistUpdated", handleWishlistUpdate);
-      window.removeEventListener("storage", handleWishlistUpdate);
-    };
-  }, []);
+  const wishlist = wishlistData?.wishlist || [];
+  const count = wishlistData?.count || 0;
 
   // Check if product is in wishlist
-  const isInWishlist = useCallback((productId) => {
-    return wishlist.some((item) => item.productId === productId);
-  }, [wishlist]);
+  const isInWishlist = (productId) => {
+    return wishlist.some((product) => product._id === productId);
+  };
 
   // Add to wishlist
-  const addToWishlist = useCallback((product) => {
-    const currentWishlist = getStoredWishlist();
-    const existingItem = currentWishlist.find((item) => item.productId === product._id);
-
-    if (!existingItem) {
-      const newItem = {
-        productId: product._id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-        slug: product.slug,
-        addedAt: new Date().toISOString(),
-      };
-
-      const newWishlist = [...currentWishlist, newItem];
-      saveWishlist(newWishlist);
-      setWishlist(newWishlist);
-      toast.success(`${product.name} added to wishlist`);
-    } else {
-      toast.info(`${product.name} is already in wishlist`);
-    }
-  }, []);
+  const addToWishlist = (productId) => {
+    addMutation.mutate(productId);
+  };
 
   // Remove from wishlist
-  const removeFromWishlist = useCallback((productId) => {
-    const currentWishlist = getStoredWishlist();
-    const item = currentWishlist.find((item) => item.productId === productId);
-    const newWishlist = currentWishlist.filter((item) => item.productId !== productId);
-
-    saveWishlist(newWishlist);
-    setWishlist(newWishlist);
-
-    if (item) {
-      toast.success(`${item.name} removed from wishlist`);
-    }
-  }, []);
+  const removeFromWishlist = (productId) => {
+    removeMutation.mutate(productId);
+  };
 
   // Toggle wishlist (add if not present, remove if present)
-  const toggleWishlist = useCallback((product) => {
-    if (isInWishlist(product._id)) {
-      removeFromWishlist(product._id);
+  const toggleWishlist = (productId) => {
+    if (isInWishlist(productId)) {
+      removeFromWishlist(productId);
     } else {
-      addToWishlist(product);
+      addToWishlist(productId);
     }
-  }, [isInWishlist, removeFromWishlist, addToWishlist]);
+  };
 
   // Clear entire wishlist
-  const clearWishlist = useCallback(() => {
-    saveWishlist([]);
-    setWishlist([]);
-    toast.success("Wishlist cleared");
-  }, []);
+  const clearWishlist = () => {
+    clearMutation.mutate();
+  };
 
   return {
     wishlist,
-    isLoaded,
+    count,
+    isLoading,
+    error,
     isInWishlist,
     addToWishlist,
     removeFromWishlist,
     toggleWishlist,
     clearWishlist,
+    // Loading states for individual operations
+    isAdding: addMutation.isPending,
+    isRemoving: removeMutation.isPending,
+    isClearing: clearMutation.isPending,
   };
 }

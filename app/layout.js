@@ -15,7 +15,15 @@ const geistMono = Geist_Mono({
 });
 
 export async function generateMetadata() {
-  const settings = await fetchSettingsServer();
+  let settings = null;
+
+  try {
+    settings = await fetchSettingsServer();
+  } catch (error) {
+    // Silently fail during metadata generation - this prevents SSR errors
+    console.warn("Metadata generation: Settings fetch failed, using defaults");
+  }
+
   const title =
     settings?.siteTitle || "PureBD Mart - Your Trusted Online Marketplace";
   const description =

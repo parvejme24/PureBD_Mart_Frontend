@@ -10,17 +10,38 @@ import { Heart, ShoppingCart, Trash2, ArrowLeft } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 
 export default function WishlistPageContainer() {
-  const { wishlist, removeFromWishlist, toggleWishlist, clearWishlist } =
+  const { wishlist, count, isLoading, removeFromWishlist, toggleWishlist, clearWishlist } =
     useWishlist();
   const { addToCart } = useCart();
 
   const handleAddToCart = (product) => {
-    addToCart(product);
+    addToCart({
+      _id: product._id,
+      name: product.name,
+      price: product.withDiscountPrice || product.price,
+      image: product.image,
+      slug: product.slug,
+    });
     // Remove from wishlist after adding to cart
     removeFromWishlist(product._id);
   };
 
-  if (wishlist.length === 0) {
+  if (isLoading) {
+    return (
+      <div className="container mx-auto max-w-7xl px-4 py-8">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 w-48 bg-gray-200 rounded" />
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-32 bg-gray-200 rounded" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (count === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center max-w-md mx-auto">
@@ -56,7 +77,7 @@ export default function WishlistPageContainer() {
           </Link>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">My Wishlist</h1>
-            <p className="text-gray-600">{wishlist.length} items in your wishlist</p>
+            <p className="text-gray-600">{count} items in your wishlist</p>
           </div>
         </div>
         <Button
@@ -71,9 +92,9 @@ export default function WishlistPageContainer() {
 
       {/* Wishlist Items - Responsive Row Layout */}
       <div className="space-y-4">
-        {wishlist.map((item) => (
+        {wishlist.map((product) => (
           <Card
-            key={item.productId}
+            key={product._id}
             className="group hover:shadow-lg transition-shadow duration-300"
           >
             <CardContent className="p-4">
@@ -81,8 +102,8 @@ export default function WishlistPageContainer() {
                 {/* Product Image */}
                 <div className="relative w-full sm:w-24 h-48 sm:h-24 shrink-0 overflow-hidden rounded-lg">
                   <Image
-                    src={item.image?.url || item.image || "/placeholder-product.png"}
-                    alt={item.name}
+                    src={product.image?.url || "/placeholder-product.png"}
+                    alt={product.name}
                     fill
                     className="object-contain group-hover:scale-105 transition-transform duration-300"
                   />
@@ -93,22 +114,25 @@ export default function WishlistPageContainer() {
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2 group-hover:text-[#3BB77E] transition-colors">
-                        {item.name}
+                        {product.name}
                       </h3>
                       <p className="text-sm text-gray-500 mb-2">
-                        Added {new Date(item.addedAt).toLocaleDateString()}
+                        {product.category?.name && `Category: ${product.category.name}`}
                       </p>
                       <div className="text-lg font-bold text-[#3BB77E]">
-                        ৳{item.price}
+                        ৳{product.withDiscountPrice || product.price}
+                        {product.discount > 0 && (
+                          <span className="text-sm text-gray-500 line-through ml-2">
+                            ৳{product.price}
+                          </span>
+                        )}
                       </div>
                     </div>
 
                     {/* Action Buttons - Responsive */}
                     <div className="flex flex-row sm:flex-col gap-2 sm:ml-4">
                       <Button
-                        onClick={() =>
-                          toggleWishlist({ _id: item.productId, name: item.name })
-                        }
+                        onClick={() => removeFromWishlist(product._id)}
                         size="sm"
                         className="bg-red-400 hover:bg-red-500 cursor-pointer text-white px-4 py-2"
                       >
@@ -117,14 +141,7 @@ export default function WishlistPageContainer() {
                       </Button>
 
                       <Button
-                        onClick={() =>
-                          handleAddToCart({
-                            _id: item.productId,
-                            name: item.name,
-                            price: item.price,
-                            image: item.image,
-                          })
-                        }
+                        onClick={() => handleAddToCart(product)}
                         size="sm"
                         className="bg-[#3BB77E] hover:bg-[#2a9c66] text-white cursor-pointer px-4 py-2"
                       >
@@ -132,7 +149,7 @@ export default function WishlistPageContainer() {
                         Add to Cart
                       </Button>
 
-                      <Link href={`/shop/${item.slug || item.productId}`}>
+                      <Link href={`/shop/${product.slug}`}>
                         <Button variant="outline" size="sm" className="px-4 py-2 cursor-pointer">
                           View Details
                         </Button>

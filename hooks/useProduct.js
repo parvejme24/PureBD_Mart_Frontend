@@ -15,19 +15,20 @@ import {
 
 // Query keys
 export const productKeys = {
-  all: ["products"],
+  all: (params) => ["products", params],
   single: (slug) => ["product", slug],
   byCategory: (categorySlug) => ["products", "category", categorySlug],
-  bestSelling: ["products", "analytics", "best-selling"],
-  dealOfTheDay: ["products", "analytics", "deal-of-the-day"],
+  bestSelling: (limit) => ["products", "best-selling", limit],
+  dealOfTheDay: ["products", "deal-of-the-day"],
 };
 
-// Hook to get all products
-export const useProducts = () => {
+// Hook to get all products with filtering and pagination
+export const useProducts = (params = {}) => {
   return useQuery({
-    queryKey: productKeys.all,
-    queryFn: getAllProducts,
+    queryKey: productKeys.all(params),
+    queryFn: () => getAllProducts(params),
     staleTime: 5 * 60 * 1000, // 5 minutes
+    keepPreviousData: true, // Useful for pagination
   });
 };
 
@@ -50,10 +51,10 @@ export const useProductsByCategory = (categorySlug) => {
 };
 
 // Hook to get best selling products
-export const useBestSellingProducts = () => {
+export const useBestSellingProducts = (limit = 10) => {
   return useQuery({
-    queryKey: productKeys.bestSelling,
-    queryFn: getBestSellingProducts,
+    queryKey: productKeys.bestSelling(limit),
+    queryFn: () => getBestSellingProducts(limit),
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 };

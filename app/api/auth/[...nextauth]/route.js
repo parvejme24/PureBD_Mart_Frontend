@@ -56,12 +56,18 @@ export const authOptions = {
   ],
 
   callbacks: {
-    // Handle Google sign-in - sync with backend
-    async signIn({ user, account }) {
+    // Handle sign-in for different providers
+    async signIn({ user, account, profile, email, credentials }) {
+      // For credentials provider, authorization is already handled in the provider
+      // Just return true to allow the sign-in
+      if (account?.provider === "credentials") {
+        return true;
+      }
+
+      // Handle Google OAuth
       if (account?.provider === "google") {
         try {
-          // Try to register/login with Google via backend
-          // You may need to create a /auth/google endpoint in your backend
+          // Call backend Google auth endpoint to create/find user
           const response = await axios.post(`${API_URL}/auth/google`, {
             fullName: user.name,
             email: user.email,
@@ -70,21 +76,20 @@ export const authOptions = {
           });
 
           if (response.data?.user) {
+            // Store backend user data in the user object
             user.id = response.data.user.id;
-            user.role = response.data.user.role;
+            user.role = response.data.user.role || "user";
             user.accessToken = response.data.token;
             user.image = response.data.user.image?.url || user.image;
             return true;
           }
         } catch (error) {
-          console.error(
-            "Google sign-in error:",
-            error.response?.data || error.message
-          );
-          // Still allow sign-in but without backend sync
+          console.error("Google sign-in backend error:", error.response?.data || error.message);
+          // For development, allow sign-in even if backend fails
           return true;
         }
       }
+
       return true;
     },
 
@@ -123,12 +128,29 @@ export const authOptions = {
     error: "/login",
   },
 
+  // Disable default toast notifications
+  events: {
+    async signIn(message) {
+      // Suppress default NextAuth toast messages
+    },
+    async signOut(message) {
+      // Suppress default NextAuth toast messages
+    },
+    async error(message) {
+      // Suppress default NextAuth error messages
+    },
+  },
+
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
 
   secret: process.env.NEXTAUTH_SECRET,
+
+  // Add base URL configuration
+  useSecureCookies: process.env.NODE_ENV === "production",
+  baseUrl: process.env.NEXTAUTH_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000"),
 };
 
 const handler = NextAuth(authOptions);

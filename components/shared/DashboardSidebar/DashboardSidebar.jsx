@@ -18,6 +18,7 @@ import {
   Menu,
   X,
   ShoppingCart,
+  MessageCircle,
 } from "lucide-react";
 import { ImProfile } from "react-icons/im";
 import { Button } from "@/components/ui/button";
@@ -52,6 +53,12 @@ export default function DashboardSidebar() {
       name: "Products",
       href: "/dashboard/products",
       icon: <ShoppingBasket size={18} />,
+      adminOnly: true,
+    },
+    {
+      name: "Reviews",
+      href: "/dashboard/reviews",
+      icon: <MessageCircle size={18} />,
       adminOnly: true,
     },
     {

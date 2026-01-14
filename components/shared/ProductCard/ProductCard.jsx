@@ -11,17 +11,33 @@ export default function ProductCard({ product }) {
   const { addToCart, isInCart, getItemQuantity, incrementQuantity, decrementQuantity } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
 
-  // Truncate description if longer than 44 characters
-  const truncateDescription = (desc, maxLength = 44) => {
-    if (!desc) return "";
-    return desc.length > maxLength ? desc.slice(0, maxLength) + "..." : desc;
+  // Get display text (short description preferred, fallback to truncated description)
+  const getDisplayText = (product) => {
+    if (product.shortDescription) {
+      return product.shortDescription.length > 60
+        ? product.shortDescription.slice(0, 60) + "..."
+        : product.shortDescription;
+    }
+    if (product.description) {
+      return product.description.length > 60
+        ? product.description.slice(0, 60) + "..."
+        : product.description;
+    }
+    return "";
   };
 
   // Get image URL - support both old format (product.image) and new API format (product.image.url)
   const imageUrl = product.image?.url || product.image || "/placeholder-product.png";
-  
+
   // Get stock status
   const inStock = product.stock > 0;
+
+  // Price calculations
+  const originalPrice = Number(product.price) || 0;
+  const discountAmount = Number(product.discount) || 0;
+  const discountedPrice = product.withDiscountPrice || (originalPrice - discountAmount);
+  const hasDiscount = discountAmount > 0 && discountedPrice > 0;
+  const discountPercentage = hasDiscount ? Math.round((discountAmount / originalPrice) * 100) : 0;
   const productInCart = isInCart(product._id);
   const quantity = productInCart ? getItemQuantity(product._id) : 0;
 
@@ -60,7 +76,7 @@ export default function ProductCard({ product }) {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            toggleWishlist(product);
+            toggleWishlist(product._id);
           }}
         >
           <Heart
@@ -77,6 +93,7 @@ export default function ProductCard({ product }) {
               src={imageUrl}
               alt={product.name}
               fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
               className="object-contain rounded-lg group-hover:scale-105 transition-transform duration-300"
             />
           </div>
@@ -96,22 +113,38 @@ export default function ProductCard({ product }) {
           <h3 className="font-semibold text-gray-800 group-hover:text-[#3BB77E] transition-colors line-clamp-1">
             {product.name}
           </h3>
-          
-          {/* Description */}
+
+          {/* Display Text (short description or truncated description) */}
           <p className="text-sm text-gray-600 line-clamp-2 min-h-[40px]">
-            {truncateDescription(product.description)}
+            {getDisplayText(product)}
           </p>
-          
-          {/* Category */}
-          {product.category?.name && (
-            <p className="text-xs text-gray-400 mt-1">
-              {product.category.name}
-            </p>
-          )}
+
+          {/* Product Info */}
+          <div className="flex justify-between items-center text-xs text-gray-500 mt-1">
+            <span>{product.category?.name}</span>
+            {product.sold > 0 && (
+              <span>{product.sold} sold</span>
+            )}
+          </div>
 
           {/* Price and Buttons */}
           <div className="flex justify-between items-center mt-3">
-            <p className="font-bold text-[#3BB77E] text-lg">৳{product.price}</p>
+            <div className="flex flex-col">
+              {hasDiscount ? (
+                <div className="flex items-center gap-2">
+                  <p className="font-bold text-[#3BB77E] text-lg">৳{discountedPrice}</p>
+                  <p className="text-sm text-gray-500 line-through">৳{originalPrice}</p>
+                  <span className="text-xs bg-red-100 text-red-600 px-1 py-0.5 rounded">
+                    -{discountPercentage}%
+                  </span>
+                </div>
+              ) : (
+                <p className="font-bold text-[#3BB77E] text-lg">৳{originalPrice}</p>
+              )}
+              {product.weight > 0 && product.weightUnit && (
+                <p className="text-xs text-gray-500">{product.weight} {product.weightUnit}</p>
+              )}
+            </div>
 
             <div className="flex items-center gap-1">
               {!inStock ? (

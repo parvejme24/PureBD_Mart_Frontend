@@ -153,13 +153,7 @@ export default function CartPage() {
               <div className="self-start flex flex-col gap-2">
                 {/* Wishlist Button */}
                 <button
-                  onClick={() => toggleWishlist({
-                    _id: item.productId,
-                    name: item.name,
-                    price: item.price,
-                    image: item.image,
-                    slug: item.slug,
-                  })}
+                  onClick={() => toggleWishlist(item.productId)}
                   className={`p-2 rounded-lg transition-colors cursor-pointer ${
                     isInWishlist(item.productId)
                       ? "text-red-500 bg-red-50"

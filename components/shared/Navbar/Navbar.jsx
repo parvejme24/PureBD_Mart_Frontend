@@ -63,7 +63,7 @@ export default function Navbar() {
     incrementQuantity,
     decrementQuantity,
   } = useCart();
-  const { wishlist } = useWishlist();
+  const { count: wishlistCount } = useWishlist();
   // const { data: settings } = useSettings(); // Removed for static generation
 
   const navItems = [
@@ -94,9 +94,10 @@ export default function Navbar() {
             <Image
               src={LOGO}
               width={100}
-              height={80}
+              height={40}
               alt="Pure BD Mart"
-              className="h-10 w-auto"
+              className="h-10"
+              loading="eager"
             />
           </Link>
         </motion.div>
@@ -130,12 +131,12 @@ export default function Navbar() {
         {/* Right section */}
         <div className="flex items-center space-x-4 md:space-x-4">
           {/* Wishlist Icon */}
-          {wishlist.length > 0 && (
+          {wishlistCount > 0 && (
             <Link href="/wishlist">
               <button className="relative focus:outline-none cursor-pointer">
                 <MdFavoriteBorder className="w-6 h-6 text-gray-700 hover:text-red-500 transition duration-300" />
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  {wishlist.length > 99 ? "99+" : wishlist.length}
+                  {wishlistCount > 99 ? "99+" : wishlistCount}
                 </span>
               </button>
             </Link>
@@ -283,7 +284,7 @@ export default function Navbar() {
           </div>
 
           {/* Wishlist Icon - Mobile */}
-          {wishlist.length > 0 && (
+          {wishlistCount > 0 && (
             <motion.div
               className="md:hidden relative"
               whileHover={{ scale: 1.1 }}
@@ -293,7 +294,7 @@ export default function Navbar() {
               <Link href="/wishlist" className="flex items-center justify-center">
                 <MdFavoriteBorder className="w-6 h-6 text-gray-700 hover:text-red-500 transition duration-300" />
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  {wishlist.length > 99 ? "99+" : wishlist.length}
+                  {wishlistCount > 99 ? "99+" : wishlistCount}
                 </span>
               </Link>
             </motion.div>
