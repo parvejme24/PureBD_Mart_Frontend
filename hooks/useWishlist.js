@@ -39,12 +39,41 @@ export const useAddToWishlist = () => {
 
   return useMutation({
     mutationFn: addToWishlistAPI,
-    onSuccess: (data) => {
-      // Invalidate and refetch wishlist
-      queryClient.invalidateQueries({ queryKey: wishlistKeys.all });
-      toast.success(data.message || "Product added to wishlist");
+    // Optimistic update - immediately update UI
+    onMutate: async (productId) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: wishlistKeys.all });
+
+      // Snapshot the previous value
+      const previousWishlist = queryClient.getQueryData(wishlistKeys.lists());
+
+      // Optimistically update to the new value
+      queryClient.setQueryData(wishlistKeys.lists(), (old) => {
+        if (!old) return old;
+        // If product is already in wishlist, don't add it again
+        const isAlreadyInWishlist = old.wishlist.some(product => product._id === productId);
+        if (isAlreadyInWishlist) return old;
+
+        return {
+          ...old,
+          wishlist: [...old.wishlist],
+          count: old.count + 1,
+        };
+      });
+
+      // Return a context object with the snapshotted value
+      return { previousWishlist };
     },
-    onError: (error) => {
+    onSuccess: (data) => {
+      toast.success(data.message || "Product added to wishlist");
+      // The optimistic update should be replaced by server data on next fetch
+    },
+    onError: (error, productId, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousWishlist) {
+        queryClient.setQueryData(wishlistKeys.lists(), context.previousWishlist);
+      }
+
       if (error.response?.status === 400 && error.response?.data?.message?.includes("already in")) {
         toast.info("Product is already in your wishlist");
       } else if (error.response?.status === 401) {
@@ -55,6 +84,10 @@ export const useAddToWishlist = () => {
         toast.error(error.response?.data?.message || "Failed to add product to wishlist");
       }
     },
+    onSettled: () => {
+      // Always refetch after error or success to ensure server state is correct
+      queryClient.invalidateQueries({ queryKey: wishlistKeys.all });
+    },
   });
 };
 
@@ -64,12 +97,37 @@ export const useRemoveFromWishlist = () => {
 
   return useMutation({
     mutationFn: removeFromWishlistAPI,
-    onSuccess: (data) => {
-      // Invalidate and refetch wishlist
-      queryClient.invalidateQueries({ queryKey: wishlistKeys.all });
-      toast.success(data.message || "Product removed from wishlist");
+    // Optimistic update - immediately update UI
+    onMutate: async (productId) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: wishlistKeys.all });
+
+      // Snapshot the previous value
+      const previousWishlist = queryClient.getQueryData(wishlistKeys.lists());
+
+      // Optimistically update to the new value
+      queryClient.setQueryData(wishlistKeys.lists(), (old) => {
+        if (!old) return old;
+
+        return {
+          wishlist: old.wishlist.filter(product => product._id !== productId),
+          count: Math.max(0, old.count - 1),
+        };
+      });
+
+      // Return a context object with the snapshotted value
+      return { previousWishlist };
     },
-    onError: (error) => {
+    onSuccess: (data) => {
+      toast.success(data.message || "Product removed from wishlist");
+      // The optimistic update should be replaced by server data on next fetch
+    },
+    onError: (error, productId, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousWishlist) {
+        queryClient.setQueryData(wishlistKeys.lists(), context.previousWishlist);
+      }
+
       if (error.response?.status === 401) {
         toast.error("Please log in to manage your wishlist");
       } else if (error.response?.status === 404) {
@@ -77,6 +135,10 @@ export const useRemoveFromWishlist = () => {
       } else {
         toast.error(error.response?.data?.message || "Failed to remove product from wishlist");
       }
+    },
+    onSettled: () => {
+      // Always refetch after error or success to ensure server state is correct
+      queryClient.invalidateQueries({ queryKey: wishlistKeys.all });
     },
   });
 };
@@ -87,13 +149,38 @@ export const useClearWishlist = () => {
 
   return useMutation({
     mutationFn: clearWishlistAPI,
-    onSuccess: (data) => {
-      // Invalidate and refetch wishlist
-      queryClient.invalidateQueries({ queryKey: wishlistKeys.all });
-      toast.success(data.message || "Wishlist cleared");
+    // Optimistic update - immediately update UI
+    onMutate: async () => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: wishlistKeys.all });
+
+      // Snapshot the previous value
+      const previousWishlist = queryClient.getQueryData(wishlistKeys.lists());
+
+      // Optimistically clear the wishlist
+      queryClient.setQueryData(wishlistKeys.lists(), {
+        wishlist: [],
+        count: 0,
+      });
+
+      // Return a context object with the snapshotted value
+      return { previousWishlist };
     },
-    onError: (error) => {
+    onSuccess: (data) => {
+      toast.success(data.message || "Wishlist cleared");
+      // The optimistic update should be replaced by server data on next fetch
+    },
+    onError: (error, _, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousWishlist) {
+        queryClient.setQueryData(wishlistKeys.lists(), context.previousWishlist);
+      }
+
       toast.error(error.response?.data?.message || "Failed to clear wishlist");
+    },
+    onSettled: () => {
+      // Always refetch after error or success to ensure server state is correct
+      queryClient.invalidateQueries({ queryKey: wishlistKeys.all });
     },
   });
 };
