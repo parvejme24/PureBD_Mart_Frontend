@@ -1,233 +1,244 @@
-# Pure BD Mart - Frontend
+<div align="center">
 
-A modern e-commerce frontend built with Next.js 16.1.1, featuring a comprehensive shopping experience with cart management, user authentication, and admin dashboard.
+# 🛒 Pure BD Mart — Frontend
 
-## 🚀 Features
+**A production-ready e-commerce platform built with Next.js 16, TypeScript, and modern web technologies.**
 
-- **Modern UI**: Built with Tailwind CSS and Shadcn/UI components
-- **Authentication**: NextAuth.js with Google OAuth and credentials login
-- **Shopping Cart**: Local storage-based cart with real-time updates
-- **Wishlist**: User wishlist functionality with local storage
-- **Admin Dashboard**: Complete admin panel for product and order management
-- **Advanced Filtering**: Deal of the Day and Best Selling product filters
-- **Responsive Design**: Mobile-first responsive design
-- **SEO Optimized**: Next.js App Router with proper meta tags
-- **Type Safety**: Full TypeScript support
-- **Security**: Latest Next.js version with all security patches
+[![Next.js](https://img.shields.io/badge/Next.js-16.1.1-black?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
+[![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-000?style=flat-square&logo=vercel)](https://vercel.com/)
+[![License](https://img.shields.io/badge/License-Private-red?style=flat-square)](#)
+
+[Live Demo](#) · [Backend Repo](#) · [Report Bug](#) · [Request Feature](#)
+
+</div>
+
+---
+
+## 📌 Overview
+
+Pure BD Mart is a full-featured e-commerce web application built for the Bangladeshi market with support for international users. It includes a customer-facing storefront, a fully functional admin dashboard, and seamless integration with a REST API backend — all optimized for performance and SEO with Next.js App Router.
+
+---
+
+## ✨ Features
+
+| Area                     | Details                                                 |
+| ------------------------ | ------------------------------------------------------- |
+| 🔐 **Authentication**    | NextAuth.js with Google OAuth & credentials-based login |
+| 🛒 **Shopping Cart**     | Real-time cart with localStorage persistence            |
+| ❤️ **Wishlist**          | Save and manage favorite products                       |
+| 🧑‍💼 **Admin Dashboard**   | Full product and order management panel                 |
+| 🔍 **Advanced Filters**  | Deal of the Day, Best Selling, and category filters     |
+| 📱 **Responsive Design** | Mobile-first layout across all screen sizes             |
+| ⚡ **Performance**       | Next.js App Router with SSR, SSG, and ISR support       |
+| 🔒 **Security**          | Zero vulnerabilities — all dependencies up to date      |
+| 🌐 **SEO Optimized**     | Proper metadata, Open Graph, and structured routes      |
+| 🧩 **Type Safety**       | Strict TypeScript throughout the entire codebase        |
+
+---
 
 ## 🛠️ Tech Stack
 
-- **Framework**: Next.js 16.1.1 (App Router)
-- **Styling**: Tailwind CSS v4
-- **UI Components**: Shadcn/UI + Radix UI
-- **State Management**: React Query + Context API
-- **Authentication**: NextAuth.js v4
-- **Icons**: Lucide React + React Icons
-- **Animations**: Framer Motion
-- **Forms**: React Hook Form + Zod validation
-- **Deployment**: Vercel (optimized)
+### Frontend
 
-## 📋 Prerequisites
+- **Framework:** [Next.js 16.1.1](https://nextjs.org/) (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS v4
+- **UI Components:** Shadcn/UI + Radix UI
+- **Icons:** Lucide React + React Icons
+- **Animations:** Framer Motion
 
-- Node.js 18+
-- npm or yarn or pnpm
+### State & Data
 
-## 🚀 Getting Started
+- **State Management:** React Context API
+- **Server State:** TanStack React Query
+- **Forms:** React Hook Form + Zod validation
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd pure-bd-mart-frontend
-   ```
+### Auth & Deployment
 
-2. **Environment Variables**
-   Create a `.env.local` file in the root directory and add the following:
-   ```env
-   # NextAuth Configuration
-   NEXTAUTH_URL=http://localhost:3000
-   NEXTAUTH_SECRET=your-nextauth-secret-here
+- **Authentication:** NextAuth.js v4
+- **Deployment:** Vercel
 
-   # API Configuration
-   NEXT_PUBLIC_API_URL=https://pure-bd-mart-backend.vercel.app/api
-
-   # Optional: For local development
-   # NEXT_PUBLIC_API_URL=http://localhost:8000/api
-   ```
-
-3. **Install dependencies**
-   ```bash
-   npm install
-   # or
-   yarn install
-   # or
-   pnpm install
-   ```
-
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env.local
-   ```
-
-   Edit `.env.local` and fill in the required values.
-
-4. **Run the development server**
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   # or
-   pnpm dev
-   ```
-
-5. **Open [http://localhost:3000](http://localhost:3000)** in your browser
-
-## 🔧 Environment Variables
-
-Copy `.env.example` to `.env.local` and configure the following variables:
-
-### Required
-- `NEXT_PUBLIC_API_URL`: Backend API URL
-- `NEXTAUTH_SECRET`: Random secret for NextAuth.js
-- `NEXTAUTH_URL`: Your app URL (for production)
-
-### Optional
-- `GOOGLE_CLIENT_ID`: Google OAuth client ID
-- `GOOGLE_CLIENT_SECRET`: Google OAuth client secret
-- `SMTP_HOST`: Email SMTP host
-- `SMTP_PORT`: Email SMTP port
-- `SMTP_USER`: Email SMTP username
-- `SMTP_PASS`: Email SMTP password
-- `EMAIL_FROM`: From email address
-- `MAILCHIMP_API_KEY`: Mailchimp API key
-- `MAILCHIMP_AUDIENCE_ID`: Mailchimp audience ID
-
-## 📜 Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint errors
-- `npm run type-check` - Run TypeScript type checking
-
-## 🚀 Deployment to Vercel
-
-### ✅ Current Status: Ready for Deployment
-- ✅ **Next.js 16.1.1**: Latest secure version installed
-- ✅ **Zero Security Vulnerabilities**: All dependencies updated and secure
-- ✅ **Build Successful**: All 30 pages generated successfully
-- ✅ **Vercel Configuration**: Optimized for Vercel deployment
-
-### Option 1: GitHub Integration (Recommended)
-1. **Push to GitHub**
-   ```bash
-   git add .
-   git commit -m "Update to Next.js 16.1.1 and fix security issues"
-   git push origin main
-   ```
-
-2. **Connect to Vercel**
-   - Go to [vercel.com](https://vercel.com) and sign in
-   - Click "New Project" → Import your GitHub repository
-   - Vercel will auto-detect Next.js settings
-
-3. **Configure Environment Variables**
-   In your Vercel project settings → Environment Variables, add:
-
-   **Required:**
-   ```
-   NEXT_PUBLIC_API_URL=https://your-backend-api.vercel.app/api
-   NEXTAUTH_SECRET=your-generated-secret-here
-   NEXTAUTH_URL=https://your-vercel-app.vercel.app
-   ```
-
-   **Optional (for features):**
-   ```
-   GOOGLE_CLIENT_ID=your-google-client-id
-   GOOGLE_CLIENT_SECRET=your-google-client-secret
-   SMTP_HOST=smtp.gmail.com
-   SMTP_PORT=587
-   SMTP_USER=your-email@gmail.com
-   SMTP_PASS=your-app-password
-   EMAIL_FROM=your-email@gmail.com
-   MAILCHIMP_API_KEY=your-mailchimp-api-key
-   MAILCHIMP_AUDIENCE_ID=your-mailchimp-audience-id
-   ```
-
-4. **Deploy**
-   - Vercel will automatically deploy on every push
-   - Your app will be live at `https://your-project-name.vercel.app`
-
-### 🛠️ Troubleshooting Vercel Deployment
-
-If you encounter build errors:
-
-1. **Schema Validation Error** (`nodeVersion` property not allowed):
-   - ✅ **Fixed**: Updated `vercel.json` to use only valid properties
-   - The config now only includes `framework` and `functions` settings
-
-2. **Middleware Issues** (deprecated middleware file):
-   - ✅ **Fixed**: Moved `middleware.js` from root to `app/middleware.js`
-   - Updated to Next.js 13+ app router format
-
-3. **Build Timeouts** or **Settings API Errors**:
-   - ✅ **Fixed**: Enhanced `useSettings` hook with better SSR handling
-   - Added retry logic and client-side only execution
-   - Settings API calls are now properly isolated to client-side
-
-4. **Environment Variables Missing**:
-   - Ensure all required variables are set in Vercel dashboard
-   - Check that `NEXT_PUBLIC_API_URL` points to your backend API
-   - Verify `NEXTAUTH_SECRET` is a secure random string
-
-5. **Build Logs Loading Forever**:
-   - Clear Vercel cache: Go to your project → Settings → Advanced → Clear Build Cache
-   - Re-deploy the project
-   - Check that all dependencies are properly installed
-
-### Option 2: Vercel CLI
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Login to Vercel
-vercel login
-
-# Deploy
-vercel
-
-# For production deployment
-vercel --prod
-```
+---
 
 ## 📁 Project Structure
 
 ```
-├── app/                    # Next.js App Router
-│   ├── api/               # API routes
-│   ├── dashboard/         # Admin dashboard pages
-│   └── (WithCommonLayout)/ # Public pages with common layout
-├── components/            # Reusable components
-│   ├── module/           # Page-specific components
-│   └── shared/           # Shared components
-├── hooks/                # Custom React hooks
-├── lib/                  # Utility functions and API calls
-├── providers/            # Context providers
-└── public/               # Static assets
+pure-bd-mart-frontend/
+├── app/
+│   ├── api/                    # Next.js API routes
+│   ├── dashboard/              # Admin dashboard pages
+│   └── (WithCommonLayout)/     # Public pages with shared layout
+├── components/
+│   ├── module/                 # Page-specific feature components
+│   └── shared/                 # Reusable UI components
+├── hooks/                      # Custom React hooks
+├── lib/                        # Utilities, API clients, helpers
+├── providers/                  # Global context providers
+└── public/                     # Static assets
 ```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js** v18 or higher
+- **npm**, **yarn**, or **pnpm**
+
+### Local Development
+
+**1. Clone the repository**
+
+```bash
+git clone <repository-url>
+cd pure-bd-mart-frontend
+```
+
+**2. Install dependencies**
+
+```bash
+npm install
+# or
+yarn install
+```
+
+**3. Configure environment variables**
+
+```bash
+cp .env.example .env.local
+```
+
+Then edit `.env.local` with your values (see [Environment Variables](#-environment-variables) below).
+
+**4. Start the development server**
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## 🔑 Environment Variables
+
+### Required
+
+| Variable              | Description                                     |
+| --------------------- | ----------------------------------------------- |
+| `NEXT_PUBLIC_API_URL` | Backend REST API base URL                       |
+| `NEXTAUTH_SECRET`     | Secure random string for NextAuth.js            |
+| `NEXTAUTH_URL`        | Application URL (e.g., `http://localhost:3000`) |
+
+### Optional
+
+| Variable                | Description                  |
+| ----------------------- | ---------------------------- |
+| `GOOGLE_CLIENT_ID`      | Google OAuth client ID       |
+| `GOOGLE_CLIENT_SECRET`  | Google OAuth client secret   |
+| `SMTP_HOST`             | Email SMTP server host       |
+| `SMTP_PORT`             | Email SMTP server port       |
+| `SMTP_USER`             | SMTP username                |
+| `SMTP_PASS`             | SMTP password / app password |
+| `EMAIL_FROM`            | Sender email address         |
+| `MAILCHIMP_API_KEY`     | Mailchimp API key            |
+| `MAILCHIMP_AUDIENCE_ID` | Mailchimp audience/list ID   |
+
+---
+
+## 📜 Available Scripts
+
+```bash
+npm run dev          # Start the development server
+npm run build        # Create a production build
+npm run start        # Run the production build locally
+npm run lint         # Run ESLint checks
+npm run lint:fix     # Auto-fix ESLint errors
+npm run type-check   # Run TypeScript type checking
+```
+
+---
+
+## ☁️ Deployment
+
+This project is optimized for deployment on **Vercel**.
+
+### Option 1 — GitHub Integration (Recommended)
+
+1. Push your code to GitHub.
+2. Go to [vercel.com](https://vercel.com) → **New Project** → Import your repository.
+3. Vercel auto-detects the Next.js configuration.
+4. Add the required environment variables in **Project Settings → Environment Variables**.
+5. Deploy — Vercel will auto-deploy on every push to `main`.
+
+### Option 2 — Vercel CLI
+
+```bash
+npm i -g vercel
+vercel login
+vercel --prod
+```
+
+---
+
+## 🐛 Troubleshooting
+
+<details>
+<summary><b>Schema Validation Error on Vercel</b></summary>
+
+If you see a `nodeVersion` property error, ensure your `vercel.json` only includes valid properties (`framework`, `functions`). This has been pre-fixed in the current config.
+
+</details>
+
+<details>
+<summary><b>Middleware Issues</b></summary>
+
+The middleware file has been moved from the root to `app/middleware.js` to comply with Next.js 13+ App Router conventions.
+
+</details>
+
+<details>
+<summary><b>Build Timeouts / Settings API Errors</b></summary>
+
+The `useSettings` hook includes retry logic and is isolated to client-side execution only, preventing SSR-related failures.
+
+</details>
+
+<details>
+<summary><b>Build Logs Loading Forever</b></summary>
+
+Go to **Vercel Project → Settings → Advanced → Clear Build Cache**, then redeploy.
+
+</details>
+
+---
 
 ## 🤝 Contributing
 
+Contributions are welcome. To contribute:
+
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature`
-3. Commit changes: `git commit -am 'Add your feature'`
-4. Push to branch: `git push origin feature/your-feature`
-5. Submit a pull request
+2. Create a feature branch: `git checkout -b feature/your-feature-name`
+3. Commit your changes: `git commit -m "feat: add your feature"`
+4. Push to your branch: `git push origin feature/your-feature-name`
+5. Open a Pull Request
 
-## 📝 License
+Please follow [Conventional Commits](https://www.conventionalcommits.org/) for commit messages.
 
-This project is private and proprietary.
+---
 
-## 📞 Support
+## 📄 License
 
-For support, please contact the development team.
+This project is **private and proprietary**. Unauthorized use, distribution, or modification is not permitted.
+
+---
+
+<div align="center">
+
+Built with ❤️ by [Md Parvej](https://github.com/) · Powered by [Next.js](https://nextjs.org/) & [Vercel](https://vercel.com/)
+
+</div>
