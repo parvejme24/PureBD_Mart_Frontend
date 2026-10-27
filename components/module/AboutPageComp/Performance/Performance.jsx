@@ -1,95 +1,93 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { HelpCircle, Phone, MessageCircle, Sparkles, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const faqData = [
   {
     id: "item-1",
-    question: "What makes PureBD Mart different from other online grocery stores?",
+    question: "What makes PureBD Mart different from typical grocery stores?",
     answer:
-      "PureBD Mart stands out by focusing exclusively on 100% authentic and premium quality products. We work directly with farmers, importers, and trusted manufacturers to ensure purity, freshness, and great taste. Every product undergoes strict quality checks, and we specialize in natural, organic, and premium grocery items including fresh dates, pure honey, natural oils, nuts, dry fruits, and high-quality spices.",
+      "PureBD Mart focuses strictly on 100% authentic, unadulterated, and premium-quality groceries. We partner directly with certified organic growers, traditional oil mills, and beekeepers across Bangladesh to deliver food that is completely free of formalin, synthetic ripeners, and chemical adulterants.",
   },
   {
     id: "item-2",
-    question: "How do you ensure product quality and authenticity?",
+    question: "How do you ensure zero formalin and chemical purity?",
     answer:
-      "Quality is our top priority. We maintain direct relationships with reliable suppliers, farmers, and trusted manufacturers. Every product goes through rigorous quality checks before reaching our customers. We verify authenticity, check for freshness, and ensure that all items meet our high standards for purity and quality. Our commitment is to deliver nothing but the best to your doorstep.",
+      "Every harvest and batch goes through strict incoming quality screening. We test perishables for chemical residues and inspect cold-pressed oils, raw honey, and spices for natural aroma, purity, and unadulterated composition.",
   },
   {
     id: "item-3",
-    question: "What areas do you deliver to in Bangladesh?",
+    question: "How fast is delivery and what are the shipping fees?",
     answer:
-      "We are committed to making healthy, natural, and essential grocery products accessible to every household across Bangladesh. We offer fast delivery services throughout the country. Delivery charges may vary based on your location - free delivery is available in Dhaka, while outside Dhaka areas may have a small shipping charge. Check our delivery policy for specific details about your area.",
+      "Within Dhaka city, we provide 30-minute to same-day express delivery! Delivery is 100% FREE on all orders over ৳500. For orders outside Dhaka, we dispatch via express temperature-safe couriers at minimal flat shipping rates.",
   },
   {
     id: "item-4",
-    question: "What payment methods do you accept?",
+    question: "What payment methods do you support?",
     answer:
-      "Currently, we accept Cash on Delivery (COD) as our primary payment method. This allows you to pay securely when your order is delivered to your doorstep. We are working on adding more payment options in the future to make your shopping experience even more convenient.",
+      "We accept Cash on Delivery (COD), bKash, Nagad, Rocket, Visa, and Mastercard with 256-bit bank-grade encryption and instant payment verification.",
   },
   {
     id: "item-5",
-    question: "Can I return or exchange products if I'm not satisfied?",
+    question: "What if I am unhappy with the freshness of my produce?",
     answer:
-      "Yes! Customer satisfaction is our top priority. We offer easy returns and exchanges for products that don't meet your expectations. If you receive a damaged, expired, or incorrect product, please contact our customer support team within 24-48 hours of delivery. We'll arrange a return or exchange at no extra cost to you.",
+      "We have a 100% hassle-free replacement guarantee. If any produce fails to meet your freshness expectations upon delivery, simply let us know via WhatsApp or phone within 24 hours, and we will replace or refund it immediately with zero questions asked.",
   },
   {
     id: "item-6",
-    question: "How can I track my order?",
+    question: "Do you offer wholesale and bulk family packs?",
     answer:
-      "Once your order is placed, you'll receive an order confirmation email with your Order ID. You can use this Order ID to track your order status. After successful order placement, you'll be redirected to an order success page where you can copy your Order ID. Our customer support team is also available to help you track your order at any time.",
-  },
-  {
-    id: "item-7",
-    question: "Do you offer bulk or wholesale pricing?",
-    answer:
-      "Yes, we offer competitive pricing for bulk orders. Whether you're purchasing for your family, restaurant, or business, we provide affordable pricing on all our products. For large quantity orders or wholesale inquiries, please contact our customer support team, and we'll be happy to provide you with special pricing and delivery arrangements.",
-  },
-  {
-    id: "item-8",
-    question: "Are your products suitable for special dietary needs?",
-    answer:
-      "Absolutely! We offer a wide range of products suitable for various dietary needs. Our selection includes natural, organic, and chemical-free options. We have products that are suitable for vegetarian, vegan, and halal dietary requirements. Each product listing includes detailed information about ingredients and dietary specifications to help you make informed choices.",
+      "Yes! We offer bulk grocery packs and wholesale supplies for families, restaurants, and catering services. Contact our support team for bulk discount rates.",
   },
 ];
 
 export default function Performance() {
-  // Split FAQs into two columns (4 FAQs each, can be extended to 5)
-  const leftColumn = faqData.slice(0, Math.ceil(faqData.length / 2));
-  const rightColumn = faqData.slice(Math.ceil(faqData.length / 2));
+  const leftColumn = faqData.slice(0, 3);
+  const rightColumn = faqData.slice(3, 6);
 
   return (
-    <div className="container mx-auto max-w-7xl px-5 py-14">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
+    <section className="py-12 sm:py-16 bg-gradient-to-b from-white via-emerald-50/20 to-white">
+      <div className="container mx-auto max-w-7xl px-4 sm:px-6">
+        
+        {/* Header */}
+        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 border border-emerald-200/80 mb-2">
+            <HelpCircle className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Got Questions?</span>
+          </div>
+
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-950 tracking-tight mb-2.5">
             Frequently Asked Questions
           </h2>
-          <p className="text-gray-600 text-lg">
-            Everything you need to know about PureBD Mart
+
+          <p className="text-xs sm:text-base text-gray-600">
+            Everything you need to know about our organic food sourcing, delivery, and guarantees.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-          {/* Left Column */}
+        {/* 2-Column Accordion */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-10">
           <div>
-            <Accordion type="single" collapsible className="w-full">
+            <Accordion type="single" collapsible className="w-full space-y-3">
               {leftColumn.map((faq) => (
                 <AccordionItem
                   key={faq.id}
                   value={faq.id}
-                  className="border-b border-gray-200"
+                  className="border border-emerald-100 rounded-2xl bg-white px-4 shadow-xs data-[state=open]:border-emerald-400 transition-colors"
                 >
-                  <AccordionTrigger className="text-left font-semibold text-gray-800 hover:text-[#3BB77E] py-4 px-4">
+                  <AccordionTrigger className="text-left font-bold text-xs sm:text-sm text-gray-900 hover:text-emerald-600 py-4 hover:no-underline cursor-pointer">
                     {faq.question}
                   </AccordionTrigger>
-                  <AccordionContent className="px-4 pb-4 text-gray-600 leading-relaxed">
+                  <AccordionContent className="text-xs sm:text-sm text-gray-600 leading-relaxed pb-4">
                     {faq.answer}
                   </AccordionContent>
                 </AccordionItem>
@@ -97,19 +95,18 @@ export default function Performance() {
             </Accordion>
           </div>
 
-          {/* Right Column */}
           <div>
-            <Accordion type="single" collapsible className="w-full">
+            <Accordion type="single" collapsible className="w-full space-y-3">
               {rightColumn.map((faq) => (
                 <AccordionItem
                   key={faq.id}
                   value={faq.id}
-                  className="border-b border-gray-200"
+                  className="border border-emerald-100 rounded-2xl bg-white px-4 shadow-xs data-[state=open]:border-emerald-400 transition-colors"
                 >
-                  <AccordionTrigger className="text-left font-semibold text-gray-800 hover:text-[#3BB77E] py-4 px-4">
+                  <AccordionTrigger className="text-left font-bold text-xs sm:text-sm text-gray-900 hover:text-emerald-600 py-4 hover:no-underline cursor-pointer">
                     {faq.question}
                   </AccordionTrigger>
-                  <AccordionContent className="px-4 pb-4 text-gray-600 leading-relaxed">
+                  <AccordionContent className="text-xs sm:text-sm text-gray-600 leading-relaxed pb-4">
                     {faq.answer}
                   </AccordionContent>
                 </AccordionItem>
@@ -117,7 +114,34 @@ export default function Performance() {
             </Accordion>
           </div>
         </div>
+
+        {/* Still Have Questions CTA */}
+        <div className="p-6 sm:p-8 rounded-3xl bg-emerald-950 text-white flex flex-col sm:flex-row items-center justify-between gap-5 border border-emerald-800">
+          <div className="space-y-1 text-center sm:text-left">
+            <h4 className="font-extrabold text-base sm:text-lg text-white">
+              Still have questions or special requirements?
+            </h4>
+            <p className="text-xs sm:text-sm text-emerald-200">
+              Our customer care specialists in Dhaka are available 9 AM – 10 PM daily.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <a href="tel:+8801700000000">
+              <Button className="bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold px-5 py-2.5 rounded-xl text-xs sm:text-sm flex items-center gap-2">
+                <Phone className="w-4 h-4" />
+                <span>Call Hotline</span>
+              </Button>
+            </a>
+            <Link href="/contact">
+              <Button variant="outline" className="border-emerald-700 text-white hover:bg-white/10 rounded-xl text-xs sm:text-sm">
+                <span>Message Us</span>
+              </Button>
+            </Link>
+          </div>
+        </div>
+
       </div>
-    </div>
+    </section>
   );
 }
