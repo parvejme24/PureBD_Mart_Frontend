@@ -1,0 +1,213 @@
+{
+  "categories": [
+    {
+      "_id": "cat001",
+      "name": "Fresh Vegetables",
+      "slug": "fresh-vegetables",
+      "description": "Farm-fresh organic vegetables sourced directly from local farmers.",
+      "image": {
+        "url": "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400",
+        "alt": "Fresh Vegetables"
+      },
+      "productCount": 42,
+      "isActive": true,
+      "createdAt": "2024-01-10T06:00:00.000Z"
+    },
+    {
+      "_id": "cat002",
+      "name": "Fresh Fruits",
+      "slug": "fresh-fruits",
+      "description": "Seasonal and tropical fruits handpicked at peak ripeness.",
+      "image": {
+        "url": "https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?w=400",
+        "alt": "Fresh Fruits"
+      },
+      "productCount": 35,
+      "isActive": true,
+      "createdAt": "2024-01-10T06:00:00.000Z"
+    },
+    {
+      "_id": "cat003",
+      "name": "Dairy & Eggs",
+      "slug": "dairy-eggs",
+      "description": "Pure dairy products and farm-fresh eggs from free-range hens.",
+      "image": {
+        "url": "https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=400",
+        "alt": "Dairy and Eggs"
+      },
+      "productCount": 18,
+      "isActive": true,
+      "createdAt": "2024-01-11T06:00:00.000Z"
+    },
+    {
+      "_id": "cat004",
+      "name": "Meat & Poultry",
+      "slug": "meat-poultry",
+      "description": "Halal-certified fresh meat and poultry.",
+      "image": {
+        "url": "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=400",
+        "alt": "Meat and Poultry"
+      },
+      "productCount": 22,
+      "isActive": true,
+      "createdAt": "2024-01-12T06:00:00.000Z"
+    },
+    {
+      "_id": "cat005",
+      "name": "Spices & Herbs",
+      "slug": "spices-herbs",
+      "description": "Premium whole and ground spices from the finest farms.",
+      "image": {
+        "url": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=400",
+        "alt": "Spices and Herbs"
+      },
+      "productCount": 30,
+      "isActive": true,
+      "createdAt": "2024-01-13T06:00:00.000Z"
+    },
+    {
+      "_id": "cat006",
+      "name": "Rice & Grains",
+      "slug": "rice-grains",
+      "description": "Premium quality rice, lentils, and grains.",
+      "image": {
+        "url": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400",
+        "alt": "Rice and Grains"
+      },
+      "productCount": 25,
+      "isActive": true,
+      "createdAt": "2024-01-14T06:00:00.000Z"
+    },
+    {
+      "_id": "cat007",
+      "name": "Seafood",
+      "slug": "seafood",
+      "description": "Fresh seafood from the Bay of Bengal. Hilsa, Rui, Katla — caught fresh daily.",
+      "image": {
+        "url": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=400",
+        "alt": "Seafood"
+      },
+      "productCount": 28,
+      "isActive": true,
+      "createdAt": "2024-01-15T06:00:00.000Z"
+    },
+    {
+      "_id": "cat008",
+      "name": "Oils & Ghee",
+      "slug": "oils-ghee",
+      "description": "Cold-pressed mustard oil, pure ghee, and coconut oil.",
+      "image": {
+        "url": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400",
+        "alt": "Oils and Ghee"
+      },
+      "productCount": 15,
+      "isActive": true,
+      "createdAt": "2024-01-16T06:00:00.000Z"
+    },
+    {
+      "_id": "cat009",
+      "name": "Honey & Sweets",
+      "slug": "honey-natural-sweets",
+      "description": "Pure raw Sundarbans honey and natural sweets.",
+      "image": {
+        "url": "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=400",
+        "alt": "Honey"
+      },
+      "productCount": 12,
+      "isActive": true,
+      "createdAt": "2024-01-17T06:00:00.000Z"
+    },
+    {
+      "_id": "cat010",
+      "name": "Organic Snacks",
+      "slug": "organic-snacks",
+      "description": "Healthy snacks with no artificial flavors or preservatives.",
+      "image": {
+        "url": "https://images.unsplash.com/photo-1599490659213-e2b9527bd087?w=400",
+        "alt": "Organic Snacks"
+      },
+      "productCount": 20,
+      "isActive": true,
+      "createdAt": "2024-01-18T06:00:00.000Z"
+    },
+    {
+      "_id": "cat011",
+      "name": "Herbal Drinks",
+      "slug": "herbal-drinks",
+      "description": "Tulsi, ginger, moringa and other traditional herbal tea blends.",
+      "image": {
+        "url": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400",
+        "alt": "Herbal Drinks"
+      },
+      "productCount": 14,
+      "isActive": true,
+      "createdAt": "2024-01-19T06:00:00.000Z"
+    },
+    {
+      "_id": "cat012",
+      "name": "Dry Fruits & Nuts",
+      "slug": "dry-fruits-nuts",
+      "description": "Premium dry fruits, nuts and seeds — preservative-free.",
+      "image": {
+        "url": "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=400",
+        "alt": "Dry Fruits"
+      },
+      "productCount": 18,
+      "isActive": true,
+      "createdAt": "2024-01-20T06:00:00.000Z"
+    },
+    {
+      "_id": "cat013",
+      "name": "Bakery & Breads",
+      "slug": "bakery-breads",
+      "description": "Freshly baked artisan breads, toasts, and deshi cookies.",
+      "image": {
+        "url": "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400",
+        "alt": "Bakery and Breads"
+      },
+      "productCount": 16,
+      "isActive": true,
+      "createdAt": "2024-01-21T06:00:00.000Z"
+    },
+    {
+      "_id": "cat014",
+      "name": "Pickles & Chutney",
+      "slug": "pickles-chutney",
+      "description": "Homemade mango, olive, and garlic pickles in pure mustard oil.",
+      "image": {
+        "url": "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=400",
+        "alt": "Pickles and Chutney"
+      },
+      "productCount": 21,
+      "isActive": true,
+      "createdAt": "2024-01-22T06:00:00.000Z"
+    },
+    {
+      "_id": "cat015",
+      "name": "Lentils & Pulses",
+      "slug": "lentils-pulses",
+      "description": "Hand-cleaned deshi masoor, moong, and split dal.",
+      "image": {
+        "url": "https://images.unsplash.com/photo-1585994192730-9886b1e5d5d7?w=400",
+        "alt": "Lentils and Pulses"
+      },
+      "productCount": 19,
+      "isActive": true,
+      "createdAt": "2024-01-23T06:00:00.000Z"
+    },
+    {
+      "_id": "cat016",
+      "name": "Tea & Coffee",
+      "slug": "tea-coffee",
+      "description": "Sreemangal orthodox black tea and rich organic roasted coffee.",
+      "image": {
+        "url": "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=400",
+        "alt": "Tea and Coffee"
+      },
+      "productCount": 24,
+      "isActive": true,
+      "createdAt": "2024-01-24T06:00:00.000Z"
+    }
+  ],
+  "total": 16
+}
