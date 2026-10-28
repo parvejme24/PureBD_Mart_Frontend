@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import LOGO from "@/public/logo.png";
@@ -75,6 +75,8 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentProductType = searchParams?.get("productType") || "";
   const router = useRouter();
   const { user, isAuthenticated, isLoading, logout, isAdmin } = useAuth();
 
@@ -86,7 +88,6 @@ export default function Navbar() {
     incrementQuantity,
     decrementQuantity,
   } = useCart();
-
   const { count: wishlistCount } = useWishlist();
   const { data: categoryData } = useCategories();
   const categories = useMemo(() => {
@@ -127,12 +128,25 @@ export default function Navbar() {
 
   const mainNavItems = [
     { name: "Home", href: "/" },
-    { name: "Shop Mart", href: "/shop" },
-    { name: "Flash Deals", href: "/shop", badge: "HOT", badgeColor: "bg-rose-500 text-white" },
-    { name: "Best Sellers", href: "/shop", badge: "TOP", badgeColor: "bg-amber-500 text-white" },
+    { name: "Shop Mart", href: "/shop", productType: "" },
+    { name: "Flash Deals", href: "/shop?productType=deal-of-day", productType: "deal-of-day", badge: "HOT", badgeColor: "bg-rose-500 text-white" },
+    { name: "Best Sellers", href: "/shop?productType=best-selling", productType: "best-selling", badge: "TOP", badgeColor: "bg-amber-500 text-white" },
     { name: "About Us", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];
+
+  const isItemActive = (item) => {
+    if (item.href === "/") {
+      return pathname === "/";
+    }
+    if (item.productType !== undefined) {
+      if (item.productType === "") {
+        return pathname === "/shop" && !currentProductType;
+      }
+      return pathname === "/shop" && currentProductType === item.productType;
+    }
+    return pathname === item.href || (pathname?.startsWith(item.href) && item.href !== "/");
+  };
 
   return (
     <>
@@ -623,7 +637,7 @@ export default function Navbar() {
             {/* Middle: Horizontal Nav Items */}
             <nav className="flex items-center gap-7">
               {mainNavItems.map((item) => {
-                const isActive = pathname === item.href;
+                const isActive = isItemActive(item);
                 return (
                   <Link
                     key={item.name}
@@ -787,21 +801,28 @@ export default function Navbar() {
                         Quick Links
                       </p>
                       <div className="space-y-1">
-                        {mainNavItems.map((item) => (
-                          <Link
-                            key={item.name}
-                            href={item.href}
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="flex items-center justify-between p-2.5 rounded-xl text-xs font-bold text-gray-800 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
-                          >
-                            <span>{item.name}</span>
-                            {item.badge && (
-                              <span className={`text-[10px] font-black px-1.5 py-0.2 rounded-full ${item.badgeColor}`}>
-                                {item.badge}
-                              </span>
-                            )}
-                          </Link>
-                        ))}
+                        {mainNavItems.map((item) => {
+                          const isActive = isItemActive(item);
+                          return (
+                            <Link
+                              key={item.name}
+                              href={item.href}
+                              onClick={() => setMobileMenuOpen(false)}
+                              className={`flex items-center justify-between p-2.5 rounded-xl text-xs font-bold transition-colors ${
+                                isActive
+                                  ? "bg-emerald-50 text-emerald-700 font-black"
+                                  : "text-gray-800 hover:bg-emerald-50 hover:text-emerald-700"
+                              }`}
+                            >
+                              <span>{item.name}</span>
+                              {item.badge && (
+                                <span className={`text-[10px] font-black px-1.5 py-0.2 rounded-full ${item.badgeColor}`}>
+                                  {item.badge}
+                                </span>
+                              )}
+                            </Link>
+                          );
+                        })}
                         <Link
                           href="/wishlist"
                           onClick={() => setMobileMenuOpen(false)}
