@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useProducts } from "@/hooks/useProduct";
 import { useCategories } from "@/hooks/useCategory";
 import ProductSkeleton from "./ProductSkeleton";
-import { ArrowRight, Sparkles, Filter, Leaf, ShieldCheck, Flame } from "lucide-react";
+import { ArrowRight, Sparkles, Filter, Leaf, Flame } from "lucide-react";
 
 // Optional emoji mapping for popular organic categories
 const getCategoryEmoji = (name = "") => {
@@ -203,32 +203,6 @@ export default function Product() {
             </Button>
           </div>
         )}
-
-        {/* Bottom Banner & Explore CTA */}
-        <div className="mt-10 sm:mt-14 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950 text-white shadow-xl shadow-emerald-950/10 border border-emerald-800/40">
-          <div className="flex items-center gap-3 text-center sm:text-left">
-            <div className="w-10 h-10 rounded-2xl bg-white/10 text-emerald-300 flex items-center justify-center shrink-0 hidden sm:flex">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="font-extrabold text-sm sm:text-base text-white">
-                Looking for something specific?
-              </h4>
-              <p className="text-xs text-emerald-200/90">
-                Browse our complete collection of over 5,000+ certified organic groceries.
-              </p>
-            </div>
-          </div>
-
-          <Link href="/shop" className="shrink-0 w-full sm:w-auto">
-            <Button
-              className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-emerald-950 font-black px-6 py-2.5 rounded-2xl shadow-md transition-all text-xs sm:text-sm cursor-pointer"
-            >
-              <span>Explore All 5,000+ Products</span>
-              <ArrowRight className="w-4 h-4 ml-1.5" />
-            </Button>
-          </Link>
-        </div>
 
       </div>
     </section>
