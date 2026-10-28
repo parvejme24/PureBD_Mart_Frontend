@@ -1,0 +1,162 @@
+{
+  "reviews": [
+    {
+      "_id": "rev001",
+      "product": "prod001",
+      "user": {
+        "_id": "usr001",
+        "name": "Tanvir Ahmed",
+        "email": "tanvir.ahmed@example.com"
+      },
+      "reviewRating": 5,
+      "reviewText": "Extremely fresh tomatoes! Firm and full of natural sweet flavour. Made tomato bhorta and fresh salad — taste was miles ahead of regular market tomatoes.",
+      "isVerified": true,
+      "likes": 12,
+      "createdAt": "2024-02-15T10:30:00.000Z",
+      "reply": {
+        "user": {
+          "_id": "admin001",
+          "name": "PureBD Mart Support",
+          "email": "support@purebdmart.com"
+        },
+        "replyText": "Thank you so much Tanvir bhai! We source these freshly harvested from Sylhet every morning. Enjoy your fresh meals!",
+        "createdAt": "2024-02-15T14:10:00.000Z"
+      }
+    },
+    {
+      "_id": "rev002",
+      "product": "prod001",
+      "user": {
+        "_id": "usr002",
+        "name": "Nusrat Jahan",
+        "email": "nusrat.j@example.com"
+      },
+      "reviewRating": 5,
+      "reviewText": "No chemicals smell or artificial ripening. 100% natural, delivered in well-ventilated paper packaging. Very impressed with the packaging quality.",
+      "isVerified": true,
+      "likes": 8,
+      "createdAt": "2024-02-20T08:15:00.000Z"
+    },
+    {
+      "_id": "rev003",
+      "product": "prod001",
+      "user": {
+        "_id": "usr003",
+        "name": "Mahmudul Hasan",
+        "email": "mahmud.h@example.com"
+      },
+      "reviewRating": 4,
+      "reviewText": "Good quality, nice vibrant red colour. A few were slightly soft due to transit heat, but overall still great quality.",
+      "isVerified": true,
+      "likes": 3,
+      "createdAt": "2024-02-24T16:40:00.000Z"
+    },
+    {
+      "_id": "rev004",
+      "product": "prod002",
+      "user": {
+        "_id": "usr004",
+        "name": "Kazi Farhan",
+        "email": "kazi.farhan@example.com"
+      },
+      "reviewRating": 5,
+      "reviewText": "Authentic Chandpur Padma Hilsa! Fresh silver shine, firm texture, and the aroma while cooking filled the whole house. Full of natural fish oil.",
+      "isVerified": true,
+      "likes": 24,
+      "createdAt": "2024-02-18T12:00:00.000Z",
+      "reply": {
+        "user": {
+          "_id": "admin001",
+          "name": "PureBD Mart Support",
+          "email": "support@purebdmart.com"
+        },
+        "replyText": "Glad you loved our Padma Ilish! We take pride in delivering authenticated fish with frozen gel ice pack packaging.",
+        "createdAt": "2024-02-18T15:20:00.000Z"
+      }
+    },
+    {
+      "_id": "rev005",
+      "product": "prod002",
+      "user": {
+        "_id": "usr005",
+        "name": "Farhana Yasmin",
+        "email": "farhana.y@example.com"
+      },
+      "reviewRating": 5,
+      "reviewText": "Exact 1kg weight as promised. Very fresh eyes and gills were red. Perfect for Shorshe Ilish!",
+      "isVerified": true,
+      "likes": 11,
+      "createdAt": "2024-02-26T11:25:00.000Z"
+    },
+    {
+      "_id": "rev006",
+      "product": "prod003",
+      "user": {
+        "_id": "usr006",
+        "name": "Dr. Rafiqul Islam",
+        "email": "dr.rafiq@example.com"
+      },
+      "reviewRating": 5,
+      "reviewText": "As a doctor, I'm very cautious about honey adulteration. Did water test and flame test on this Sundarbans honey — passes with flying colours! Authentic floral aroma.",
+      "isVerified": true,
+      "likes": 35,
+      "createdAt": "2024-02-10T19:00:00.000Z"
+    },
+    {
+      "_id": "rev007",
+      "product": "prod003",
+      "user": {
+        "_id": "usr007",
+        "name": "Sabrina Akhter",
+        "email": "sabrina.a@example.com"
+      },
+      "reviewRating": 5,
+      "reviewText": "Raw and unprocessed honey. Has tiny pollen grains visible which proves it wasn't ultra-filtered or heated. Daily spoon with warm lemon water is heavenly.",
+      "isVerified": true,
+      "likes": 14,
+      "createdAt": "2024-02-22T09:45:00.000Z"
+    },
+    {
+      "_id": "rev008",
+      "product": "prod004",
+      "user": {
+        "_id": "usr008",
+        "name": "Anisur Rahman",
+        "email": "anisur.r@example.com"
+      },
+      "reviewRating": 5,
+      "reviewText": "Made Payesh with this Gobindobhog rice. The aromatic fragrance spread everywhere. Clean, uniform small grains with zero stones or husk.",
+      "isVerified": true,
+      "likes": 19,
+      "createdAt": "2024-02-14T14:10:00.000Z"
+    },
+    {
+      "_id": "rev009",
+      "product": "prod005",
+      "user": {
+        "_id": "usr009",
+        "name": "Shirin Akter",
+        "email": "shirin.akter@example.com"
+      },
+      "reviewRating": 5,
+      "reviewText": "Pungent, strong jhaal just like village ghani mustard oil. Real cold-pressed mustard oil is hard to find in Dhaka nowadays, PureBD Mart delivered true quality.",
+      "isVerified": true,
+      "likes": 15,
+      "createdAt": "2024-02-12T13:20:00.000Z"
+    },
+    {
+      "_id": "rev010",
+      "product": "prod011",
+      "user": {
+        "_id": "usr010",
+        "name": "Zubair Hossain",
+        "email": "zubair.h@example.com"
+      },
+      "reviewRating": 5,
+      "reviewText": "Granular (danadar) texture and golden color. Tastes like grandma's homemade desi ghee. Best accompaniment for hot rice.",
+      "isVerified": true,
+      "likes": 18,
+      "createdAt": "2024-02-25T17:05:00.000Z"
+    }
+  ]
+}
