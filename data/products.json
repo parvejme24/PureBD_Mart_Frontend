@@ -1,0 +1,590 @@
+{
+  "products": [
+    {
+      "_id": "prod001",
+      "name": "Organic Red Tomato",
+      "slug": "organic-red-tomato",
+      "shortDescription": "Juicy farm-fresh red tomatoes grown without pesticides, perfect for salads, curries and chutneys.",
+      "description": "Our organic red tomatoes are grown on certified organic farms in the hills of Sylhet. Each tomato is handpicked at peak ripeness to ensure the best flavour and nutrition.\n\nRich in lycopene, vitamins C and K, these tomatoes are great for heart health and immunity. They are 100% natural with no chemical fertilizers or pesticides used at any stage of growth.\n\nPerfect for making tomato curry, salads, soups, and chutneys. Store at room temperature away from direct sunlight for up to 5 days, or refrigerate for up to 10 days.",
+      "price": 80,
+      "discount": 15,
+      "withDiscountPrice": 65,
+      "stock": 150,
+      "sold": 320,
+      "weight": 500,
+      "weightUnit": "g",
+      "sku": "VEG-TOM-001",
+      "note": "Best consumed within 5-7 days of delivery. Keep in a cool dry place.",
+      "transportCost": 30,
+      "otherCost": 0,
+      "category": {
+        "_id": "cat001",
+        "name": "Fresh Vegetables",
+        "slug": "fresh-vegetables"
+      },
+      "image": {
+        "url": "https://images.unsplash.com/photo-1546470427-e26264be0b0d?w=500",
+        "alt": "Organic Red Tomato"
+      },
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1546470427-e26264be0b0d?w=500",
+          "alt": "Organic Red Tomato front"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1592841200221-a6898f307baa?w=500",
+          "alt": "Organic Red Tomato side"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1561136594-7f68813d8923?w=500",
+          "alt": "Organic Red Tomatoes bunch"
+        }
+      ],
+      "reviewsCount": 47,
+      "averageRating": 4.8,
+      "tags": [
+        "organic",
+        "vegetables",
+        "tomato",
+        "fresh"
+      ],
+      "createdAt": "2024-02-01T06:00:00.000Z"
+    },
+    {
+      "_id": "prod002",
+      "name": "Deshi Hilsa Fish (1kg)",
+      "slug": "deshi-hilsa-fish",
+      "shortDescription": "Premium whole Hilsa (Ilish) fish, the national fish of Bangladesh, freshly caught from the Padma river.",
+      "description": "The Hilsa (Ilish) fish is beloved as the national fish of Bangladesh and holds deep cultural significance. Our Hilsa is sourced directly from certified fishermen of the Padma and Meghna rivers.\n\nEach fish is carefully cleaned and packaged within hours of being caught to preserve its famous rich, fatty flavour. Hilsa is an excellent source of Omega-3 fatty acids, protein, and essential minerals.\n\nPerfect for the classic Shorshe Ilish (Hilsa in mustard sauce), Bhapa Ilish, or simply pan-fried. Arrives fresh and iced in our eco-friendly packaging.",
+      "price": 1200,
+      "discount": 100,
+      "withDiscountPrice": 1100,
+      "stock": 45,
+      "sold": 210,
+      "weight": 1000,
+      "weightUnit": "g",
+      "sku": "SEA-HIL-001",
+      "note": "Fresh fish — consume within 2 days or freeze immediately upon delivery.",
+      "transportCost": 50,
+      "otherCost": 20,
+      "category": {
+        "_id": "cat007",
+        "name": "Seafood",
+        "slug": "seafood"
+      },
+      "image": {
+        "url": "https://images.unsplash.com/photo-1510130387422-82bed34b37e9?w=500",
+        "alt": "Hilsa Fish"
+      },
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1510130387422-82bed34b37e9?w=500",
+          "alt": "Hilsa Fish whole"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1565329922943-4b45c16b2700?w=500",
+          "alt": "Hilsa Fish cleaned"
+        }
+      ],
+      "reviewsCount": 63,
+      "averageRating": 4.9,
+      "tags": [
+        "seafood",
+        "hilsa",
+        "ilish",
+        "fresh",
+        "fish"
+      ],
+      "createdAt": "2024-02-02T06:00:00.000Z"
+    },
+    {
+      "_id": "prod003",
+      "name": "Sundarbans Pure Raw Honey (500g)",
+      "slug": "sundarbans-pure-raw-honey",
+      "shortDescription": "100% pure unfiltered honey from the Sundarbans mangrove forest. Rich in antioxidants and enzymes.",
+      "description": "Our Sundarbans Raw Honey is collected by traditional honey hunters (moualis) deep within the Sundarbans — the world largest mangrove forest and a UNESCO World Heritage Site.\n\nThis honey is completely raw and unfiltered, meaning it retains all its natural enzymes, pollen, propolis, and antioxidants. Unlike commercial honey, it has not been heated or pasteurized, preserving its full medicinal value.\n\nKnown to boost immunity, soothe sore throats, aid digestion, and provide natural energy. The distinctive dark amber colour and bold flavour come from the nectar of diverse mangrove flowers.\n\nFarm-to-table traceability guaranteed. Each batch is lab-tested for purity.",
+      "price": 650,
+      "discount": 50,
+      "withDiscountPrice": 600,
+      "stock": 80,
+      "sold": 445,
+      "weight": 500,
+      "weightUnit": "g",
+      "sku": "HON-SUN-001",
+      "note": "May crystallize over time — this is a sign of pure, natural honey. Gently warm in water to re-liquify.",
+      "transportCost": 0,
+      "otherCost": 0,
+      "category": {
+        "_id": "cat009",
+        "name": "Honey & Natural Sweets",
+        "slug": "honey-natural-sweets"
+      },
+      "image": {
+        "url": "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=500",
+        "alt": "Sundarbans Honey"
+      },
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=500",
+          "alt": "Honey jar front"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=500",
+          "alt": "Honey drizzle"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1568921571394-4e5fd7fb7e72?w=500",
+          "alt": "Honey with honeycomb"
+        }
+      ],
+      "reviewsCount": 112,
+      "averageRating": 4.9,
+      "tags": [
+        "honey",
+        "organic",
+        "sundarbans",
+        "natural",
+        "antioxidant"
+      ],
+      "createdAt": "2024-02-03T06:00:00.000Z"
+    },
+    {
+      "_id": "prod004",
+      "name": "Gobindobhog Aromatic Rice (5kg)",
+      "slug": "gobindobhog-aromatic-rice",
+      "shortDescription": "Premium short-grain aromatic Gobindobhog rice — the jewel of Bengali cuisine used in khichuri and payesh.",
+      "description": "Gobindobhog is a rare and prized short-grain aromatic rice variety originating from West Bengal and Bangladesh. Known for its distinct milky-white appearance, soft texture, and heavenly fragrance, it is considered the finest rice for Bengali desserts and festive dishes.\n\nOur Gobindobhog rice is sourced from traditional organic farms in Rajshahi, where it has been cultivated for generations. It is stone-milled and sun-dried to preserve its natural aroma and nutrients.\n\nIdeal for Payesh (rice pudding), Bhog, Khichuri, and Polao. The rice cooks quickly and has a naturally sticky texture that makes it perfect for these traditional preparations.",
+      "price": 380,
+      "discount": 0,
+      "withDiscountPrice": 380,
+      "stock": 200,
+      "sold": 178,
+      "weight": 5000,
+      "weightUnit": "g",
+      "sku": "RIC-GOB-001",
+      "note": "Store in an airtight container in a cool dry place. Best used within 6 months.",
+      "transportCost": 60,
+      "otherCost": 0,
+      "category": {
+        "_id": "cat006",
+        "name": "Rice & Grains",
+        "slug": "rice-grains"
+      },
+      "image": {
+        "url": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500",
+        "alt": "Aromatic Rice"
+      },
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500",
+          "alt": "Gobindobhog Rice"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1536304993881-ff86e0c9b827?w=500",
+          "alt": "Rice grains close-up"
+        }
+      ],
+      "reviewsCount": 38,
+      "averageRating": 4.7,
+      "tags": [
+        "rice",
+        "gobindobhog",
+        "aromatic",
+        "premium",
+        "organic"
+      ],
+      "createdAt": "2024-02-04T06:00:00.000Z"
+    },
+    {
+      "_id": "prod005",
+      "name": "Cold-Pressed Mustard Oil (1L)",
+      "slug": "cold-pressed-mustard-oil",
+      "shortDescription": "Traditional Bangladeshi cold-pressed kachi ghani mustard oil. Strong, pungent and packed with heart-healthy fats.",
+      "description": "Mustard oil is the lifeblood of Bangladeshi and Bengali cooking. Our Kachi Ghani (cold-pressed) mustard oil is extracted at low temperatures without heat or chemicals, preserving all its natural pungency, flavour, and nutritional properties.\n\nRich in monounsaturated and polyunsaturated fats, Omega-3 and Omega-6 fatty acids, and natural antioxidants. Known in traditional medicine (Ayurveda) for its anti-inflammatory and antibacterial properties.\n\nPerfect for fish frying, vegetable stir-fries, pickles (achar), and as a massage oil. The deep golden colour and sharp smell are hallmarks of genuine cold-pressed mustard oil.",
+      "price": 320,
+      "discount": 20,
+      "withDiscountPrice": 300,
+      "stock": 120,
+      "sold": 560,
+      "weight": 1000,
+      "weightUnit": "ml",
+      "sku": "OIL-MUS-001",
+      "note": "Pure mustard oil may have a strong smell that mellows after heating. This is perfectly natural.",
+      "transportCost": 0,
+      "otherCost": 0,
+      "category": {
+        "_id": "cat008",
+        "name": "Oils & Ghee",
+        "slug": "oils-ghee"
+      },
+      "image": {
+        "url": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=500",
+        "alt": "Mustard Oil"
+      },
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=500",
+          "alt": "Mustard Oil bottle"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1616687823029-5239df5d0e9e?w=500",
+          "alt": "Mustard seeds and oil"
+        }
+      ],
+      "reviewsCount": 89,
+      "averageRating": 4.6,
+      "tags": [
+        "mustard oil",
+        "kachi ghani",
+        "cold-pressed",
+        "cooking oil",
+        "organic"
+      ],
+      "createdAt": "2024-02-05T06:00:00.000Z"
+    },
+    {
+      "_id": "prod006",
+      "name": "Fresh Country Egg (12 pcs)",
+      "slug": "fresh-country-egg",
+      "shortDescription": "Farm-fresh desi murgi (country hen) eggs. Free-range, hormone-free, and packed with rich golden yolks.",
+      "description": "Our Desi Country Eggs come from free-range hens that roam freely on organic farms in Gazipur and Narsingdi. Unlike commercial battery-cage eggs, our country eggs have deep orange-golden yolks, superior flavour, and much higher nutritional content.\n\nFree-range hens feed on natural grains, insects, and grasses, resulting in eggs rich in Omega-3 fatty acids, Vitamin D, Vitamin B12, and high-quality protein. Completely hormone-free and antibiotic-free.\n\nPerfect for any cooking — omelets, bhaji, curries, or simply boiled. The difference in taste is immediately noticeable.",
+      "price": 160,
+      "discount": 0,
+      "withDiscountPrice": 160,
+      "stock": 300,
+      "sold": 890,
+      "weight": 0,
+      "weightUnit": "",
+      "sku": "DAI-EGG-001",
+      "note": "Store at room temperature for up to 2 weeks or refrigerate for up to 4 weeks.",
+      "transportCost": 20,
+      "otherCost": 0,
+      "category": {
+        "_id": "cat003",
+        "name": "Dairy & Eggs",
+        "slug": "dairy-eggs"
+      },
+      "image": {
+        "url": "https://images.unsplash.com/photo-1498654077810-12c21d4d6dc3?w=500",
+        "alt": "Country Eggs"
+      },
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1498654077810-12c21d4d6dc3?w=500",
+          "alt": "Country eggs basket"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1506459225024-1428097a7e18?w=500",
+          "alt": "Fresh eggs closeup"
+        }
+      ],
+      "reviewsCount": 156,
+      "averageRating": 4.8,
+      "tags": [
+        "eggs",
+        "country eggs",
+        "desi",
+        "free-range",
+        "organic",
+        "dairy"
+      ],
+      "createdAt": "2024-02-06T06:00:00.000Z"
+    },
+    {
+      "_id": "prod007",
+      "name": "Organic Turmeric Powder (200g)",
+      "slug": "organic-turmeric-powder",
+      "shortDescription": "Stone-ground organic haldi (turmeric) with high curcumin content. Bright golden colour and intense flavour.",
+      "description": "Our organic turmeric is sourced from certified organic farms in Rangpur and Sylhet. It is carefully dried under the sun and then stone-ground to a fine powder, preserving maximum curcumin content — the active compound responsible for turmerics golden colour and powerful anti-inflammatory properties.\n\nCurcumin has been scientifically proven to have powerful anti-inflammatory, antioxidant, and potential anti-cancer properties. It supports joint health, brain function, and digestion.\n\nPerfect for all curries, dals, rice dishes, golden milk (haldi doodh), and face packs. The vivid golden colour and earthy aroma are markers of its superior quality.",
+      "price": 120,
+      "discount": 0,
+      "withDiscountPrice": 120,
+      "stock": 250,
+      "sold": 412,
+      "weight": 200,
+      "weightUnit": "g",
+      "sku": "SPI-TUR-001",
+      "note": "Store in an airtight container away from direct sunlight. Can be stored for up to 2 years.",
+      "transportCost": 0,
+      "otherCost": 0,
+      "category": {
+        "_id": "cat005",
+        "name": "Spices & Herbs",
+        "slug": "spices-herbs"
+      },
+      "image": {
+        "url": "https://images.unsplash.com/photo-1615485500834-bc10199bc727?w=500",
+        "alt": "Turmeric Powder"
+      },
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1615485500834-bc10199bc727?w=500",
+          "alt": "Turmeric powder in bowl"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1605217374-c930a10c4b28?w=500",
+          "alt": "Turmeric roots and powder"
+        }
+      ],
+      "reviewsCount": 74,
+      "averageRating": 4.9,
+      "tags": [
+        "turmeric",
+        "haldi",
+        "spices",
+        "organic",
+        "curcumin",
+        "anti-inflammatory"
+      ],
+      "createdAt": "2024-02-07T06:00:00.000Z"
+    },
+    {
+      "_id": "prod008",
+      "name": "Fresh Spinach (Palak) Bundle",
+      "slug": "fresh-spinach-bundle",
+      "shortDescription": "Tender young spinach leaves (palak shak) packed with iron, folate and vitamins. Freshly harvested.",
+      "description": "Our organic palak (spinach) is grown in the fertile river delta regions of Bangladesh. Harvested in the early morning and delivered to your door within 24 hours for maximum freshness and nutrition.\n\nSpinach is one of the most nutrient-dense vegetables available — packed with iron, folate, vitamins A, C, and K, and powerful antioxidants like lutein and zeaxanthin that protect eye health.\n\nBest used in palak paneer, stir-fries, smoothies, soups, or simply sauted with garlic and mustard oil in the traditional Bangladeshi way. The leaves are tender and cook down quickly.",
+      "price": 45,
+      "discount": 5,
+      "withDiscountPrice": 40,
+      "stock": 80,
+      "sold": 267,
+      "weight": 500,
+      "weightUnit": "g",
+      "sku": "VEG-SPI-001",
+      "note": "Consume within 2-3 days. Refrigerate in a damp cloth or sealed bag.",
+      "transportCost": 20,
+      "otherCost": 0,
+      "category": {
+        "_id": "cat001",
+        "name": "Fresh Vegetables",
+        "slug": "fresh-vegetables"
+      },
+      "image": {
+        "url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=500",
+        "alt": "Fresh Spinach"
+      },
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=500",
+          "alt": "Fresh spinach leaves"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=500",
+          "alt": "Spinach bundle"
+        }
+      ],
+      "reviewsCount": 31,
+      "averageRating": 4.7,
+      "tags": [
+        "spinach",
+        "palak",
+        "vegetables",
+        "organic",
+        "greens",
+        "iron-rich"
+      ],
+      "createdAt": "2024-02-08T06:00:00.000Z"
+    },
+    {
+      "_id": "prod009",
+      "name": "Alphonso Mango (Himsagar) 1kg",
+      "slug": "alphonso-mango-himsagar",
+      "shortDescription": "The king of Bangladeshi mangoes — fragrant Himsagar with saffron-coloured flesh and irresistible sweetness.",
+      "description": "The Himsagar mango is considered the finest variety produced in Bangladesh, particularly from the orchards of Rajshahi and Chapai Nawabganj. This seasonal delight is available only for a few weeks each year — making it one of the most sought-after fruits in the country.\n\nWith its fibreless, melt-in-your-mouth golden flesh, intoxicating floral aroma, and perfectly balanced sweetness with a hint of tartness, Himsagar is enjoyed fresh, in aamras, lassis, and desserts.\n\nOur mangoes are tree-ripened (no artificial ripening agents) and packed with vitamins A and C, fibre, and natural antioxidants. Seasonal availability: April to June.",
+      "price": 280,
+      "discount": 30,
+      "withDiscountPrice": 250,
+      "stock": 60,
+      "sold": 380,
+      "weight": 1000,
+      "weightUnit": "g",
+      "sku": "FRU-MAN-001",
+      "note": "Seasonal product. Store at room temperature to finish ripening, then refrigerate for up to 5 days.",
+      "transportCost": 40,
+      "otherCost": 0,
+      "category": {
+        "_id": "cat002",
+        "name": "Fresh Fruits",
+        "slug": "fresh-fruits"
+      },
+      "image": {
+        "url": "https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?w=500",
+        "alt": "Himsagar Mango"
+      },
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?w=500",
+          "alt": "Himsagar mango whole"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1605027990121-cbae9e0642df?w=500",
+          "alt": "Mango sliced"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1553279768-865429fa0078?w=500",
+          "alt": "Mangoes in basket"
+        }
+      ],
+      "reviewsCount": 98,
+      "averageRating": 5.0,
+      "tags": [
+        "mango",
+        "himsagar",
+        "fruit",
+        "seasonal",
+        "organic",
+        "rajshahi"
+      ],
+      "createdAt": "2024-02-09T06:00:00.000Z"
+    },
+    {
+      "_id": "prod010",
+      "name": "Moringa Leaf Powder (100g)",
+      "slug": "moringa-leaf-powder",
+      "shortDescription": "Superfood moringa (sojne pata) powder — one of the most nutrient-dense plants on earth.",
+      "description": "Moringa oleifera, known locally as Sojne Pata, is a nutritional powerhouse revered in traditional Bengali medicine for centuries. Our moringa powder is made from shade-dried moringa leaves grown without any chemicals on organic farms in Dinajpur.\n\nGram for gram, moringa contains more protein than eggs, more vitamin A than carrots, more iron than spinach, more calcium than milk, and more potassium than bananas. It is one of the most nutrient-dense plants known to science.\n\nAdd to smoothies, juices, yogurt, or soups. The mild earthy flavour blends well with most foods. Just one teaspoon daily provides a powerful nutritional boost.",
+      "price": 250,
+      "discount": 25,
+      "withDiscountPrice": 225,
+      "stock": 150,
+      "sold": 198,
+      "weight": 100,
+      "weightUnit": "g",
+      "sku": "HRB-MOR-001",
+      "note": "Start with half a teaspoon daily and increase gradually. Not recommended during pregnancy in large amounts.",
+      "transportCost": 0,
+      "otherCost": 0,
+      "category": {
+        "_id": "cat011",
+        "name": "Herbal Drinks",
+        "slug": "herbal-drinks"
+      },
+      "image": {
+        "url": "https://images.unsplash.com/photo-1611251126112-b09e48a01432?w=500",
+        "alt": "Moringa Powder"
+      },
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1611251126112-b09e48a01432?w=500",
+          "alt": "Moringa powder"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=500",
+          "alt": "Moringa leaves"
+        }
+      ],
+      "reviewsCount": 55,
+      "averageRating": 4.8,
+      "tags": [
+        "moringa",
+        "superfood",
+        "herbal",
+        "organic",
+        "nutrition",
+        "sojne pata"
+      ],
+      "createdAt": "2024-02-10T06:00:00.000Z"
+    },
+    {
+      "_id": "prod011",
+      "name": "Pure Ghee (Desi Ghee) 500ml",
+      "slug": "pure-desi-ghee",
+      "shortDescription": "Slow-cooked pure desi ghee from grass-fed cow milk. Golden, aromatic and full of healthy fats.",
+      "description": "Our Desi Ghee is made the traditional way — slow-cooking high-fat butter from 100% grass-fed cows over low heat until all moisture evaporates and the milk solids separate, leaving behind pure clarified butter fat.\n\nThis traditional process concentrates the fat-soluble vitamins (A, D, E, K) and conjugated linoleic acid (CLA), making it one of the healthiest cooking fats available. Ghee has a high smoke point of 250C, making it ideal for high-heat cooking.\n\nThe golden colour, rich aroma, and slightly nutty taste distinguish genuine desi ghee from commercial versions. Perfect for tadka, parathas, biriyani, halwa, and khichuri.",
+      "price": 780,
+      "discount": 80,
+      "withDiscountPrice": 700,
+      "stock": 90,
+      "sold": 312,
+      "weight": 500,
+      "weightUnit": "ml",
+      "sku": "OIL-GHE-001",
+      "note": "Store at room temperature. May solidify in cold weather — gently warm to liquify. Shelf life: 12 months.",
+      "transportCost": 0,
+      "otherCost": 0,
+      "category": {
+        "_id": "cat008",
+        "name": "Oils & Ghee",
+        "slug": "oils-ghee"
+      },
+      "image": {
+        "url": "https://images.unsplash.com/photo-1626200926746-79b0ffa22fc7?w=500",
+        "alt": "Pure Desi Ghee"
+      },
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1626200926746-79b0ffa22fc7?w=500",
+          "alt": "Ghee jar"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1631209121750-a9f656d28f32?w=500",
+          "alt": "Ghee on bread"
+        }
+      ],
+      "reviewsCount": 83,
+      "averageRating": 4.9,
+      "tags": [
+        "ghee",
+        "desi ghee",
+        "pure ghee",
+        "cooking fat",
+        "grass-fed",
+        "organic"
+      ],
+      "createdAt": "2024-02-11T06:00:00.000Z"
+    },
+    {
+      "_id": "prod012",
+      "name": "Mixed Dry Fruits Combo (250g)",
+      "slug": "mixed-dry-fruits-combo",
+      "shortDescription": "Premium mix of cashews, almonds, pistachios, raisins, and walnuts. No added salt, sugar or preservatives.",
+      "description": "Our Mixed Dry Fruits combo brings together the finest nuts and dried fruits from around the world — plump cashews from Kerala, premium Californian almonds, vibrant green pistachios from Iran, sweet sultana raisins, and crunchy walnuts.\n\nAll nuts are raw and unsalted — no roasting oils, no added salt, no sugar coating, and absolutely no preservatives. Each batch is sealed fresh in vacuum-packed bags to maintain freshness and crunchiness.\n\nAn excellent source of healthy fats, protein, fibre, vitamin E, magnesium, and antioxidants. A perfect snack, addition to oatmeal, yogurt, or baking.",
+      "price": 450,
+      "discount": 50,
+      "withDiscountPrice": 400,
+      "stock": 200,
+      "sold": 234,
+      "weight": 250,
+      "weightUnit": "g",
+      "sku": "NUT-MIX-001",
+      "note": "Store in a cool dry place. Once opened, seal and consume within 3 months.",
+      "transportCost": 0,
+      "otherCost": 0,
+      "category": {
+        "_id": "cat012",
+        "name": "Dry Fruits & Nuts",
+        "slug": "dry-fruits-nuts"
+      },
+      "image": {
+        "url": "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=500",
+        "alt": "Mixed Dry Fruits"
+      },
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=500",
+          "alt": "Mixed dry fruits bowl"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=500",
+          "alt": "Assorted nuts and raisins"
+        }
+      ],
+      "reviewsCount": 61,
+      "averageRating": 4.7,
+      "tags": [
+        "dry fruits",
+        "nuts",
+        "cashew",
+        "almond",
+        "walnut",
+        "healthy snack",
+        "premium"
+      ],
+      "createdAt": "2024-02-12T06:00:00.000Z"
+    }
+  ],
+  "total": 12,
+  "page": 1,
+  "limit": 12
+}
