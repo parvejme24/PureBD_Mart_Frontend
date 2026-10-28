@@ -1,12 +1,15 @@
 "use client";
 
+import { Suspense } from "react";
 import DashboardSidebar from "@/components/shared/DashboardSidebar/DashboardSidebar";
 import Navbar from "@/components/shared/Navbar/Navbar";
 
 export default function DashboardLayout({ children }) {
   return (
     <div className="min-h-screen bg-gray-50/30">
-      <Navbar />
+      <Suspense fallback={null}>
+        <Navbar />
+      </Suspense>
       <div className="container mx-auto max-w-7xl pr-5 lg:pr-0 lg:px-5">
         <div className="flex gap-5 py-5">
           {/* Sidebar - Hidden on mobile, shown via floating button */}
