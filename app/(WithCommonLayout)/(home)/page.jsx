@@ -5,8 +5,6 @@ import Category from "@/components/module/HomePageComp/Category/Category";
 import DealOfTheDay from "@/components/module/HomePageComp/DealOfTheDay/DealOfTheDay";
 import Product from "@/components/module/HomePageComp/Product/Product";
 import PromoBanners from "@/components/module/HomePageComp/PromoBanners/PromoBanners";
-import BestSellingProducts from "@/components/module/HomePageComp/BestSellingProducts/BestSellingProducts";
-import WhyChooseUs from "@/components/module/HomePageComp/WhyChooseUs/WhyChooseUs";
 import Testimonials from "@/components/module/HomePageComp/Testimonials/Testimonials";
 import Subscribe from "@/components/shared/Subscribe/Subscribe";
 
@@ -19,10 +17,10 @@ export default function HomePage() {
       {/* 2. Trust & Service Value Proposition Bar */}
       <FeaturesBar />
 
-      {/* 3. Category Showcase with Soft Hues */}
+      {/* 3. Category Showcase (16 Categories on Large Devices, Scroll on Mobile) */}
       <Category />
 
-      {/* 4. Deal of the Day with Live Countdown Timer */}
+      {/* 4. Highlighted Mega Deal of the Day (Bestsellers + Flash Discounts with Live Timer) */}
       <DealOfTheDay />
 
       {/* 5. Our Special Products with Category Tabs Filter */}
@@ -31,16 +29,10 @@ export default function HomePage() {
       {/* 6. Promotional Mid-Page Visual Banners */}
       <PromoBanners />
 
-      {/* 7. Best Selling Customer Favorites */}
-      <BestSellingProducts />
-
-      {/* 8. Why Choose PureBD Mart - Brand Purity Story */}
-      <WhyChooseUs />
-
-      {/* 9. Social Proof / Verified Customer Testimonials */}
+      {/* 7. Social Proof / Verified Customer Testimonials */}
       <Testimonials />
 
-      {/* 10. High-converting Newsletter & Discount Voucher Banner */}
+      {/* 8. High-converting Newsletter & Discount Voucher Banner */}
       <Subscribe />
     </div>
   );
