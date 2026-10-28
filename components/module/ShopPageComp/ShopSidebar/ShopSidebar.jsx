@@ -4,26 +4,56 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { Search, X, RotateCcw, Loader2 } from "lucide-react";
+import {
+  Search,
+  X,
+  RotateCcw,
+  Loader2,
+  SlidersHorizontal,
+  ChevronDown,
+  ChevronUp,
+  Sparkles,
+  TrendingUp,
+  Zap,
+  Tag,
+  LayoutGrid,
+} from "lucide-react";
 import React, { useState } from "react";
-import { FaMinus, FaPlus, FaFilter } from "react-icons/fa";
 import { useCategories } from "@/hooks/useCategory";
 import { useShopFilter } from "@/hooks/useShopFilter";
 
-// Section header component (declared outside render to avoid recreation)
-const SectionHeader = ({ title, isOpen, toggle }) => (
-  <div className="flex justify-between items-center mt-3">
-    <h2 className="font-semibold text-lg text-gray-800">{title}</h2>
-    <Button
-      variant="outline"
-      size="icon"
-      className="border-none hover:bg-transparent cursor-pointer"
-      onClick={toggle}
-    >
-      {isOpen ? <FaMinus /> : <FaPlus />}
-    </Button>
-  </div>
+// Collapsible section component
+const SectionHeader = ({ title, icon: Icon, isOpen, toggle, badge }) => (
+  <button
+    onClick={toggle}
+    className="w-full flex justify-between items-center py-3 text-left group cursor-pointer"
+  >
+    <div className="flex items-center gap-2.5">
+      {Icon && (
+        <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+          <Icon className="w-3.5 h-3.5 text-emerald-600" />
+        </div>
+      )}
+      <span className="font-bold text-sm text-gray-800 group-hover:text-emerald-700 transition-colors">
+        {title}
+      </span>
+      {badge && (
+        <span className="text-[10px] font-black bg-emerald-500 text-white px-1.5 py-0.5 rounded-full leading-none">
+          {badge}
+        </span>
+      )}
+    </div>
+    <div className="w-6 h-6 rounded-md flex items-center justify-center text-gray-400 group-hover:text-emerald-600 transition-colors">
+      {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+    </div>
+  </button>
 );
+
+const PRODUCT_TYPES = [
+  { value: "all", label: "All Products", icon: LayoutGrid },
+  { value: "best-selling", label: "Best Selling", icon: TrendingUp },
+  { value: "deal-of-day", label: "Deal of the Day", icon: Zap },
+];
 
 export default function ShopSidebar() {
   const [catOpen, setCatOpen] = useState(true);
@@ -31,7 +61,6 @@ export default function ShopSidebar() {
   const [productTypeOpen, setProductTypeOpen] = useState(true);
   const [showSidebar, setShowSidebar] = useState(false);
 
-  // Get filter functions from hook
   const {
     filters,
     setSearch,
@@ -42,30 +71,25 @@ export default function ShopSidebar() {
     hasActiveFilters,
   } = useShopFilter();
 
-  // Local state for controlled inputs
   const [searchInput, setSearchInput] = useState(() => filters.search || "");
   const [priceRange, setPriceRange] = useState(() => [
     filters.minPrice ?? 0,
     filters.maxPrice ?? 10000,
   ]);
 
-  // Get categories from API
   const { data: categoriesData, isLoading: categoriesLoading } = useCategories();
   const categories = categoriesData?.categories || [];
 
-  // Handle search submit
   const handleSearch = (e) => {
     e?.preventDefault();
     setSearch(searchInput);
   };
 
-  // Handle price filter apply
   const handleApplyPriceFilter = () => {
     applyPriceFilter(priceRange[0], priceRange[1]);
     setShowSidebar(false);
   };
 
-  // Handle clear all filters
   const handleClearFilters = () => {
     setSearchInput("");
     setPriceRange([0, 10000]);
@@ -73,140 +97,176 @@ export default function ShopSidebar() {
     clearFilters();
   };
 
-  return (
-    <>
-      {/* ---------------- Filter Icon for Small Devices ---------------- */}
-      <div className="sm:hidden fixed bottom-5 right-5 z-50">
-        <Button
-          className="bg-green-600 text-white rounded-full p-4 shadow-lg cursor-pointer"
-          onClick={() => setShowSidebar(true)}
-        >
-          <FaFilter className="w-5 h-5" />
-          {hasActiveFilters && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-              !
+  const activeFilterCount =
+    (filters.search ? 1 : 0) +
+    filters.categories.length +
+    (filters.productType !== "all" ? 1 : 0) +
+    (filters.minPrice > 0 || filters.maxPrice < 10000 ? 1 : 0);
+
+  const SidebarContent = () => (
+    <div className="flex flex-col gap-1">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal className="w-4 h-4 text-emerald-600" />
+          <h2 className="font-black text-gray-900 text-base tracking-tight">Filters</h2>
+          {activeFilterCount > 0 && (
+            <span className="text-[10px] font-black bg-emerald-500 text-white w-5 h-5 rounded-full flex items-center justify-center">
+              {activeFilterCount}
             </span>
           )}
-        </Button>
+        </div>
+        {hasActiveFilters && (
+          <button
+            onClick={handleClearFilters}
+            className="flex items-center gap-1 text-xs font-semibold text-red-500 hover:text-red-600 transition-colors cursor-pointer px-2 py-1 rounded-lg hover:bg-red-50"
+          >
+            <RotateCcw className="w-3 h-3" />
+            Reset
+          </button>
+        )}
       </div>
 
-      {/* ---------------- Overlay for Mobile ---------------- */}
-      <div
-        className={`fixed inset-0 bg-black/40 sm:hidden transition-opacity duration-300 z-40 ${
-          showSidebar ? "opacity-100 visible" : "opacity-0 invisible"
-        }`}
-        onClick={() => setShowSidebar(false)}
-      ></div>
-
-      {/* ---------------- Sidebar ---------------- */}
-      <div
-        className={`fixed top-0 right-0 bg-green-50/95 p-5 shadow-lg transform transition-transform duration-300
-          ${
-            showSidebar
-              ? "translate-x-0 z-50 h-full"
-              : "translate-x-full h-full"
-          }
-          sm:static sm:translate-x-0 sm:w-[350px] sm:max-w-none sm:shadow-none sm:h-full
-          lg:h-fit md:bg-green-50/40 md:border md:rounded-lg md:border-gray-200 overflow-y-auto`}
-      >
-        {/* Close button on mobile */}
-        <div className="flex justify-between items-center sm:hidden mb-3">
-          <h2 className="font-bold text-lg text-gray-800">Filters</h2>
-          <Button
-            variant="ghost"
-            className="text-gray-700 hover:text-green-600 cursor-pointer"
-            onClick={() => setShowSidebar(false)}
-          >
-            <X className="w-6 h-6" />
-          </Button>
-        </div>
-
-        {/* Clear Filters Button */}
-        {hasActiveFilters && (
-          <Button
-            variant="outline"
-            className="w-full mb-4 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 cursor-pointer"
-            onClick={handleClearFilters}
-          >
-            <RotateCcw className="w-4 h-4 mr-2" />
-            Clear All Filters
-          </Button>
-        )}
-
-        {/* ---------------- Search Option ---------------- */}
-        <div className="relative w-full mb-3">
+      {/* Search */}
+      <div className="mb-2">
+        <form onSubmit={handleSearch} className="relative group">
           <Input
             type="text"
-            placeholder="Search Product..."
+            placeholder="Search products..."
             value={searchInput}
             onChange={(e) => {
               setSearchInput(e.target.value);
-              setSearch(e.target.value); // apply search immediately without Enter
+              setSearch(e.target.value);
             }}
-            className="w-full rounded-md pl-3 pr-12 focus-visible:ring-green-500 bg-white"
+            className="w-full pr-10 pl-4 h-10 rounded-xl bg-gray-50 border-gray-200 focus-visible:ring-emerald-400 focus-visible:border-emerald-400 placeholder:text-gray-400 text-sm font-medium transition-all"
           />
-          <Button
-            variant="default"
-            className="absolute top-1/2 right-1 transform -translate-y-1/2 bg-[#3BB77E] hover:bg-[#32a56f] text-white rounded-full p-2 cursor-pointer"
-            onClick={handleSearch}
+          <button
+            type="submit"
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white transition-colors cursor-pointer"
           >
-            <Search className="h-5 w-5" />
-          </Button>
-        </div>
+            <Search className="h-3.5 w-3.5" />
+          </button>
+        </form>
 
-        {/* Active Search Tag */}
         {filters.search && (
-          <div className="flex items-center gap-2 mb-3 flex-wrap">
-            <span className="text-xs text-gray-500">Searching:</span>
-            <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 text-sm px-2 py-1 rounded-full">
+          <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+            <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-emerald-200">
+              <Search className="w-2.5 h-2.5" />
               &quot;{filters.search}&quot;
               <button
-                onClick={() => {
-                  setSearchInput("");
-                  setSearch("");
-                }}
-                className="hover:text-red-500 cursor-pointer"
+                onClick={() => { setSearchInput(""); setSearch(""); }}
+                className="hover:text-red-500 cursor-pointer ml-0.5"
               >
-                <X className="h-3 w-3" />
+                <X className="h-2.5 w-2.5" />
               </button>
             </span>
           </div>
         )}
+      </div>
 
-        {/* ---------------- Product Categories ---------------- */}
-        <div>
-          <SectionHeader
-            title="Product Categories"
-            isOpen={catOpen}
-            toggle={() => setCatOpen(!catOpen)}
-          />
-          <div
-            className={`transition-all duration-300 overflow-hidden pb-3 ${
-              catOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-            }`}
-          >
+      {/* Divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-1" />
+
+      {/* Product Type */}
+      <div>
+        <SectionHeader
+          title="Product Type"
+          icon={Tag}
+          isOpen={productTypeOpen}
+          toggle={() => setProductTypeOpen(!productTypeOpen)}
+        />
+        <div
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${
+            productTypeOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
+          <div className="pb-3 space-y-1.5">
+            {PRODUCT_TYPES.map(({ value, label, icon: Icon }) => {
+              const isSelected = filters.productType === value;
+              return (
+                <label
+                  key={value}
+                  className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all duration-200 border ${
+                    isSelected
+                      ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                      : "bg-transparent border-transparent hover:bg-gray-50 text-gray-600 hover:border-gray-100"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="productType"
+                    value={value}
+                    checked={isSelected}
+                    onChange={(e) => setProductType(e.target.value)}
+                    className="sr-only"
+                  />
+                  <div
+                    className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+                      isSelected ? "border-emerald-500 bg-emerald-500" : "border-gray-300"
+                    }`}
+                  >
+                    {isSelected && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                  </div>
+                  <Icon className={`w-3.5 h-3.5 shrink-0 ${isSelected ? "text-emerald-600" : "text-gray-400"}`} />
+                  <span className={`text-sm font-semibold ${isSelected ? "text-emerald-800" : ""}`}>
+                    {label}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-1" />
+
+      {/* Categories */}
+      <div>
+        <SectionHeader
+          title="Categories"
+          icon={LayoutGrid}
+          isOpen={catOpen}
+          toggle={() => setCatOpen(!catOpen)}
+          badge={filters.categories.length > 0 ? filters.categories.length : null}
+        />
+        <div
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${
+            catOpen ? "max-h-72 opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
+          <div className="pb-3">
             {categoriesLoading ? (
-              <div className="flex items-center justify-center py-4">
-                <Loader2 className="h-5 w-5 animate-spin text-green-600" />
+              <div className="flex items-center justify-center py-6">
+                <Loader2 className="h-5 w-5 animate-spin text-emerald-500" />
               </div>
             ) : categories.length === 0 ? (
-              <p className="text-sm text-gray-500 mt-3">No categories found</p>
+              <p className="text-sm text-gray-400 py-3 text-center">No categories found</p>
             ) : (
-              <ul className="space-y-3 mt-3 max-h-64 overflow-y-auto pr-2">
+              <ul className="space-y-0.5 max-h-56 overflow-y-auto pr-1 no-scrollbar">
                 {categories.map((category) => {
                   const isChecked = filters.categories.includes(category.slug);
                   return (
                     <li key={category._id}>
-                      <label className="flex items-center gap-2 cursor-pointer text-gray-700 hover:text-green-600 transition-colors">
+                      <label
+                        className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all duration-150 ${
+                          isChecked
+                            ? "bg-emerald-50 text-emerald-800"
+                            : "hover:bg-gray-50 text-gray-600"
+                        }`}
+                      >
                         <Checkbox
                           id={`category-${category._id}`}
                           checked={isChecked}
                           onCheckedChange={() => toggleCategory(category.slug)}
-                          className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                          className="data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500 rounded-md"
                         />
-                        <span className={isChecked ? "text-green-700 font-medium" : ""}>
+                        <span className={`text-sm font-medium leading-none ${isChecked ? "font-bold text-emerald-800" : ""}`}>
                           {category.name}
                         </span>
+                        {isChecked && (
+                          <span className="ml-auto w-1.5 h-1.5 bg-emerald-500 rounded-full shrink-0" />
+                        )}
                       </label>
                     </li>
                   );
@@ -215,151 +275,122 @@ export default function ShopSidebar() {
             )}
           </div>
         </div>
+      </div>
 
-        <hr className="mt-3 border-green-200" />
+      {/* Divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-1" />
 
-        {/* ---------------- Product Type Filter ---------------- */}
-        <div>
-          <SectionHeader
-            title="Product Type"
-            isOpen={productTypeOpen}
-            toggle={() => setProductTypeOpen(!productTypeOpen)}
-          />
-          <div
-            className={`transition-all duration-300 overflow-hidden pb-3 ${
-              productTypeOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-            }`}
-          >
-            <div className="space-y-2 mt-3">
-              <label className="flex items-center gap-2 cursor-pointer text-gray-700 hover:text-green-600 transition-colors">
-                <input
-                  type="radio"
-                  name="productType"
-                  value="all"
-                  checked={filters.productType === "all"}
-                  onChange={(e) => setProductType(e.target.value)}
-                  className="text-green-600 focus:ring-green-500"
-                />
-                <span className={filters.productType === "all" ? "text-green-700 font-medium" : ""}>
-                  All Products
-                </span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer text-gray-700 hover:text-green-600 transition-colors">
-                <input
-                  type="radio"
-                  name="productType"
-                  value="best-selling"
-                  checked={filters.productType === "best-selling"}
-                  onChange={(e) => setProductType(e.target.value)}
-                  className="text-green-600 focus:ring-green-500"
-                />
-                <span className={filters.productType === "best-selling" ? "text-green-700 font-medium" : ""}>
-                  Best Selling
-                </span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer text-gray-700 hover:text-green-600 transition-colors">
-                <input
-                  type="radio"
-                  name="productType"
-                  value="deal-of-day"
-                  checked={filters.productType === "deal-of-day"}
-                  onChange={(e) => setProductType(e.target.value)}
-                  className="text-green-600 focus:ring-green-500"
-                />
-                <span className={filters.productType === "deal-of-day" ? "text-green-700 font-medium" : ""}>
-                  Deal of the Day
-                </span>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <hr className="mt-3 border-green-200" />
-
-        {/* ---------------- Price Filter ---------------- */}
-        <div>
-          <SectionHeader
-            title="Filter By Price"
-            isOpen={priceOpen}
-            toggle={() => setPriceOpen(!priceOpen)}
-          />
-
-          <div
-            className={`transition-all duration-300 overflow-hidden ${
-              priceOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-            }`}
-          >
-            <div className="my-4">
-              <Slider
-                value={priceRange}
-                min={0}
-                max={10000}
-                step={100}
-                className="w-full"
-                onValueChange={(value) => setPriceRange(value)}
-              />
+      {/* Price Filter */}
+      <div>
+        <SectionHeader
+          title="Price Range"
+          icon={Sparkles}
+          isOpen={priceOpen}
+          toggle={() => setPriceOpen(!priceOpen)}
+        />
+        <div
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${
+            priceOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
+          <div className="pb-3 space-y-4">
+            <div className="flex justify-between items-center gap-2">
+              <div className="flex-1 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 text-center">
+                <p className="text-[10px] text-emerald-600 font-semibold uppercase tracking-wider">Min</p>
+                <p className="text-sm font-black text-emerald-800">৳{priceRange[0]}</p>
+              </div>
+              <div className="text-gray-300 font-bold">—</div>
+              <div className="flex-1 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 text-center">
+                <p className="text-[10px] text-emerald-600 font-semibold uppercase tracking-wider">Max</p>
+                <p className="text-sm font-black text-emerald-800">৳{priceRange[1]}</p>
+              </div>
             </div>
 
-            <div className="flex justify-between items-center text-sm mb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-gray-600">Min:</span>
-                <span className="font-semibold text-green-700">৳{priceRange[0]}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-600">Max:</span>
-                <span className="font-semibold text-green-700">৳{priceRange[1]}</span>
-              </div>
+            <Slider
+              value={priceRange}
+              min={0}
+              max={10000}
+              step={100}
+              className="w-full"
+              onValueChange={(value) => setPriceRange(value)}
+            />
+
+            <div className="flex justify-between text-xs text-gray-400 font-medium -mt-2">
+              <span>৳0</span>
+              <span>৳10,000</span>
             </div>
 
             <Button
               variant="default"
-              className="w-full bg-[#3BB77E] hover:bg-[#32a56f] text-white cursor-pointer"
+              size="sm"
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl h-9 shadow-sm hover:shadow-emerald-500/30 transition-all cursor-pointer"
               onClick={handleApplyPriceFilter}
             >
-              Apply Price Filter
+              Apply Filter
             </Button>
-
-            {hasActiveFilters && (
-              <Button
-                variant="outline"
-                className="w-full mt-2 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 cursor-pointer"
-                onClick={handleClearFilters}
-              >
-                Clear All Filters
-              </Button>
-            )}
           </div>
         </div>
+      </div>
+    </div>
+  );
 
-        {/* Active Filters Summary (Mobile) */}
-        {hasActiveFilters && (
-          <div className="sm:hidden mt-4 pt-4 border-t border-green-200">
-            <p className="text-sm font-medium text-gray-700 mb-2">Active Filters:</p>
-            <div className="flex flex-wrap gap-2">
-              {filters.search && (
-                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                  Search: {filters.search}
-                </span>
-              )}
-              {filters.productType !== "all" && (
-                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                  {filters.productType === "best-selling" ? "Best Selling" : "Deal of the Day"}
-                </span>
-              )}
-              {filters.categories.length > 0 && (
-                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                  {filters.categories.length} categories
-                </span>
-              )}
-              {(filters.minPrice > 0 || filters.maxPrice < 10000) && (
-                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                  ৳{filters.minPrice} - ৳{filters.maxPrice}
+  return (
+    <>
+      {/* Mobile Filter FAB */}
+      <button
+        className="sm:hidden fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-2xl py-3 px-5 shadow-xl shadow-emerald-600/30 font-bold text-sm transition-all cursor-pointer"
+        onClick={() => setShowSidebar(true)}
+      >
+        <SlidersHorizontal className="w-4 h-4" />
+        Filters
+        {activeFilterCount > 0 && (
+          <span className="bg-white text-emerald-700 text-xs font-black w-5 h-5 rounded-full flex items-center justify-center">
+            {activeFilterCount}
+          </span>
+        )}
+      </button>
+
+      {/* Mobile Overlay */}
+      <div
+        className={`fixed inset-0 bg-black/50 backdrop-blur-sm sm:hidden transition-all duration-300 z-40 ${
+          showSidebar ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+        }`}
+        onClick={() => setShowSidebar(false)}
+      />
+
+      {/* Mobile Drawer */}
+      <div
+        className={`fixed top-0 right-0 h-full w-80 max-w-[90vw] bg-white shadow-2xl transform transition-transform duration-300 ease-out z-50 sm:hidden overflow-y-auto`}
+        style={{ transform: showSidebar ? "translateX(0)" : "translateX(100%)" }}
+      >
+        <div className="p-5">
+          <div className="flex justify-between items-center mb-5">
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="w-4 h-4 text-emerald-600" />
+              <h2 className="font-black text-gray-900">Filters</h2>
+              {activeFilterCount > 0 && (
+                <span className="text-[10px] font-black bg-emerald-500 text-white w-5 h-5 rounded-full flex items-center justify-center">
+                  {activeFilterCount}
                 </span>
               )}
             </div>
+            <button
+              className="w-8 h-8 flex items-center justify-center rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors cursor-pointer"
+              onClick={() => setShowSidebar(false)}
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
-        )}
+          <SidebarContent />
+        </div>
       </div>
+
+      {/* Desktop Sidebar */}
+      <aside className="hidden sm:block w-[280px] lg:w-[300px] shrink-0 self-start sticky top-6">
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5 hover:shadow-md transition-shadow duration-300">
+          <SidebarContent />
+        </div>
+      </aside>
     </>
   );
 }
