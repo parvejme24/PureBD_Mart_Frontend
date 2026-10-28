@@ -22,7 +22,6 @@ import {
   ShoppingBag,
   ArrowLeft,
   Loader2,
-  CreditCard,
   MapPin,
   User,
   Tag,
@@ -30,51 +29,48 @@ import {
   X,
   Percent,
   Banknote,
+  ShieldCheck,
+  Truck,
+  RotateCcw,
+  Sparkles,
+  Phone,
+  Mail,
+  FileText,
+  AlertCircle,
+  Clock,
+  ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useShippingConfig } from "@/hooks/useShipping";
 
-// Sample coupon codes (in real app, this would come from backend)
+// Available coupon codes
 const VALID_COUPONS = {
-  SAVE10: { type: "percentage", value: 10, minOrder: 500 },
-  SAVE20: { type: "percentage", value: 20, minOrder: 1000 },
-  FLAT50: { type: "fixed", value: 50, minOrder: 300 },
-  FLAT100: { type: "fixed", value: 100, minOrder: 800 },
-  WELCOME: { type: "percentage", value: 15, minOrder: 0 },
+  SAVE10: { type: "percentage", value: 10, minOrder: 500, label: "10% OFF" },
+  SAVE20: { type: "percentage", value: 20, minOrder: 1000, label: "20% OFF" },
+  FLAT50: { type: "fixed", value: 50, minOrder: 300, label: "৳50 Flat" },
+  FLAT100: { type: "fixed", value: 100, minOrder: 800, label: "৳100 Flat" },
+  WELCOME: { type: "percentage", value: 15, minOrder: 0, label: "15% Welcome" },
 };
 
-// Payment method - Only Cash on Delivery
-const PAYMENT_METHOD = {
-  value: "COD",
-  label: "Cash on Delivery",
-  icon: Banknote,
-  description: "Pay with cash when your order is delivered.",
-  color: "text-orange-600",
-  bgColor: "bg-orange-50",
-  borderColor: "border-orange-200",
-};
-
-// Checkout form component
 function CheckoutForm({
   user,
   cart,
   cartTotal,
   getOrderItems,
   isPending,
-  isPaymentPending,
   onSubmitCOD,
-  onSubmitOnlinePayment,
 }) {
-  // Initialize form with user data if available
+  // Form state
   const [formData, setFormData] = useState({
-    fullName: user?.fullName || "",
+    fullName: user?.fullName || user?.name || "",
     email: user?.email || "",
     phone: user?.phone || "",
-    division: user?.address?.division || "",
+    division: user?.address?.division || "Dhaka",
     district: user?.address?.district || "",
     upazila: user?.address?.upazila || "",
     postalCode: user?.address?.postalCode || "",
     detailsAddress: user?.address?.detailsAddress || "",
+    deliveryNotes: "",
     paymentMethod: "COD",
   });
 
@@ -84,29 +80,27 @@ function CheckoutForm({
   const [couponError, setCouponError] = useState("");
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
 
-  const isProcessing = isPending || isPaymentPending;
-
-  // Get available districts based on selected division
+  // Cascading districts based on selected division
   const availableDistricts = useMemo(() => {
     if (!formData.division) return [];
     const selectedDivision = divisions.find(
-      (d) => d.name === formData.division
+      (d) => d.name.toLowerCase() === formData.division.toLowerCase()
     );
     if (!selectedDivision) return [];
     return districts.filter((d) => d.divisionId === selectedDivision.id);
   }, [formData.division]);
 
-  // Get available upazilas based on selected district
+  // Cascading upazilas based on selected district
   const availableUpazilas = useMemo(() => {
     if (!formData.district) return [];
     const selectedDistrict = districts.find(
-      (d) => d.name === formData.district
+      (d) => d.name.toLowerCase() === formData.district.toLowerCase()
     );
     if (!selectedDistrict) return [];
     return upazilas.filter((u) => u.districtId === selectedDistrict.id);
   }, [formData.district]);
 
-  // Check if all required fields are filled
+  // Check form validity
   const isFormValid = useMemo(() => {
     return (
       formData.fullName.trim() !== "" &&
@@ -120,7 +114,7 @@ function CheckoutForm({
     );
   }, [formData, cart.length]);
 
-  // Calculate discount
+  // Coupon Discount
   const discount = useMemo(() => {
     if (!appliedCoupon) return 0;
     if (appliedCoupon.type === "percentage") {
@@ -129,22 +123,20 @@ function CheckoutForm({
     return appliedCoupon.value;
   }, [appliedCoupon, cartTotal]);
 
-  // Calculate final total
-  const { data: shippingConfig, isLoading: isShippingLoading } = useShippingConfig();
+  // Shipping calculation
+  const { data: shippingConfig, isLoading: isShippingLoading } =
+    useShippingConfig();
+
+  const isFreeDelivery = cartTotal >= 500 || shippingConfig?.freeDeliveryEnabled;
 
   const shippingAmount = useMemo(() => {
-    if (shippingConfig?.freeDeliveryEnabled) return 0;
-    const inside = Number(shippingConfig?.shippingInsideDhaka) || 0;
-    const outside = Number(shippingConfig?.shippingOutsideDhaka) || 0;
-    if (!formData.division) return 0;
+    if (isFreeDelivery) return 0;
+    const inside = Number(shippingConfig?.shippingInsideDhaka) || 60;
+    const outside = Number(shippingConfig?.shippingOutsideDhaka) || 120;
+    if (!formData.division) return inside;
     const isDhaka = formData.division.trim().toLowerCase() === "dhaka";
     return isDhaka ? inside : outside;
-  }, [
-    formData.division,
-    shippingConfig?.freeDeliveryEnabled,
-    shippingConfig?.shippingInsideDhaka,
-    shippingConfig?.shippingOutsideDhaka,
-  ]);
+  }, [formData.division, isFreeDelivery, shippingConfig]);
 
   const finalTotal = useMemo(() => {
     return Math.max(0, cartTotal - discount + shippingAmount);
@@ -172,13 +164,14 @@ function CheckoutForm({
     }));
   };
 
-  // Apply coupon
-  const handleApplyCoupon = () => {
+  const handleApplyCoupon = (codeToApply) => {
+    const code = (codeToApply || couponCode).trim().toUpperCase();
+    if (!code) return;
+
     setCouponError("");
     setIsApplyingCoupon(true);
 
     setTimeout(() => {
-      const code = couponCode.trim().toUpperCase();
       const coupon = VALID_COUPONS[code];
 
       if (!coupon) {
@@ -196,31 +189,30 @@ function CheckoutForm({
       }
 
       setAppliedCoupon({ ...coupon, code });
+      setCouponCode("");
       setCouponError("");
       toast.success(`Coupon "${code}" applied successfully!`);
       setIsApplyingCoupon(false);
-    }, 500);
+    }, 400);
   };
 
-  // Remove coupon
   const handleRemoveCoupon = () => {
     setAppliedCoupon(null);
     setCouponCode("");
     setCouponError("");
-    toast.success("Coupon removed");
+    toast.info("Coupon removed");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!isFormValid) {
-      toast.error("Please fill in all required fields");
+      toast.error("Please fill in all required shipping fields marked with *");
       return;
     }
 
-    // Prepare order data
     const orderData = {
-      items: getOrderItems(),
+      items: getOrderItems ? getOrderItems() : cart,
       customer: {
         name: formData.fullName,
         email: formData.email,
@@ -233,117 +225,159 @@ function CheckoutForm({
           postalCode: formData.postalCode,
           detailsAddress: formData.detailsAddress,
         },
+        deliveryNotes: formData.deliveryNotes,
       },
       total: finalTotal,
-      paymentMethod: formData.paymentMethod,
-      coupon: appliedCoupon ? appliedCoupon.code : null,
+      subtotal: cartTotal,
       discount: discount,
       shipping: shippingAmount,
+      paymentMethod: "COD",
+      coupon: appliedCoupon ? appliedCoupon.code : null,
     };
 
-    // Only COD payment method
     onSubmitCOD(orderData);
   };
 
-  const selectedPaymentMethod = PAYMENT_METHOD;
-
   return (
     <form onSubmit={handleSubmit}>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Checkout Form */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Customer Information */}
-          <div className="bg-white border rounded-lg p-6 shadow-sm">
-            <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <User className="h-5 w-5 text-[#3BB77E]" />
-              Customer Information
-            </h2>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+        {/* ========================================================= */}
+        {/* LEFT COLUMN: Shipping & Customer Form (7 cols)             */}
+        {/* ========================================================= */}
+        <div className="lg:col-span-7 space-y-6">
+          {/* Card 1: Contact Information */}
+          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-gray-150 shadow-xs space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                  <User className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-black text-gray-900 tracking-tight">
+                    Contact Information
+                  </h2>
+                  <p className="text-xs text-gray-500">
+                    We will send order tracking details and invoice to this contact.
+                  </p>
+                </div>
+              </div>
+              {user && (
+                <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
+                  <Check className="w-3 h-3" /> Auto-filled
+                </span>
+              )}
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name *</Label>
-                <Input
-                  id="fullName"
-                  name="fullName"
-                  placeholder="Enter your full name"
-                  value={formData.fullName}
-                  onChange={handleInputChange}
-                  disabled={isProcessing}
-                  className={
-                    !formData.fullName.trim()
-                      ? "border-gray-300"
-                      : "border-green-300"
-                  }
-                />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Full Name */}
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label htmlFor="fullName" className="text-xs font-bold text-gray-700">
+                  Full Name <span className="text-rose-500">*</span>
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="fullName"
+                    name="fullName"
+                    placeholder="Enter your full name"
+                    value={formData.fullName}
+                    onChange={handleInputChange}
+                    disabled={isPending}
+                    className="h-11 rounded-2xl bg-gray-50/50 border-gray-200 focus:bg-white focus:border-emerald-500 focus:ring-emerald-400 text-sm font-medium"
+                    required
+                  />
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address *</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  disabled={isProcessing}
-                  className={
-                    !formData.email.trim()
-                      ? "border-gray-300"
-                      : "border-green-300"
-                  }
-                />
+              {/* Email */}
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="text-xs font-bold text-gray-700">
+                  Email Address <span className="text-rose-500">*</span>
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="e.g. name@example.com"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    disabled={isPending}
+                    className="h-11 rounded-2xl bg-gray-50/50 border-gray-200 focus:bg-white focus:border-emerald-500 focus:ring-emerald-400 text-sm font-medium"
+                    required
+                  />
+                </div>
               </div>
 
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="phone">Phone Number *</Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  placeholder="Enter your phone number (e.g., 01XXXXXXXXX)"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  disabled={isProcessing}
-                  className={
-                    !formData.phone.trim()
-                      ? "border-gray-300"
-                      : "border-green-300"
-                  }
-                />
+              {/* Phone */}
+              <div className="space-y-1.5">
+                <Label htmlFor="phone" className="text-xs font-bold text-gray-700">
+                  Phone Number <span className="text-rose-500">*</span>
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    placeholder="01XXXXXXXXX"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    disabled={isPending}
+                    className="h-11 rounded-2xl bg-gray-50/50 border-gray-200 focus:bg-white focus:border-emerald-500 focus:ring-emerald-400 text-sm font-medium"
+                    required
+                  />
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Shipping Address */}
-          <div className="bg-white border rounded-lg p-6 shadow-sm">
-            <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-[#3BB77E]" />
-              Shipping Address
-            </h2>
+          {/* Card 2: Delivery & Shipping Address */}
+          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-gray-150 shadow-xs space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                  <MapPin className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-black text-gray-900 tracking-tight">
+                    Delivery Destination
+                  </h2>
+                  <p className="text-xs text-gray-500">
+                    Select your division, district, and exact address across Bangladesh.
+                  </p>
+                </div>
+              </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Dynamic Shipping Badge */}
+              <div className="hidden sm:flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                <Truck className="w-3.5 h-3.5 text-emerald-600" />
+                <span>
+                  {isFreeDelivery
+                    ? "Free Delivery"
+                    : formData.division?.toLowerCase() === "dhaka"
+                    ? "Dhaka Express: ৳60"
+                    : "Outside Dhaka: ৳120"}
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Division */}
-              <div className="space-y-2">
-                <Label>Division *</Label>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-bold text-gray-700">
+                  Division <span className="text-rose-500">*</span>
+                </Label>
                 <Select
                   value={formData.division}
                   onValueChange={handleDivisionChange}
-                  disabled={isProcessing}
+                  disabled={isPending}
                 >
-                  <SelectTrigger
-                    className={`w-full ${
-                      !formData.division
-                        ? "border-gray-300"
-                        : "border-green-300"
-                    }`}
-                  >
+                  <SelectTrigger className="w-full !h-11 rounded-2xl bg-gray-50/50 border-gray-200 px-4 text-sm font-medium focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-400 cursor-pointer transition-all">
                     <SelectValue placeholder="Select Division" />
                   </SelectTrigger>
-                  <SelectContent>
-                    {divisions.map((division) => (
-                      <SelectItem key={division.id} value={division.name}>
-                        {division.name} ({division.nameBn})
+                  <SelectContent className="max-h-60 rounded-2xl">
+                    {divisions.map((d) => (
+                      <SelectItem key={d.id} value={d.name} className="cursor-pointer">
+                        {d.name} ({d.nameBn})
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -351,32 +385,26 @@ function CheckoutForm({
               </div>
 
               {/* District */}
-              <div className="space-y-2">
-                <Label>District *</Label>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-bold text-gray-700">
+                  District <span className="text-rose-500">*</span>
+                </Label>
                 <Select
                   value={formData.district}
                   onValueChange={handleDistrictChange}
-                  disabled={isProcessing || !formData.division}
+                  disabled={isPending || !formData.division}
                 >
-                  <SelectTrigger
-                    className={`w-full ${
-                      !formData.district
-                        ? "border-gray-300"
-                        : "border-green-300"
-                    }`}
-                  >
+                  <SelectTrigger className="w-full !h-11 rounded-2xl bg-gray-50/50 border-gray-200 px-4 text-sm font-medium focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-400 cursor-pointer transition-all">
                     <SelectValue
                       placeholder={
-                        formData.division
-                          ? "Select District"
-                          : "Select Division first"
+                        formData.division ? "Select District" : "Choose Division First"
                       }
                     />
                   </SelectTrigger>
-                  <SelectContent>
-                    {availableDistricts.map((district) => (
-                      <SelectItem key={district.id} value={district.name}>
-                        {district.name} ({district.nameBn})
+                  <SelectContent className="max-h-60 rounded-2xl">
+                    {availableDistricts.map((dist) => (
+                      <SelectItem key={dist.id} value={dist.name} className="cursor-pointer">
+                        {dist.name} ({dist.nameBn})
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -384,32 +412,28 @@ function CheckoutForm({
               </div>
 
               {/* Upazila */}
-              <div className="space-y-2">
-                <Label>Upazila / Sub-district *</Label>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-bold text-gray-700">
+                  Upazila / Thana <span className="text-rose-500">*</span>
+                </Label>
                 <Select
                   value={formData.upazila}
-                  onValueChange={(value) =>
-                    setFormData((prev) => ({ ...prev, upazila: value }))
+                  onValueChange={(val) =>
+                    setFormData((prev) => ({ ...prev, upazila: val }))
                   }
-                  disabled={isProcessing || !formData.district}
+                  disabled={isPending || !formData.district}
                 >
-                  <SelectTrigger
-                    className={`w-full ${
-                      !formData.upazila ? "border-gray-300" : "border-green-300"
-                    }`}
-                  >
+                  <SelectTrigger className="w-full !h-11 rounded-2xl bg-gray-50/50 border-gray-200 px-4 text-sm font-medium focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-400 cursor-pointer transition-all">
                     <SelectValue
                       placeholder={
-                        formData.district
-                          ? "Select Upazila"
-                          : "Select District first"
+                        formData.district ? "Select Upazila" : "Choose District First"
                       }
                     />
                   </SelectTrigger>
-                  <SelectContent>
-                    {availableUpazilas.map((upazila) => (
-                      <SelectItem key={upazila.id} value={upazila.name}>
-                        {upazila.name} ({upazila.nameBn})
+                  <SelectContent className="max-h-60 rounded-2xl">
+                    {availableUpazilas.map((u) => (
+                      <SelectItem key={u.id} value={u.name} className="cursor-pointer">
+                        {u.name} ({u.nameBn})
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -417,250 +441,348 @@ function CheckoutForm({
               </div>
 
               {/* Postal Code */}
-              <div className="space-y-2">
-                <Label htmlFor="postalCode">Postal / ZIP Code</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="postalCode" className="text-xs font-bold text-gray-700">
+                  Postal / ZIP Code (Optional)
+                </Label>
                 <Input
                   id="postalCode"
                   name="postalCode"
-                  placeholder="Enter postal code"
+                  placeholder="e.g. 1212"
                   value={formData.postalCode}
                   onChange={handleInputChange}
-                  disabled={isProcessing}
+                  disabled={isPending}
+                  className="h-11 rounded-2xl bg-gray-50/50 border-gray-200 focus:bg-white focus:border-emerald-500 text-sm font-medium"
                 />
               </div>
 
-              {/* Details Address */}
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="detailsAddress">Detailed Address *</Label>
+              {/* Street Detailed Address */}
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label htmlFor="detailsAddress" className="text-xs font-bold text-gray-700">
+                  Street &amp; House Details <span className="text-rose-500">*</span>
+                </Label>
                 <Textarea
                   id="detailsAddress"
                   name="detailsAddress"
-                  placeholder="House no, Road, Area, Landmark etc."
+                  placeholder="House #, Road #, Sector / Area name, Flat #, Landmark (e.g., Near City Hospital)"
                   value={formData.detailsAddress}
                   onChange={handleInputChange}
-                  rows={3}
-                  disabled={isProcessing}
-                  className={
-                    !formData.detailsAddress.trim()
-                      ? "border-gray-300"
-                      : "border-green-300"
-                  }
+                  rows={2}
+                  disabled={isPending}
+                  className="rounded-2xl bg-gray-50/50 border-gray-200 focus:bg-white focus:border-emerald-500 text-sm font-medium resize-none"
+                  required
+                />
+              </div>
+
+              {/* Order Notes */}
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label htmlFor="deliveryNotes" className="text-xs font-bold text-gray-500">
+                  Special Delivery Instructions (Optional)
+                </Label>
+                <Input
+                  id="deliveryNotes"
+                  name="deliveryNotes"
+                  placeholder="e.g., Please call before delivering, deliver after 2 PM"
+                  value={formData.deliveryNotes}
+                  onChange={handleInputChange}
+                  disabled={isPending}
+                  className="h-10 rounded-2xl bg-gray-50/50 border-gray-200 focus:bg-white focus:border-emerald-500 text-xs font-medium"
                 />
               </div>
             </div>
           </div>
 
-          {/* Payment Method */}
-          <div className="bg-white border rounded-lg p-6 shadow-sm">
-            <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-[#3BB77E]" />
-              Payment Method
-            </h2>
+          {/* Card 3: Payment Method */}
+          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-gray-150 shadow-xs space-y-4">
+            <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                <Banknote className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-lg font-black text-gray-900 tracking-tight">
+                  Payment Method
+                </h2>
+                <p className="text-xs text-gray-500">
+                  Zero advance fee required. Inspect your fresh groceries at doorstep before paying.
+                </p>
+              </div>
+            </div>
 
-            <div className="p-4 rounded-lg border-2 border-orange-200 bg-orange-50">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-orange-50">
-                  <Banknote className="h-5 w-5 text-orange-600" />
+            {/* Cash on Delivery Card */}
+            <div className="p-4 sm:p-5 rounded-2xl border-2 border-emerald-500 bg-gradient-to-r from-emerald-50/90 via-teal-50/50 to-white flex items-start gap-4 shadow-xs">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                <Banknote className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-black text-gray-900 text-sm sm:text-base">
+                    Cash on Delivery (COD)
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full">
+                    <Check className="w-3 h-3" /> Selected
+                  </span>
                 </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-orange-600">
-                    Cash on Delivery
-                  </p>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    Pay with cash when your order is delivered.
-                  </p>
+                <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+                  Pay with physical cash or digital money (bKash / Nagad / Upay) when the delivery agent hands over your fresh groceries.
+                </p>
+                <div className="flex items-center gap-2 mt-2.5 text-[11px] font-bold text-emerald-800">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>100% Secure &amp; Risk-Free Doorstep Inspection</span>
                 </div>
-                <Check className="h-5 w-5 text-orange-600" />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Order Summary */}
-        <div className="lg:col-span-1">
-          <div className="bg-white border rounded-lg p-6 shadow-sm sticky top-24">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">
-              Order Summary
-            </h2>
+        {/* ========================================================= */}
+        {/* RIGHT COLUMN: Order Summary & Coupon (5 cols)             */}
+        {/* ========================================================= */}
+        <div className="lg:col-span-5">
+          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-gray-150 shadow-sm sticky top-24 space-y-6">
+            {/* Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                <ShoppingBag className="w-5 h-5 text-emerald-600" />
+                <h3 className="text-lg font-black text-gray-900 tracking-tight">
+                  Order Summary
+                </h3>
+              </div>
+              <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
+                {cart.length} item{cart.length !== 1 ? "s" : ""}
+              </span>
+            </div>
 
-            {/* Cart Items */}
-            <div className="space-y-3 max-h-[200px] overflow-y-auto border-b pb-4">
-              {cart.map((item) => (
-                <div key={item.productId} className="flex gap-3">
-                  <div className="relative w-14 h-14 flex-shrink-0 rounded-md overflow-hidden bg-gray-100">
-                    {item.image ? (
+            {/* Cart Items List */}
+            <div className="space-y-3.5 max-h-64 overflow-y-auto pr-1 no-scrollbar">
+              {cart.map((item) => {
+                const img = item.image?.url || item.image || "/placeholder-product.png";
+                return (
+                  <div
+                    key={item._id || item.productId}
+                    className="flex items-center gap-3 p-2 rounded-2xl hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shrink-0 flex items-center justify-center p-1">
                       <Image
-                        src={item.image}
+                        src={img}
                         alt={item.name}
                         fill
-                        className="object-cover"
+                        sizes="56px"
+                        className="object-contain"
                       />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <ShoppingBag className="h-5 w-5 text-gray-300" />
-                      </div>
-                    )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold text-xs sm:text-sm text-gray-900 truncate">
+                        {item.name}
+                      </h4>
+                      <p className="text-[11px] text-gray-400 mt-0.5 font-semibold">
+                        Qty: {item.qty} × ৳{item.price}
+                      </p>
+                    </div>
+                    <span className="font-black text-sm text-gray-900 shrink-0">
+                      ৳{(item.price * item.qty).toLocaleString()}
+                    </span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 line-clamp-1">
-                      {item.name}
-                    </p>
-                    <p className="text-xs text-gray-500">Qty: {item.qty}</p>
-                    <p className="text-sm font-semibold text-[#3BB77E]">
-                      ৳{(item.price * item.qty).toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Coupon Code Section */}
-            <div className="py-4 border-b">
-              <Label className="text-sm font-medium text-gray-700 flex items-center gap-2 mb-2">
-                <Tag className="h-4 w-4" />
-                Coupon Code
-              </Label>
+            <div className="p-4 rounded-2xl bg-gray-50/70 border border-gray-150 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-gray-700 flex items-center gap-1.5">
+                  <Tag className="w-3.5 h-3.5 text-emerald-600" /> Have a Promo Code?
+                </span>
+                {appliedCoupon && (
+                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                    Active
+                  </span>
+                )}
+              </div>
 
               {appliedCoupon ? (
-                <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-3">
+                <div className="flex items-center justify-between bg-emerald-100/60 border border-emerald-300 rounded-xl px-3 py-2">
                   <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                      <Percent className="h-4 w-4 text-green-600" />
-                    </div>
+                    <Percent className="w-4 h-4 text-emerald-700" />
                     <div>
-                      <p className="text-sm font-semibold text-green-700">
+                      <span className="text-xs font-black text-emerald-900 uppercase">
                         {appliedCoupon.code}
-                      </p>
-                      <p className="text-xs text-green-600">
+                      </span>
+                      <span className="text-[11px] text-emerald-700 block font-semibold">
                         {appliedCoupon.type === "percentage"
-                          ? `${appliedCoupon.value}% off`
-                          : `৳${appliedCoupon.value} off`}
-                      </p>
+                          ? `${appliedCoupon.value}% discount applied`
+                          : `৳${appliedCoupon.value} discount applied`}
+                      </span>
                     </div>
                   </div>
                   <button
                     type="button"
                     onClick={handleRemoveCoupon}
-                    className="p-1 hover:bg-green-100 rounded-full transition-colors cursor-pointer"
+                    className="p-1 hover:bg-emerald-200/60 rounded-lg text-emerald-800 transition-colors cursor-pointer"
+                    title="Remove coupon"
                   >
-                    <X className="h-4 w-4 text-green-600" />
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
               ) : (
                 <div className="space-y-2">
                   <div className="flex gap-2">
                     <Input
-                      placeholder="Enter coupon code"
+                      placeholder="e.g. SAVE10, WELCOME"
                       value={couponCode}
                       onChange={(e) => {
-                        setCouponCode(e.target.value);
+                        setCouponCode(e.target.value.toUpperCase());
                         setCouponError("");
                       }}
-                      disabled={isProcessing || isApplyingCoupon}
-                      className="flex-1"
+                      disabled={isPending || isApplyingCoupon}
+                      className="h-10 text-xs uppercase font-mono font-bold bg-white rounded-xl border-gray-200"
                     />
                     <Button
                       type="button"
-                      variant="outline"
-                      onClick={handleApplyCoupon}
-                      disabled={
-                        !couponCode.trim() || isProcessing || isApplyingCoupon
-                      }
-                      className="cursor-pointer"
+                      onClick={() => handleApplyCoupon()}
+                      disabled={!couponCode.trim() || isPending || isApplyingCoupon}
+                      className="h-10 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs cursor-pointer"
                     >
                       {isApplyingCoupon ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
                       ) : (
                         "Apply"
                       )}
                     </Button>
                   </div>
+
                   {couponError && (
-                    <p className="text-xs text-red-500">{couponError}</p>
+                    <p className="text-[11px] font-bold text-rose-500 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" /> {couponError}
+                    </p>
                   )}
+
+                  {/* Quick-tap coupon pills */}
+                  <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                    <span className="text-[10px] text-gray-400 font-semibold">Try:</span>
+                    {["WELCOME", "SAVE10", "FLAT50"].map((code) => (
+                      <button
+                        key={code}
+                        type="button"
+                        onClick={() => handleApplyCoupon(code)}
+                        className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white border border-gray-200 text-gray-600 hover:text-emerald-700 hover:border-emerald-300 transition-all cursor-pointer"
+                      >
+                        {code}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Totals */}
-            <div className="space-y-3 py-4 border-b">
+            {/* Financial Totals */}
+            <div className="space-y-2.5 text-sm pt-2 border-t border-gray-100">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
-                <span className="font-medium">৳{cartTotal.toFixed(2)}</span>
+                <span className="font-bold text-gray-900">
+                  ৳{cartTotal.toLocaleString()}
+                </span>
               </div>
+
               {appliedCoupon && (
-                <div className="flex justify-between text-green-600">
+                <div className="flex justify-between text-emerald-700 font-semibold">
                   <span className="flex items-center gap-1">
-                    <Tag className="h-3 w-3" />
-                    Discount ({appliedCoupon.code})
+                    <Tag className="w-3.5 h-3.5" /> Coupon Discount ({appliedCoupon.code})
                   </span>
-                  <span className="font-medium">-৳{discount.toFixed(2)}</span>
+                  <span>-৳{discount.toLocaleString()}</span>
                 </div>
               )}
+
               <div className="flex justify-between text-gray-600">
-                <span>Shipping</span>
+                <span className="flex items-center gap-1">
+                  <Truck className="w-3.5 h-3.5 text-gray-400" /> Delivery Fee
+                </span>
                 {isShippingLoading ? (
-                  <span className="text-gray-500 text-sm flex items-center gap-1">
-                    <Loader2 className="h-4 w-4 animate-spin" /> Calculating...
+                  <span className="text-xs text-gray-400 flex items-center gap-1">
+                    <Loader2 className="w-3 h-3 animate-spin" /> Calculating...
                   </span>
-                ) : shippingAmount === 0 ? (
-                  <span className="text-green-600 font-medium">Free</span>
+                ) : isFreeDelivery ? (
+                  <span className="font-black text-emerald-600 uppercase text-xs">
+                    FREE DELIVERY
+                  </span>
                 ) : (
-                  <span className="font-medium">৳{shippingAmount.toFixed(2)}</span>
+                  <span className="font-bold text-gray-900">
+                    ৳{shippingAmount}
+                  </span>
                 )}
               </div>
-              {shippingConfig?.freeDeliveryEnabled && shippingConfig?.freeDeliveryNote && (
-                <p className="text-xs text-green-600 flex items-center gap-1">
-                  <Check className="h-3 w-3" />
-                  {shippingConfig.freeDeliveryNote}
+
+              {isFreeDelivery && (
+                <p className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg">
+                  🎉 Free delivery applied on orders over ৳500!
                 </p>
               )}
+
+              {/* Grand Total */}
+              <div className="pt-3 border-t border-gray-100 flex items-baseline justify-between">
+                <div>
+                  <span className="text-base font-black text-gray-900 block leading-tight">
+                    Total Amount
+                  </span>
+                  <span className="text-[11px] text-gray-400 font-semibold">
+                    Including all taxes &amp; charges
+                  </span>
+                </div>
+                <div className="text-right">
+                  <span className="text-2xl sm:text-3xl font-black text-emerald-700 tracking-tight">
+                    ৳{finalTotal.toLocaleString()}
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <div className="flex justify-between py-4">
-              <span className="text-lg font-bold text-gray-800">Total</span>
-              <span className="text-xl font-bold text-[#3BB77E]">
-                ৳{finalTotal.toFixed(2)}
-              </span>
-            </div>
-
-            {/* Form validation status */}
+            {/* Form status hint */}
             {!isFormValid && (
-              <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                <p className="text-xs text-amber-700 font-medium">
-                  Please fill in all required fields (*) to proceed
+              <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-xs font-semibold text-amber-800 leading-snug">
+                  Please complete your shipping address (Name, Phone, Division, District, Upazila &amp; Street Address) to place order.
                 </p>
               </div>
             )}
 
+            {/* Order Confirmation Button */}
             <Button
               type="submit"
-              disabled={isProcessing || !isFormValid}
-              className={`w-full h-12 text-lg cursor-pointer transition-all ${
-                isFormValid
-                  ? "bg-[#3BB77E] hover:bg-[#2a9c66]"
-                  : "bg-gray-300 cursor-not-allowed"
+              disabled={isPending || !isFormValid}
+              className={`w-full h-13 font-black text-base rounded-2xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                isFormValid && !isPending
+                  ? "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-emerald-700/20 active:scale-98"
+                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
               }`}
             >
-              {isProcessing ? (
+              {isPending ? (
                 <>
-                  <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                  Placing Order...
-                </>
-              ) : isFormValid ? (
-                <>
-                  <Check className="h-5 w-5 mr-2" />
-                  Place Order
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Confirming Order...</span>
                 </>
               ) : (
-                "Fill Required Fields"
+                <>
+                  <Check className="w-5 h-5" />
+                  <span>Place Order • ৳{finalTotal.toLocaleString()} (COD)</span>
+                </>
               )}
             </Button>
 
-            <p className="text-xs text-gray-400 text-center mt-4">
-              By placing this order, you agree to our Terms of Service and
-              Privacy Policy.
-            </p>
+            {/* Trust and Policy Footer */}
+            <div className="space-y-2 pt-2 text-center">
+              <div className="flex items-center justify-center gap-4 text-xs font-bold text-gray-500">
+                <span className="flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Genuine Food
+                </span>
+                <span>•</span>
+                <span className="flex items-center gap-1">
+                  <RotateCcw className="w-3.5 h-3.5 text-emerald-600" /> Easy Return
+                </span>
+              </div>
+              <p className="text-[11px] text-gray-400 leading-tight">
+                By placing this order, you confirm you agree to PureBD Mart&apos;s Terms of Service and Privacy Policy.
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -674,7 +796,6 @@ export default function CheckoutPage() {
   const { data: userData, isLoading: isUserLoading } = useCurrentUser();
   const user = userData?.user || null;
 
-  // Handle COD order
   const handleCODSubmit = (orderData) => {
     createOrder(orderData);
   };
@@ -682,10 +803,9 @@ export default function CheckoutPage() {
   // Loading state
   if (!isLoaded || isUserLoading) {
     return (
-      <div className="container mx-auto max-w-7xl px-4 py-10">
-        <div className="flex items-center justify-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin text-[#3BB77E]" />
-        </div>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center py-20">
+        <Loader2 className="w-10 h-10 animate-spin text-emerald-600 mb-4" />
+        <p className="text-sm font-bold text-gray-600">Loading your checkout...</p>
       </div>
     );
   }
@@ -693,58 +813,79 @@ export default function CheckoutPage() {
   // Empty cart
   if (cart.length === 0) {
     return (
-      <div className="container mx-auto max-w-7xl px-4 py-20">
-        <div className="flex flex-col items-center justify-center text-center">
-          <ShoppingBag className="h-24 w-24 text-gray-300 mb-6" />
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">
-            Your cart is empty
+      <div className="container mx-auto max-w-4xl px-4 py-20 text-center">
+        <div className="bg-white rounded-3xl border border-gray-150 p-10 sm:p-14 shadow-xs max-w-lg mx-auto">
+          <div className="w-20 h-20 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-5 shadow-inner">
+            <ShoppingBag className="w-10 h-10" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight mb-2">
+            Your Basket is Empty
           </h1>
-          <p className="text-gray-500 mb-6">
-            Add some products to your cart before checkout.
+          <p className="text-sm text-gray-500 mb-8 max-w-sm mx-auto leading-relaxed">
+            Looks like you haven&apos;t added any organic farm items yet. Explore our fresh harvest and start shopping!
           </p>
-          <Button
-            asChild
-            className="bg-[#3BB77E] hover:bg-[#2a9c66] cursor-pointer"
+          <Link
+            href="/shop"
+            className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-3.5 rounded-2xl transition-all shadow-md active:scale-98"
           >
-            <Link href="/shop">Continue Shopping</Link>
-          </Button>
+            <span>Explore Fresh Mart</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-10">
-      {/* Header */}
-      <div className="mb-8">
-        <Link
-          href="/cart"
-          className="inline-flex items-center gap-2 text-gray-500 hover:text-[#3BB77E] mb-4"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Cart
-        </Link>
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-          Checkout
-        </h1>
-        {user && (
-          <p className="text-sm text-gray-500 mt-1">
-            Logged in as <span className="text-[#3BB77E]">{user.email}</span>
-          </p>
-        )}
+    <div className="min-h-screen bg-gray-50/50 pb-20">
+      {/* Top Breadcrumb & Stepper Header */}
+      <div className="bg-white border-b border-gray-100 py-4 shadow-2xs">
+        <div className="container mx-auto max-w-7xl px-3 sm:px-4 lg:px-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            {/* Title & Back link */}
+            <div>
+              <Link
+                href="/cart"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-emerald-700 transition-colors mb-1"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Return to Shopping Cart</span>
+              </Link>
+              <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
+                Secure Checkout
+              </h1>
+            </div>
+
+            {/* Stepper Indicator */}
+            <div className="flex items-center gap-2 text-xs font-bold">
+              <span className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+                <Check className="w-3.5 h-3.5" /> 1. Cart
+              </span>
+              <span className="text-gray-300">→</span>
+              <span className="flex items-center gap-1.5 text-white bg-emerald-600 px-3 py-1 rounded-full shadow-xs">
+                2. Shipping &amp; Payment
+              </span>
+              <span className="text-gray-300">→</span>
+              <span className="text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
+                3. Confirmation
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <CheckoutForm
-        key={user?._id || "guest"}
-        user={user}
-        cart={cart}
-        cartTotal={cartTotal}
-        getOrderItems={getOrderItems}
-        isPending={isCODPending}
-        isPaymentPending={false}
-        onSubmitCOD={handleCODSubmit}
-        onSubmitOnlinePayment={() => {}}
-      />
+      {/* Main Form Section */}
+      <div className="container mx-auto max-w-7xl px-3 sm:px-4 lg:px-6 pt-8 sm:pt-10">
+        <CheckoutForm
+          key={user?._id || "guest"}
+          user={user}
+          cart={cart}
+          cartTotal={cartTotal}
+          getOrderItems={getOrderItems}
+          isPending={isCODPending}
+          onSubmitCOD={handleCODSubmit}
+        />
+      </div>
     </div>
   );
 }
